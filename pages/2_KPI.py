@@ -228,8 +228,8 @@ valor_minimo = st.number_input("Coloque o valor mínimo desejado", min_value=0, 
 valor_maximo = st.number_input("Coloque o valor máximo desejado", min_value=0, max_value=200, value = 150)
 
 # Displaying a graph to show filter results of KPI
-df_filter = df[(df["Lap time (s)"] >= valor_minimo) & (df["Lap time (s)"] <= valor_maximo)]
-fig1 = px.box(df_filter, x=df_filter["Lap time (s)"])
+df_filter = df[(df["Calc Lap Time [s]"] >= valor_minimo) & (df["Calc Lap Time [s]"] <= valor_maximo)]
+fig1 = px.box(df_filter, x=df_filter["Calc Lap Time [s]"])
 st.plotly_chart(fig1, key="kpi_graph")
 
 # Same thing but for VITALS
@@ -247,14 +247,14 @@ option = st.selectbox(
 if option == "Grip Factors":
     st.title("Gráficos de Grip Factors")
     for idx, var in enumerate(grip_factors):
-        fig1 = px.scatter(df_filter, x='Lap Number ', y=var, color="Car", symbol="Car", trendline="ols", color_discrete_map=car_colors)
+        fig1 = px.scatter(df_filter, x='Lap Number', y=var, color="Car", symbol="Car", trendline="ols", color_discrete_map=car_colors)
         with st.empty():
             st.plotly_chart(fig1, key=f"grip_factor_{var}_{idx}")  #Adding an index (idk how this works but it does)
 
 elif option == "Aceleração":
     st.title("Gráficos de Aceleração")
     for idx, var in enumerate(accelerating):
-        fig2 = px.scatter(df_filter, x='Lap Number ', y=var, color="Car", symbol="Car", trendline="ols", color_discrete_map=car_colors)
+        fig2 = px.scatter(df_filter, x='Lap Number', y=var, color="Car", symbol="Car", trendline="ols", color_discrete_map=car_colors)
         with st.empty():
             st.plotly_chart(fig2, key=f"accelerating_{var}_{idx}")
 
@@ -268,7 +268,7 @@ elif option == "Frenagem":
 elif option == "Esterçamento":
     st.title("Gráficos de Esterçamento")
     for idx, var in enumerate(steering):
-        fig4 = px.scatter(df_filter, x='Lap Number ', y=var, color="Car", symbol="Car", trendline="ols", color_discrete_map=car_colors)
+        fig4 = px.scatter(df_filter, x='Lap Number', y=var, color="Car", symbol="Car", trendline="ols", color_discrete_map=car_colors)
         with st.empty():
             st.plotly_chart(fig4, key=f"steering_{var}_{idx}")
 
