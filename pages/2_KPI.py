@@ -115,7 +115,7 @@ braking=[
     "Math Brake Release Smoothness [bar/s]",
     "Braking Time [s]",
     "Math Brake Temperature Front [°C]",
-    "Math Brake Temperature Rear [°C],
+    "Math Brake Temperature Rear [°C]",
     
 ]
 
