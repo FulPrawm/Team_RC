@@ -16,8 +16,42 @@ st.image('header.png')
 st.title("KPI Data Report")
 
 # Driver and Car Performance
-df = pd.read_excel('kpi.xlsx')
-pd.set_option('display.max_columns', None)
+df = pd.read_excel('performance.xlsx', header=4, skiprows=[5])
+
+#Removing the space from the columns
+df.columns = df.columns.str.strip()
+
+# Pular as 6 primeiras colunas
+df = df.iloc[:, 6:]
+
+# Obter o nome da primeira coluna
+first_col = df.columns[0]
+
+# Corrigir vírgulas e converter para float apenas na primeira coluna
+df[first_col] = (
+    df[first_col]
+    .astype(str)
+    .str.strip()
+    .str.replace(',', '.', regex=False)
+)
+df[first_col] = pd.to_numeric(df[first_col], errors='coerce')
+
+# Agora sim: dividir por 1000
+df[first_col] = df[first_col] / 1000
+
+# Agora repetir o processo para o restante das colunas
+for col in df.columns[1:]:
+    df[col] = (df[col])
+
+# Criar uma lista com os valores repetidos 31 vezes cada
+car_ids = [11]*32 + [88]*31 + [44]*31 + [10]*31
+
+# Adicionar como nova coluna
+df['Car'] = car_ids
+
+df['Lap Number'] = df.groupby('Car').cumcount() + 1
+
+#adding the column Car to the table
 df['Car'] = df['Car'].astype(str)
 
 #Vitals
@@ -60,43 +94,39 @@ df1['Car'] = df1['Car'].astype(str)
 
 # Driver and Car Performance
 grip_factors=[
-    "Grip Factor Aero (G)",
-    "Grip Factor Braking (G)",
-    "Grip Factor Cornering (G)",
-    "Grip Factor Overall (G)",
-    "Grip Factor Traction (G)",
-    "Grip Factor Trailbraking (G)"
+    "Math Aero Grip Factor [G]",
+    "Math Braking Grip Factor [G]",
+    "Math Cornering Grip Factor [G]",
+    "Math Overall Grip Factor [G]",
+    "Math Traction Grip Factor [G]",
 ]
 
 accelerating=[
-    "Full Throttle Time (s)",
-    "Part Throttle Time (s)",
-    "Throttle speed (%/s)",
-    "Speed (km/h)"
+    "Full Throttle Time [s]",
+    "Part Throttle Time [s]",
+    "Math Throttle Aggression [%/s]",
+    "Coasting Time [s]",
 ]
 
 braking=[
-    "Brake Press Total (psi)",
-    "Brake Balance Gated (%)",
-    "Front Disc Temp (°C)",
-    "Rear Disc Temp (°C)",
-    "Braking Efficiency (%)",
-    "Avg Brake Pressure (psi)",
-    "Braking Aggressiveness (psi/s)",
-    "Brake release smoothness (psi/s)",
-    "Brake Balance Gated (%)",
-    "Brake Temperature Balance (%)",
-    "Braking Time (s)"
+    "Math Brake Pressure Total [bar]",
+    "Math Brake Bias Front [%]",
+    "Math Brake Aggression [bar/s]",
+    "Math Brake Release Smoothness [bar/s]",
+    "Braking Time [s]",
+    "Math Brake Temperature Front [°C]",
+    "Math Brake Temperature Rear [°C],
+    
 ]
 
 steering=[
-    "Steering Smoothness (°)",
-    "Understeer Angle (°)",
-    "Understeer angle - ENTRY (°)",
-    "Understeer angle - MID (°)",
-    "Understeer angle - EXIT (°)",
-    "Understeer angle - HS (°)",
-    "Understeer angle - LS (°)"
+    "Math Steering Smooth",
+    "Math Vehicle Balance [°]",
+    "Vehicle Balance - Entry [°]",
+    "Vehicle Balance - MID [°]",
+    "Vehicle Balance - MID [°]",
+    "Vehicle Balance - HS [°])",
+    "Vehicle Balance - LS [°]"
 ]
 
 # Car Vitals Signals
@@ -117,6 +147,20 @@ vitals=[
 "Brake Temp RL [°C]",
 "Brake Temp RR [°C]"
 ]
+
+# Força conversão para número (erros viram NaN)
+for col in performance:
+    if col in df.columns:
+        # Se for string, tenta corrigir vírgulas
+        if df[col].dtype == 'object':
+            df[col] = (
+                df[col]
+                .astype(str)
+                .str.strip()
+                .str.replace(',', '.', regex=False)
+            )
+        # Converte para número
+        df[col] = pd.to_numeric(df[col], errors='coerce')
 
 # Força conversão para número (erros viram NaN)
 for col in vitals:
