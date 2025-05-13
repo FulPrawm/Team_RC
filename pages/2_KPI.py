@@ -149,7 +149,7 @@ vitals=[
 ]
 
 # Força conversão para número (erros viram NaN)
-for col in performance:
+for col in grip_factors:
     if col in df.columns:
         # Se for string, tenta corrigir vírgulas
         if df[col].dtype == 'object':
@@ -162,6 +162,44 @@ for col in performance:
         # Converte para número
         df[col] = pd.to_numeric(df[col], errors='coerce')
 
+for col in accelerating:
+    if col in df.columns:
+        # Se for string, tenta corrigir vírgulas
+        if df[col].dtype == 'object':
+            df[col] = (
+                df[col]
+                .astype(str)
+                .str.strip()
+                .str.replace(',', '.', regex=False)
+            )
+        # Converte para número
+        df[col] = pd.to_numeric(df[col], errors='coerce')
+
+for col in braking:
+    if col in df.columns:
+        # Se for string, tenta corrigir vírgulas
+        if df[col].dtype == 'object':
+            df[col] = (
+                df[col]
+                .astype(str)
+                .str.strip()
+                .str.replace(',', '.', regex=False)
+            )
+        # Converte para número
+        df[col] = pd.to_numeric(df[col], errors='coerce')
+
+for col in steering:
+    if col in df.columns:
+        # Se for string, tenta corrigir vírgulas
+        if df[col].dtype == 'object':
+            df[col] = (
+                df[col]
+                .astype(str)
+                .str.strip()
+                .str.replace(',', '.', regex=False)
+            )
+        # Converte para número
+        df[col] = pd.to_numeric(df[col], errors='coerce')
 # Força conversão para número (erros viram NaN)
 for col in vitals:
     if col in df1.columns:
