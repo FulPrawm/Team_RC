@@ -2,6 +2,10 @@ import streamlit as st
 import plotly.express as px
 import pandas as pd
 
+# Carregar dados
+sessao = pd.read_excel("sessao.xlsx")
+df = pd.read_excel("performance.xlsx")
+df1 = pd.read_excel("vitals.xlsx")
 
 def filtrar_e_exibir_kpi(df, df1):
     st.title("Filtragem - KPI e Vitals")
