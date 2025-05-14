@@ -92,6 +92,9 @@ df1['Lap Number'] = df1.groupby('Car').cumcount() + 1
 
 df1['Car'] = df1['Car'].astype(str)
 
+from 3_Fitros import filtrar_e_exibir_kpi
+df_filter, df1_filter = filtrar_e_exibir_kpi(df, df1)
+
 # Driver and Car Performance
 grip_factors=[
     "Math Aero Grip Factor [G]",
@@ -221,21 +224,6 @@ car_colors = {
     '44': 'gray',
     '88': 'yellow'
 }
-
-# Filtering the Dataframes
-st.title("Gráfico para filtragem")
-valor_minimo = st.number_input("Coloque o valor mínimo desejado", min_value=0, max_value=200, value = 50)
-valor_maximo = st.number_input("Coloque o valor máximo desejado", min_value=0, max_value=200, value = 150)
-
-# Displaying a graph to show filter results of KPI
-df_filter = df[(df["Calc Lap Time [s]"] >= valor_minimo) & (df["Calc Lap Time [s]"] <= valor_maximo)]
-fig1 = px.box(df_filter, x=df_filter["Calc Lap Time [s]"])
-st.plotly_chart(fig1, key="kpi_graph")
-
-# Same thing but for VITALS
-df1_filter = df1[(df1["Calc Lap Time [s]"] >= valor_minimo) & (df1["Calc Lap Time [s]"] <= valor_maximo)]
-fig2 = px.box(df1_filter, x = df1_filter["Calc Lap Time [s]"])
-st.plotly_chart(fig2, key="vitals_graph")
 
 #Creating a list to select which type of graphs we want to display
 option = st.selectbox(
