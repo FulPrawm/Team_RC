@@ -92,7 +92,7 @@ df1['Lap Number'] = df1.groupby('Car').cumcount() + 1
 
 df1['Car'] = df1['Car'].astype(str)
 
-from 3_Fitros import filtrar_e_exibir_kpi
+from 3_Filtros import filtrar_e_exibir_kpi
 df_filter, df1_filter = filtrar_e_exibir_kpi(df, df1)
 
 # Driver and Car Performance
