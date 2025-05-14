@@ -86,13 +86,29 @@ def filtrar_e_exibir_kpi(df, df1):
         st.warning("Nenhum dado correspondente ao filtro de Vitals.")
 
 def filtrar_e_exibir_sessao(sessao):
-valor_maximo = st.number_input(
-    "Valor máximo (Race Time)", 
-    min_value=0, 
-    max_value=200, 
-    value=st.session_state.get("valor_max_race", 110),
-    key="valor_max_race"
-)
+    st.title("Filtragem - Race Session")
+    
+    valor_maximo = st.number_input(
+        "Valor máximo (Race Time)", 
+        min_value=0, 
+        max_value=200, 
+        value=st.session_state.get("valor_max_race", 110),
+        key="valor_max_race"
+    )
+
+    if "Lap Tm (S)" not in sessao.columns:
+        st.error("A coluna 'Lap Tm (S)' não foi encontrada.")
+        st.write("Colunas disponíveis:", sessao.columns.tolist())
+        return
+
+    sessao_filtrado = sessao[sessao["Lap Tm (S)"] <= valor_maximo]
+    st.write("Linhas filtradas - Sessão:", len(sessao_filtrado))
+
+    if not sessao_filtrado.empty:
+        fig = px.box(sessao_filtrado, x="Lap Tm (S)")
+        st.plotly_chart(fig)
+    else:
+        st.warning("Nenhum dado correspondente ao filtro de Race Session.")
 
 filtrar_e_exibir_kpi(df, df1)
 filtrar_e_exibir_sessao(sessao)
