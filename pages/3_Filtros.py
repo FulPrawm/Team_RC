@@ -39,9 +39,20 @@ pd.set_option('display.max_rows', None)
 def filtrar_e_exibir_kpi(df, df1):
     st.title("Filtragem - KPI e Vitals")
 
-    valor_minimo = st.number_input("Valor mínimo (KPI/Vitals)", min_value=0, max_value=200, value=50)
-    valor_maximo = st.number_input("Valor máximo (KPI/Vitals)", min_value=0, max_value=200, value=150)
-
+valor_minimo = st.number_input(
+    "Valor mínimo (KPI/Vitals)", 
+    min_value=0, 
+    max_value=200, 
+    value=st.session_state.get("valor_minimo", 50),
+    key="valor_minimo"
+)
+valor_maximo = st.number_input(
+    "Valor máximo (KPI/Vitals)", 
+    min_value=0, 
+    max_value=200, 
+    value=st.session_state.get("valor_maximo", 150),
+    key="valor_maximo"
+)
     # Filtro e gráfico - KPI
     df_filter = df[(df["Calc Lap Time [s]"] >= valor_minimo) & (df["Calc Lap Time [s]"] <= valor_maximo)]
     fig1 = px.box(df_filter, x="Calc Lap Time [s]")
@@ -55,7 +66,12 @@ def filtrar_e_exibir_kpi(df, df1):
 
 def filtrar_e_exibir_sessao(sessao):
     st.title("Filtragem - Race Session")
-    valor_maximo = st.number_input("Valor máximo (Race Time)", min_value=0, max_value=200, value=110)
+    valor_maximo = st.number_input(
+    "Valor máximo (Race Time)", 
+    min_value=0, 
+    max_value=200, 
+    value=st.session_state.get("valor_max_race", 110),
+    key="valor_max_race"
     sessao_filtrado = sessao[sessao["Lap Tm (S)"] <= valor_maximo]
     fig = px.box(sessao_filtrado, x="Lap Tm (S)")
     st.plotly_chart(fig)
