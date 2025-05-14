@@ -12,18 +12,12 @@ def filtrar_e_exibir_kpi(df, df1):
         df_filter = df[(df["Calc Lap Time [s]"] >= valor_minimo) & (df["Calc Lap Time [s]"] <= valor_maximo)]
         fig1 = px.box(df_filter, x="Calc Lap Time [s]")
         st.plotly_chart(fig1, key="kpi_graph")
-    else:
-        df_filter = df  # fallback
 
     # Filtro e gráfico - Vitals
     if "Calc Lap Time [s]" in df1.columns:
         df1_filter = df1[(df1["Calc Lap Time [s]"] >= valor_minimo) & (df1["Calc Lap Time [s]"] <= valor_maximo)]
         fig2 = px.box(df1_filter, x="Calc Lap Time [s]")
         st.plotly_chart(fig2, key="vitals_graph")
-    else:
-        df1_filter = df1  # fallback
-
-    return df_filter, df1_filter
 
 
 def filtrar_e_exibir_sessao(sessao):
@@ -35,7 +29,3 @@ def filtrar_e_exibir_sessao(sessao):
         sessao_filtrado = sessao[sessao["Lap Tm (S)"] <= valor_maximo]
         fig = px.box(sessao_filtrado, x="Lap Tm (S)")
         st.plotly_chart(fig)
-    else:
-        sessao_filtrado = sessao  # fallback
-    
-    return sessao_filtrado
