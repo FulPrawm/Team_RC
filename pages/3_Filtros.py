@@ -39,43 +39,33 @@ pd.set_option('display.max_rows', None)
 def filtrar_e_exibir_kpi(df, df1):
     st.title("Filtragem - KPI e Vitals")
 
-valor_minimo = st.number_input(
-    "Valor mínimo (KPI/Vitals)", 
-    min_value=0, 
-    max_value=200, 
-    value=st.session_state.get("valor_minimo", 50),
-    key="valor_minimo"
-)
-valor_maximo = st.number_input(
-    "Valor máximo (KPI/Vitals)", 
-    min_value=0, 
-    max_value=200, 
-    value=st.session_state.get("valor_maximo", 150),
-    key="valor_maximo"
-)
+    valor_minimo = st.number_input(
+        "Valor mínimo (KPI/Vitals)", 
+        min_value=0, 
+        max_value=200, 
+        value=st.session_state.get("valor_minimo", 50),
+        key="valor_minimo"
+    )
+    valor_maximo = st.number_input(
+        "Valor máximo (KPI/Vitals)", 
+        min_value=0, 
+        max_value=200, 
+        value=st.session_state.get("valor_maximo", 150),
+        key="valor_maximo"
+    )
+
     # Filtro e gráfico - KPI
-    df_filter = df[(df["Calc Lap Time [s]"] >= valor_minimo) & (df["Calc Lap Time [s]"] <= valor_maximo)]
+    df_filter = df[
+        (df["Calc Lap Time [s]"] >= valor_minimo) & 
+        (df["Calc Lap Time [s]"] <= valor_maximo)
+    ]
     fig1 = px.box(df_filter, x="Calc Lap Time [s]")
     st.plotly_chart(fig1, key="kpi_graph")
 
     # Filtro e gráfico - Vitals
-    df1_filter = df1[(df1["Calc Lap Time [s]"] >= valor_minimo) & (df1["Calc Lap Time [s]"] <= valor_maximo)]
+    df1_filter = df1[
+        (df1["Calc Lap Time [s]"] >= valor_minimo) & 
+        (df1["Calc Lap Time [s]"] <= valor_maximo)
+    ]
     fig2 = px.box(df1_filter, x="Calc Lap Time [s]")
     st.plotly_chart(fig2, key="vitals_graph")
-
-
-def filtrar_e_exibir_sessao(sessao):
-    st.title("Filtragem - Race Session")
-    valor_maximo = st.number_input(
-    "Valor máximo (Race Time)", 
-    min_value=0, 
-    max_value=200, 
-    value=st.session_state.get("valor_max_race", 110),
-    key="valor_max_race"
-    sessao_filtrado = sessao[sessao["Lap Tm (S)"] <= valor_maximo]
-    fig = px.box(sessao_filtrado, x="Lap Tm (S)")
-    st.plotly_chart(fig)
-
-# ✅ Chamadas de função para exibir os filtros e gráficos
-filtrar_e_exibir_kpi(df, df1)
-filtrar_e_exibir_sessao(sessao)
