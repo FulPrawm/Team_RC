@@ -54,18 +54,36 @@ def filtrar_e_exibir_kpi(df, df1):
         key="valor_maximo"
     )
 
+    # Verifique se a coluna existe
+    if "Calc Lap Time [s]" not in df.columns or "Calc Lap Time [s]" not in df1.columns:
+        st.error("A coluna 'Calc Lap Time [s]' não foi encontrada no DataFrame.")
+        st.write("Colunas em df:", df.columns.tolist())
+        st.write("Colunas em df1:", df1.columns.tolist())
+        return
+
     # Filtro e gráfico - KPI
     df_filter = df[
         (df["Calc Lap Time [s]"] >= valor_minimo) & 
         (df["Calc Lap Time [s]"] <= valor_maximo)
     ]
-    fig1 = px.box(df_filter, x="Calc Lap Time [s]")
-    st.plotly_chart(fig1, key="kpi_graph")
+    st.write("Linhas filtradas - KPI:", len(df_filter))
+    if not df_filter.empty:
+        fig1 = px.box(df_filter, x="Calc Lap Time [s]")
+        st.plotly_chart(fig1, key="kpi_graph")
+    else:
+        st.warning("Nenhum dado correspondente ao filtro de KPI.")
 
     # Filtro e gráfico - Vitals
     df1_filter = df1[
         (df1["Calc Lap Time [s]"] >= valor_minimo) & 
         (df1["Calc Lap Time [s]"] <= valor_maximo)
     ]
-    fig2 = px.box(df1_filter, x="Calc Lap Time [s]")
-    st.plotly_chart(fig2, key="vitals_graph")
+    st.write("Linhas filtradas - Vitals:", len(df1_filter))
+    if not df1_filter.empty:
+        fig2 = px.box(df1_filter, x="Calc Lap Time [s]")
+        st.plotly_chart(fig2, key="vitals_graph")
+    else:
+        st.warning("Nenhum dado correspondente ao filtro de Vitals.")
+
+filtrar_e_exibir_kpi(df, df1)
+filtrar_e_exibir_sessao(sessao)
