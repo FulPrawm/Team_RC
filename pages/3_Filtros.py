@@ -1,5 +1,7 @@
 import streamlit as st
 import plotly.express as px
+import pandas as pd
+
 
 def filtrar_e_exibir_kpi(df, df1):
     st.title("Filtragem - KPI e Vitals")
