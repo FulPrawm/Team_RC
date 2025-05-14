@@ -86,6 +86,9 @@ analise_equipe = ["Equipe", "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT", "Avg 
 analise_carros = ['Car_ID', "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
 analise_montadora = ['Montadora', "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
 
+from 3_Filtros import filtrar_e_exibir_sessao
+sessao_filtrado = filtrar_e_exibir_sessao(sessao)
+
 #Creating a list to select which type of graphs we want to display
 option = st.selectbox(
     "Selecione o modo de gráfico",
