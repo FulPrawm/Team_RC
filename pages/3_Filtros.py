@@ -59,3 +59,7 @@ def filtrar_e_exibir_sessao(sessao):
     sessao_filtrado = sessao[sessao["Lap Tm (S)"] <= valor_maximo]
     fig = px.box(sessao_filtrado, x="Lap Tm (S)")
     st.plotly_chart(fig)
+
+# ✅ Chamadas de função para exibir os filtros e gráficos
+filtrar_e_exibir_kpi(df, df1)
+filtrar_e_exibir_sessao(sessao)
