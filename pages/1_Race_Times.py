@@ -86,13 +86,6 @@ analise_equipe = ["Equipe", "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT", "Avg 
 analise_carros = ['Car_ID', "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
 analise_montadora = ['Montadora', "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
 
-#Filtering again the dataframe
-st.title("Gráfico para filtragem")
-valor_maximo = st.number_input("Coloque o valor desejado", min_value=0, max_value=200, value=110)
-sessao_filtrado = sessao[sessao["Lap Tm (S)"] <= valor_maximo]
-fig = px.box(sessao_filtrado, x="Lap Tm (S)")
-st.plotly_chart(fig)
-
 #Creating a list to select which type of graphs we want to display
 option = st.selectbox(
     "Selecione o modo de gráfico",
