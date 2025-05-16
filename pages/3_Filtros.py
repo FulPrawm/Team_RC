@@ -53,6 +53,7 @@ def filtrar_e_exibir_kpi(df, df1):
         value=st.session_state.get("valor_maximo", 150),
         key="valor_maximo"
     )
+    return df_filter, df1_filter
 
     # Verifique se a coluna existe
     if "Calc Lap Time [s]" not in df.columns or "Calc Lap Time [s]" not in df1.columns:
@@ -109,6 +110,7 @@ def filtrar_e_exibir_sessao(sessao):
         st.plotly_chart(fig)
     else:
         st.warning("Nenhum dado correspondente ao filtro de Race Session.")
+        return sessao_filtrado
 
 filtrar_e_exibir_kpi(df, df1)
 filtrar_e_exibir_sessao(sessao)
