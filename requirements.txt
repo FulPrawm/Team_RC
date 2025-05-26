@@ -1,8 +1,8 @@
-numpy
-pandas
-matplotlib.pyplot
-seaborn
-plotly.express
 streamlit
+pandas
+numpy
+matplotlib
+seaborn
+plotly
 altair
-os
+openpyxl
