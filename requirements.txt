@@ -8,3 +8,4 @@ altair
 openpyxl
 missingno
 statsmodels
+plotly.graph_objects
