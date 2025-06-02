@@ -120,21 +120,19 @@ car_colors = {
     '88': 'yellow'
 }
 
-# Filtering the Dataframes
-st.header("Gráfico para filtragem")
-valor_minimo = st.number_input("Coloque o valor mínimo desejado", min_value=0, max_value=200, value = 50)
-valor_maximo = st.number_input("Coloque o valor máximo desejado", min_value=0, max_value=200, value = 150)
+# Filtro automático com base na melhor volta
+st.subheader("Filtro automático baseado em 4% da melhor volta da sessão")
 
-# Displaying a graph to show filter results of KPI
-st.write('Cada gráfico é a filtragem de um arquivo, performance e vital')
-df_filter = df[(df["Calc Lap Time [s]"] >= valor_minimo) & (df["Calc Lap Time [s]"] <= valor_maximo)]
-fig1 = px.box(df_filter, x="Calc Lap Time [s]")
-st.plotly_chart(fig1, key="kpi_graph")
+melhor_volta = df["Calc Lap Time [s]"].min()
+tempo_limite = melhor_volta * 1.04
 
-# Same thing but for VITALS
-df1_filter = df1[(df1["Calc Lap Time [s]"] >= valor_minimo) & (df1["Calc Lap Time [s]"] <= valor_maximo)]
-fig2 = px.box(df1_filter, "Calc Lap Time [s]")
-st.plotly_chart(fig2, key="vitals_graph")
+st.write(f"Melhor volta da sessão: **{melhor_volta:.3f} s**")
+st.write(f"Filtro aplicado (4% acima): **{tempo_limite:.3f} s**")
+
+# Aplicando o filtro
+df_filter = df[df["Calc Lap Time [s]"] <= tempo_limite]
+df1_filter = df1[df1["Calc Lap Time [s]"] <= tempo_limite]
+
 #Creating a list to select which type of graphs we want to display
 option = st.selectbox(
     "Tipo de KPI",
