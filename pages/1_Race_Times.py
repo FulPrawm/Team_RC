@@ -96,13 +96,16 @@ analise_equipe = ["Equipe", "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT", "Avg 
 analise_carros = ['Car_ID', "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
 analise_montadora = ['Montadora', "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
 
-#Filtering again the dataframe
-st.header("Gráfico para filtragem")
-valor_minimo = st.number_input("Coloque o valor mínimo desejado", min_value=0, max_value=200, value = 50)
-valor_maximo = st.number_input("Coloque o valor máximo desejado", min_value=0, max_value=200, value = 150)
-sessao_filtrado = sessao[sessao["Lap Tm (S)"] <= valor_maximo]
-fig = px.box(sessao_filtrado, x="Lap Tm (S)")
-st.plotly_chart(fig)
+# Filtragem automática baseada em 4% da melhor volta da sessão
+melhor_volta = sessao["Lap Tm (S)"].min()
+tempo_limite = melhor_volta * 1.04
+
+st.subheader("Filtro automático aplicado")
+st.write(f"Melhor volta da sessão: **{melhor_volta:.3f} s**")
+st.write(f"Filtro de 4% aplicado: **{tempo_limite:.3f} s**")
+
+sessao_filtrado = sessao[sessao["Lap Tm (S)"] <= tempo_limite]
+
 
 
 # Lista das colunas que devem ser numéricas
