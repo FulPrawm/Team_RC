@@ -236,19 +236,6 @@ elif option == 'Outros':
         st.altair_chart(chart, use_container_width=True)
         st.write(f'Baseado na média de cada carro para {coluna}')
 
-  # Gráfico de violino por Car_ID
-  st.subheader("Distribuição de tempos de volta por Carro (Violin Plot)")
-  fig_violino = px.violin(sessao_filtrado,
-                        y="Lap Tm (S)",
-                        x="Car_ID",
-                        box=True,
-                        points="all",
-                        color="Car_ID",
-                        title="Violin Plot - Lap Time por Car_ID")
-  st.plotly_chart(fig_violino, key="violin_car_id")  # <- KEY adicionado aqui
-
-
-
 elif option == 'BoxPlots':
     st.write('Média de todos os carros da montadora')
     for var in analise_montadora:
