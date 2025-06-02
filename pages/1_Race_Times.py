@@ -236,6 +236,33 @@ elif option == 'Outros':
         st.altair_chart(chart, use_container_width=True)
         st.write(f'Baseado na média de cada carro para {coluna}')
 
+    #Matriz de diferença de ritmo entre pilotos
+    st.title("Matriz de Diferença de Ritmo entre Pilotos")
+
+    # 1. Calculando a média de tempo de volta de cada piloto
+    tempos_medios = sessao_filtrado.groupby('Car_ID')['Lap Tm (S)'].mean()
+
+    # 2. Criando matriz de diferença
+    delta_matrix = tempos_medios.values[:, None] - tempos_medios.values[None, :]
+    delta_df = pd.DataFrame(delta_matrix, index=tempos_medios.index, columns=tempos_medios.index)
+
+    # 3. Arredondar os valores para melhor visualização
+    delta_df = delta_df.round(3)
+
+    # 4. Converter Car_IDs para string (Plotly exige isso)
+    delta_df.index = delta_df.index.astype(str)
+    delta_df.columns = delta_df.columns.astype(str)
+
+    # 5. Gráfico de heatmap com Plotly
+    fig = px.imshow(delta_df,
+                    text_auto=True,
+                    color_continuous_scale='RdBu_r',
+                    aspect="auto",
+                    title="Diferença Média de Ritmo (em segundos)",
+                    labels=dict(color="Δ Tempo (s)"))
+
+    st.plotly_chart(fig, use_container_width=True)
+
 elif option == 'BoxPlots':
     st.write('Média de todos os carros da montadora')
     for var in analise_montadora:
