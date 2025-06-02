@@ -106,8 +106,6 @@ st.write(f"Filtro de 4% aplicado: **{tempo_limite:.3f} s**")
 
 sessao_filtrado = sessao[sessao["Lap Tm (S)"] <= tempo_limite]
 
-
-
 # Lista das colunas que devem ser numéricas
 colunas_temporais = ["Lap Tm (S)", "S1 Tm", "S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
 
@@ -238,16 +236,17 @@ elif option == 'Outros':
         st.altair_chart(chart, use_container_width=True)
         st.write(f'Baseado na média de cada carro para {coluna}')
 
-    st.title("Gráfico de Violino por Carro")
+# Gráfico de violino por Car_ID
+st.subheader("Distribuição de tempos de volta por Carro (Violin Plot)")
+fig_violino = px.violin(sessao_filtrado,
+                        y="Lap Tm (S)",
+                        x="Car_ID",
+                        box=True,
+                        points="all",
+                        color="Car_ID",
+                        title="Violin Plot - Lap Time por Car_ID")
+st.plotly_chart(fig_violino, key="violin_car_id")  # <- KEY adicionado aqui
 
-    fig21 = px.violin(sessao_filtrado,
-                    y="Lap Tm (S)",
-                    x="Car_ID",
-                    box=True,
-                    points="all",
-                    color="Car_ID",
-                    title="Distribuição de Tempos de Volta por Carro")
-    st.plotly_chart(fig21)
 
 
 elif option == 'BoxPlots':
