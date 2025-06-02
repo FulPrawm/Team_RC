@@ -240,14 +240,14 @@ elif option == 'Outros':
 
     st.title("Gráfico de Violino por Carro")
 
-    fig = px.violin(sessao_filtrado,
+    fig21 = px.violin(sessao_filtrado,
                     y="Lap Tm (S)",
                     x="Car_ID",
                     box=True,
                     points="all",
                     color="Car_ID",
                     title="Distribuição de Tempos de Volta por Carro")
-    st.plotly_chart(fig)
+    st.plotly_chart(fig21)
 
 
 elif option == 'BoxPlots':
