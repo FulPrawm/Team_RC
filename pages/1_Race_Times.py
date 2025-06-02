@@ -215,34 +215,6 @@ elif option == 'Outros':
     bgcolor="lightgray",
     borderpad=4,
     bordercolor="black"
-    )
-    fig.add_annotation(
-    x=152, y=225,
-    text="Low Efficiency",
-    showarrow=False,
-    font=dict(size=12, color="black"),
-    bgcolor="lightgray",
-    borderpad=4,
-    bordercolor="black"
-    )   
-    fig.add_annotation(
-    x=152, y=252,
-    text="Low Downforce",
-    showarrow=False,
-    font=dict(size=12, color="black"),
-    bgcolor="lightgray",
-    borderpad=4,
-    bordercolor="black"
-    )
-    fig.add_annotation(
-    x=158, y=252,
-    text="High Efficiency",
-    showarrow=False,
-    font=dict(size=12, color="black"),
-    bgcolor="lightgray",
-    borderpad=4,
-    bordercolor="black"
-    )
     st.plotly_chart(fig)
 
     # Calcular a média de 'Lap Tm (S)' para cada 'Car_ID'
