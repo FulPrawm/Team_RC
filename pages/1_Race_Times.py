@@ -238,6 +238,16 @@ elif option == 'Outros':
         st.altair_chart(chart, use_container_width=True)
         st.write(f'Baseado na média de cada carro para {coluna}')
 
+    st.title("Gráfico de Violino por Carro")
+
+    fig = px.violin(sessao_filtrado,
+                    y="Lap Tm (S)",
+                    x="Car_ID",
+                    box=True,
+                    points="all",
+                    color="Car_ID",
+                    title="Distribuição de Tempos de Volta por Carro")
+    st.plotly_chart(fig)
 
 
 elif option == 'BoxPlots':
