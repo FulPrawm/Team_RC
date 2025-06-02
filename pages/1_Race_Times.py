@@ -205,16 +205,6 @@ elif option == 'Outros':
     fig = px.scatter(sessao_filtrado, x = 'Avg Speed', y = 'SPT', color = 'Equipe', symbol = 'Equipe',
                      title="Car Efficiency")
     fig.update_traces(marker_size=10)
-    fig.add_vline(x=155, line_color='white')
-    fig.add_hline(y=240, line_color='white')
-    fig.add_annotation(
-    x=158, y=225,
-    text="High Downforce",
-    showarrow=False,
-    font=dict(size=12, color="black"),
-    bgcolor="lightgray",
-    borderpad=4,
-    bordercolor="black")
     st.plotly_chart(fig)
 
     # Calcular a média de 'Lap Tm (S)' para cada 'Car_ID'
