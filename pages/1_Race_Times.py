@@ -214,9 +214,9 @@ elif option == 'Outros':
     font=dict(size=12, color="black"),
     bgcolor="lightgray",
     borderpad=4,
-    bordercolor="black"
+    bordercolor="black")
     st.plotly_chart(fig)
-    )
+
     # Calcular a média de 'Lap Tm (S)' para cada 'Car_ID'
     media_por_car_id = sessao_filtrado.groupby('Car_ID')['Lap Tm (S)'].mean().reset_index()
 
