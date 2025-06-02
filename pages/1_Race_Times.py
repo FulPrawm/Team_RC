@@ -249,14 +249,14 @@ elif option == 'BoxPlots':
         st.plotly_chart(fig)
 
     st.write('Média dos pilotos')
-        fig = px.box(sessao_filtrado, 
-                     x='Car_ID',
-                     y = 'Lap Tm (S)',
-                     points='all', 
-                     color='Car_ID',
-                     title='Distribuição das voltas',
-                    key='Drivers_Avg')
-    st.plotly_chart(fig)
+    fig = px.box(sessao_filtrado, 
+                 x='Car_ID',
+                 y='Lap Tm (S)',
+                 points='all', 
+                 color='Car_ID',
+                 title='Distribuição das voltas')
+    st.plotly_chart(fig, key='Drivers_Avg')  # <- key precisa estar aqui
+
 
 elif option == 'All Laps':
     alllaps10 = sessao[sessao['Car_ID'] == 10]
