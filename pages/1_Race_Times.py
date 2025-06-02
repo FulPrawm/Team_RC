@@ -201,38 +201,40 @@ elif option =='Histogramas':
 
 elif option == 'Outros':
     
-    #Calculating the efficiency of each car
-    fig = px.scatter(sessao_filtrado, x = 'Avg Speed', y = 'SPT', color = 'Equipe', symbol = 'Equipe',
-                     title="Car Efficiency")
-    fig.update_traces(marker_size=10)
-    st.plotly_chart(fig)
+  # Scatter de eficiência
+  fig = px.scatter(sessao_filtrado, x='Avg Speed', y='SPT', color='Equipe', symbol='Equipe',
+                 title="Car Efficiency")
+  fig.update_traces(marker_size=10)
+  st.plotly_chart(fig)
 
-    # Calcular a média de 'Lap Tm (S)' para cada 'Car_ID'
-    media_por_car_id = sessao_filtrado.groupby('Car_ID')['Lap Tm (S)'].mean().reset_index()
+  # Tabs para Gap to Fastest
+  tabs = st.tabs(["Gap to Fastest - Lap", "Gap to Fastest - S1", "Gap to Fastest - S2", "Gap to Fastest - S3"])
 
-    # Encontrar o valor mínimo de 'Lap Tm (S)'
-    min_valor = media_por_car_id['Lap Tm (S)'].min()
+  colunas_setores = {
+    "Gap to Fastest - Lap": "Lap Tm (S)",
+    "Gap to Fastest - S1": "S1 Tm",
+    "Gap to Fastest - S2": "S2 Tm",
+    "Gap to Fastest - S3": "S3 Tm"
+  }
 
-    # Calcular a diferença para o menor valor
-    media_por_car_id['Diff'] = media_por_car_id['Lap Tm (S)'] - min_valor
+  for i, (tab_name, coluna) in enumerate(colunas_setores.items()):
+    with tabs[i]:
+        media_por_car_id = sessao_filtrado.groupby('Car_ID')[coluna].mean().reset_index()
+        min_valor = media_por_car_id[coluna].min()
+        media_por_car_id['Diff'] = media_por_car_id[coluna] - min_valor
+        media_por_car_id = media_por_car_id.sort_values(by='Diff')
+        media_por_car_id['Car_ID'] = media_por_car_id['Car_ID'].astype(str)
 
-    # Ordenar os valores da diferença do menor para o maior
-    media_por_car_id = media_por_car_id.sort_values(by='Diff')
+        chart = alt.Chart(media_por_car_id).mark_bar().encode(
+            x=alt.X('Car_ID:N', sort=media_por_car_id['Diff'].tolist()),
+            y=alt.Y('Diff', title=f'Diff to Best {coluna} (s)')
+        ).properties(
+            title=f'{tab_name}'
+        )
 
-    # Garantir que o Car_ID seja tratado como uma categoria, se necessário
-    media_por_car_id['Car_ID'] = media_por_car_id['Car_ID'].astype(str)
+        st.altair_chart(chart, use_container_width=True)
+        st.write(f'Baseado na média de cada carro para {coluna}')
 
-    # Criar o gráfico de barras com Altair
-    chart = alt.Chart(media_por_car_id).mark_bar().encode(
-    x=alt.X('Car_ID:N', sort=media_por_car_id['Diff'].tolist()),  # Ordena pelo valor da diferença
-    y='Diff'
-    ).properties(
-    title='Gap to fastest (S)'  # Adiciona o título ao gráfico
-    )
-
-    # Exibir o gráfico com Streamlit
-    st.altair_chart(chart, use_container_width=True)
-    st.write('Calculado pela média de cada carro')
 
 
 elif option == 'BoxPlots':
