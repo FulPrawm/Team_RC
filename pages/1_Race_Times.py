@@ -256,7 +256,7 @@ elif option == 'BoxPlots':
                      color='Car_ID',
                      title='Distribuição das voltas',
                     key='Drivers_Avg')
-        st.plotly_chart(fig)
+    st.plotly_chart(fig)
 
 elif option == 'All Laps':
     alllaps10 = sessao[sessao['Car_ID'] == 10]
