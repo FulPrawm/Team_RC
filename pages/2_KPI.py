@@ -35,7 +35,7 @@ arquivos_vitals = {f.replace("_vitals.xlsx", "") for f in arquivos if f.endswith
 corridas_disponiveis = sorted(arquivos_perf & arquivos_vitals)
 
 # Seletor de corrida
-corrida_selecionada = st.selectbox("Escolha a corrida:", corridas_disponiveis)
+corrida_selecionada = st.selectbox("Escolha a sessão:", corridas_disponiveis)
 
 # Montagem dos caminhos
 arquivo_perf = os.path.join(pasta_etapa, f"{corrida_selecionada}_performance.xlsx")
