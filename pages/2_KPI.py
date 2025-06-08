@@ -104,6 +104,8 @@ vitals=[
 "Airbox Temperature [°C]",
 "Exhaust Lambda Bank 1 [LA]",
 "Fuel Pressure Differential [bar]",
+"Fuel Used [l]",
+"Fuel Used per Lap [l]",
 "Brake Temp FL [°C]",
 "Brake Temp FR [°C]",
 "Brake Temp RL [°C]",
