@@ -98,6 +98,7 @@ vitals=[
 "Battery Voltage [V]",
 "Engine Oil Pressure [bar]",
 "Engine Oil Temperature [°C]",
+"Coolant Pressure [bar]",
 "Coolant Temperature [°C]",
 "Gearbox Temperature [°C]",
 "Fuel Temperature [°C]",
