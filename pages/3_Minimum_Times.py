@@ -15,7 +15,7 @@ warnings.filterwarnings('ignore')
 st.image('header.png')
 
 #title
-st.title("Session Data Report")
+st.title("Fastest Time Session Data Report")
 
 # Caminho base onde ficam as pastas das etapas
 PASTA_ETAPAS = "Arquivos Treinos & Qualy"
@@ -33,7 +33,7 @@ pasta_etapa = os.path.join(PASTA_ETAPAS, etapa_escolhida)
 corridas_disponiveis = [f for f in os.listdir(pasta_etapa) if f.endswith(".xlsx")]
 
 # Seletor de corrida
-corrida_escolhida = st.selectbox("Escolha a corrida:", sorted(corridas_disponiveis))
+corrida_escolhida = st.selectbox("Escolha a sessão:", sorted(corridas_disponiveis))
 
 # Caminho final do arquivo a ser carregado
 caminho_corrida = os.path.join(pasta_etapa, corrida_escolhida)
@@ -44,18 +44,13 @@ sessao = pd.read_excel(caminho_corrida)
 # Não limitando o número de linhas que poderão ser visualizadas
 pd.set_option('display.max_rows', None)
 
-#Creating a new column for Last Lap Difference
-sessao['Last Lap Diff'] = sessao.groupby('Car_ID')['Lap Tm (S)'].diff()
-
 #Calculating the fastest time for each driver
 fastest_lap_global = sessao.groupby('Car_ID')['Lap Tm (S)'].transform('min')
-
-#Creating a new column for the fastest lap difference
-sessao['Fast Lap Diff'] = sessao['Lap Tm (S)'] - fastest_lap_global
 
 # Criando 2 grupos para análise, separando o grupo de carros do modelo Corolla e do modelo Cruze
 carros_toyota = [301, 4, 30, 111, 38, 81, 5, 7, 9, 21]
 carros_mitsubishi = [101, 444, 44, 33, 29, 11, 121, 18, 10, 88]
+
 # Função que verifica se o carro está presente na lista de carros Toyota, se estiver retorna a string 'Toyota', senão retorna "Chevrolet"
 def marca(x):
     if x in carros_toyota:
@@ -116,7 +111,7 @@ for col in colunas_temporais:
 #Creating a list to select which type of graphs we want to display
 option = st.selectbox(
     "Selecione o modo de gráfico",
-    ("Tabelas", "Linhas", "Histogramas", "BoxPlots", "Outros", "All Laps"),
+    ("Tabelas", "Linhas", "BoxPlots", "Outros", "All Laps"),
     index=0  # number 0 is to open it blank
 )
 # Ordenando pela velocidade dos carros
@@ -135,26 +130,6 @@ if option == "Tabelas":
     st.dataframe(tabela3)
 
 elif option == 'Linhas':
-    #Lap Progression
-    graf1 = px.line(sessao, x="Lap", y= "Lap Tm (S)", color="Car_ID", title='Lap Time Progression')
-    st.plotly_chart(graf1)
-
-    #S1 Progression
-    graf9 = px.line(sessao, x="Lap", y= "S1 Tm", color="Car_ID", title='S1 Time Progression')
-    st.plotly_chart(graf9)
-
-    #S2 Progression
-    graf10 = px.line(sessao, x="Lap", y= "S2 Tm", color="Car_ID", title='S2 Time Progression')
-    st.plotly_chart(graf10)
-
-    #S3 Progression
-    graf11 = px.line(sessao, x="Lap", y= "S3 Tm", color="Car_ID", title='S3 Time Progression')
-    st.plotly_chart(graf11)
-
-    #SPT Progression
-    graf12 = px.line(sessao, x="Lap", y= "SPT", color="Car_ID", title='SPT Progression')
-    st.plotly_chart(graf12)
-
     #Lap Time Raising Average
     sessao_filtrado['Ranking'] = sessao_filtrado.groupby('Car_ID')['Lap Tm (S)'].rank(ascending=True) # Criando uma coluna de ranking por carro
     sessao_filtrado = sessao_filtrado.sort_values(by=['Car_ID', 'Ranking']) # Ordenando os dados por carro e ranking
@@ -185,29 +160,7 @@ elif option == 'Linhas':
     graf6 = px.line(sessao_filtrado, x='Ranking', y='SPT', color='Car_ID', title='SPT Raising Average')
     st.plotly_chart(graf6)
 
-    #Last Lap Diff Graph
-    graf7 = px.line(sessao, x="Lap", y= "Last Lap Diff", color="Car_ID", title='Last Lap Diff')
-    st.plotly_chart(graf7)
-
-    #Fast Lap Diff Graph
-    graf8 = px.line(sessao, x="Lap", y= "Fast Lap Diff", color="Car_ID", title='Fast Lap Diff')
-    st.plotly_chart(graf8)
-
-elif option =='Histogramas':
-    for var in analise_carros:
-        if var == 'Car_ID':
-            continue #skips the column "Car_ID"
-        fig = px.histogram(sessao_filtrado[var], nbins=25,title=f'Distribuição de {var}')
-        st.plotly_chart(fig)
-
 elif option == 'Outros':
-    
-  # Scatter de eficiência
-  fig = px.scatter(sessao_filtrado, x='Avg Speed', y='SPT', color='Equipe', symbol='Equipe',
-                 title="Car Efficiency")
-  fig.update_traces(marker_size=10)
-  st.plotly_chart(fig)
-
   # Tabs para Gap to Fastest
   tabs = st.tabs(["Gap to Fastest - Lap", "Gap to Fastest - S1", "Gap to Fastest - S2", "Gap to Fastest - S3"])
 
@@ -238,7 +191,7 @@ elif option == 'Outros':
         st.write(f'Baseado no melhor tempo de cada carro para {coluna}')
 
 elif option == 'BoxPlots':
-    st.write('Média de todos os carros da montadora')
+    st.write('Valores de todos os carros da montadora')
     for var in analise_montadora:
         if var == 'Montadora':
             continue
