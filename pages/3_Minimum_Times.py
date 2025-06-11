@@ -116,17 +116,37 @@ option = st.selectbox(
 )
 # Ordenando pela velocidade dos carros
 if option == "Tabelas":
-    tabela1 = sessao_filtrado[analise_carros].groupby(by=["Car_ID"]).min(numeric_only=True).style.background_gradient(cmap='coolwarm')
-    st.header("Tabela ordenada pelos carros")
+    tabela1 = sessao_filtrado.groupby("Car_ID").agg({
+    "Lap Tm (S)": "min",
+    "S1 Tm": "min",
+    "S2 Tm": "min",
+    "S3 Tm": "min",
+    "SPT": "max",
+    "Avg Speed": "max"
+    }).style.background_gradient(cmap='coolwarm')
+    st.header("Tabela - Melhor volta por carro")
     st.dataframe(tabela1)
-
-    # Ordenando pelo tempo de volta das equipes
-    tabela2 = sessao_filtrado[analise_equipe].groupby(by=["Equipe"]).min(numeric_only=True).style.background_gradient(cmap='coolwarm')
-    st.header("Tabela ordenada pelas equipes")
+ 
+    tabela2 = sessao_filtrado.groupby("Equipe").agg({
+    "Lap Tm (S)": "min",
+    "S1 Tm": "min",
+    "S2 Tm": "min",
+    "S3 Tm": "min",
+    "SPT": "max",
+    "Avg Speed": "max"
+    }).style.background_gradient(cmap='coolwarm')
+    st.header("Tabela - Melhor volta por equipe")
     st.dataframe(tabela2)
 
-    tabela3 = sessao_filtrado[analise_montadora].groupby(by=["Montadora"]).min(numeric_only=True).style.background_gradient(cmap='coolwarm')
-    st.header("Tabela ordenada pelas montadoras")
+    tabela3 = sessao_filtrado.groupby("Montadora").agg({
+    "Lap Tm (S)": "min",
+    "S1 Tm": "min",
+    "S2 Tm": "min",
+    "S3 Tm": "min",
+    "SPT": "max",
+    "Avg Speed": "max"
+    }).style.background_gradient(cmap='coolwarm')
+    st.header("Tabela - Melhor volta por montadora")
     st.dataframe(tabela3)
 
 elif option == 'Linhas':
