@@ -43,10 +43,10 @@ arquivo_vitals = os.path.join(pasta_etapa, f"{corrida_selecionada}_vitals.xlsx")
 
 def converter_tempo(val):
     try:
-        val_str = str(val)
-        return float(val_str.replace('.', '')) / 1000
+        return val / 1000
     except:
         return None
+
 
 df = pd.read_excel(arquivo_perf, converters={"Calc Lap Time [s]": converter_tempo})
 df1 = pd.read_excel(arquivo_vitals, converters={"Calc Lap Time [s]": converter_tempo})
