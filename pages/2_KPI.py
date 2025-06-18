@@ -43,10 +43,9 @@ arquivo_vitals = os.path.join(pasta_etapa, f"{corrida_selecionada}_vitals.xlsx")
 
 def converter_tempo(val):
     try:
-        print(f"Convertendo: {val}")
-        return val / 1000
-    except Exception as e:
-        print(f"Erro com valor {val}: {e}")
+        val_str = str(val)
+        return float(val_str.replace('.', '')) / 1000
+    except:
         return None
 
 
