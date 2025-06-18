@@ -30,6 +30,7 @@ arquivos = os.listdir(pasta_etapa)
 # Encontrar arquivos performance e vitals
 arquivos_perf = {f.replace("_performance.xlsx", "") for f in arquivos if f.endswith("_performance.xlsx")}
 arquivos_vitals = {f.replace("_vitals.xlsx", "") for f in arquivos if f.endswith("_vitals.xlsx")}
+arquivos_corners = {f.replace("_corners.xlsx", "") for f in arquivos if f.endswith("_corners.xlsx")}
 
 # Interseção entre os dois tipos (só os que têm ambos)
 corridas_disponiveis = sorted(arquivos_perf & arquivos_vitals)
@@ -40,6 +41,7 @@ corrida_selecionada = st.selectbox("Escolha a sessão:", corridas_disponiveis)
 # Montagem dos caminhos
 arquivo_perf = os.path.join(pasta_etapa, f"{corrida_selecionada}_performance.xlsx")
 arquivo_vitals = os.path.join(pasta_etapa, f"{corrida_selecionada}_vitals.xlsx")
+arquivo_corners = os.path.join(pasta_etapa, f"{corrida_selecionada}_corners.xlsx")
 
 def converter_tempo(val):
     try:
@@ -48,12 +50,13 @@ def converter_tempo(val):
     except:
         return None
 
-
 df = pd.read_excel(arquivo_perf, converters={"Calc Lap Time [s]": converter_tempo})
 df1 = pd.read_excel(arquivo_vitals, converters={"Calc Lap Time [s]": converter_tempo})
+df2 = pd.read_excel(arquivo_corners, converters={"Calc Lap Time [s]": converter_tempo})
 
 df["Car"] = df["Car"].astype(str)
 df1["Car"] = df1["Car"].astype(str)
+df2["Car"] = df2["Car"].astype(str)
 
 # Driver and Car Performance
 grip_factors=[
@@ -114,7 +117,15 @@ vitals=[
 "Brake Temp RR [°C]"
 ]
 
-
+# Corner Performance
+corners=[
+"Math Aero Grip Factor [G]",
+"Math Braking Grip Factor [G]",
+"Math Cornering Grip Factor [G]",
+"Math Overall Grip Factor [G]",
+"Math Traction Grip Factor [G]",
+"Corr Speed [km/h]"
+]
 
 # Mapping colors for specific cars
 car_colors = {
@@ -140,7 +151,7 @@ df1_filter = df1[df1["Calc Lap Time [s]"] <= tempo_limite]
 #Creating a list to select which type of graphs we want to display
 option = st.selectbox(
     "Tipo de KPI",
-    ("Grip Factors", "Aceleração", "Frenagem", "Esterçamento", "Vitais", "Outros"),
+    ("Grip Factors", "Aceleração", "Frenagem", "Esterçamento", "Vitais", "Curvas", "Outros"),
     index=0  # number 0 is to open it blank
 )
 
@@ -178,6 +189,13 @@ elif option == "Vitais":
         fig5 = px.scatter(df1_filter, x='Lap', y=var, color="Car", symbol="Car", trendline="ols", color_discrete_map=car_colors)
         with st.empty():
             st.plotly_chart(fig5, key=f"vitals_{var}_{idx}")
+
+elif option == "Corners":
+    st.title("Gráficos de cada curva")
+    for idx, var in enumerate(corners):
+        fig7 = px.scatter(df2, x='Lap', y=var, color="Car", symbol="Car", trendline="ols", color_discrete_map=car_colors)
+        with st.empty():
+            st.plotly_chart(fig5, key=f"corners_{var}_{idx}")
 
 elif option == "Outros":
     st.title("Gráfico de comparação entre pilotos")
