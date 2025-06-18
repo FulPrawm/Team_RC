@@ -195,7 +195,7 @@ elif option == "Corners":
     for idx, var in enumerate(corners):
         fig7 = px.scatter(df2, x='Lap', y=var, color="Car", symbol="Car", trendline="ols", color_discrete_map=car_colors)
         with st.empty():
-            st.plotly_chart(fig5, key=f"corners_{var}_{idx}")
+            st.plotly_chart(fig7, key=f"corners_{var}_{idx}")
 
 elif option == "Outros":
     st.title("Gráfico de comparação entre pilotos")
