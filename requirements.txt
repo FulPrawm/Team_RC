@@ -8,3 +8,4 @@ altair
 openpyxl
 missingno
 statsmodels
+scipy==1.10.1
