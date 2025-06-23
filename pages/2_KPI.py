@@ -52,6 +52,8 @@ def converter_tempo(val):
 
 df = pd.read_excel(arquivo_perf, converters={"Calc Lap Time [s]": converter_tempo})
 df1 = pd.read_excel(arquivo_vitals, converters={"Calc Lap Time [s]": converter_tempo})
+df2 = pd.read_excel(arquivo_corners)
+
 
 df["Car"] = df["Car"].astype(str)
 df1["Car"] = df1["Car"].astype(str)
