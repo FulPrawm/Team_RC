@@ -192,11 +192,27 @@ elif option == "Vitais":
             st.plotly_chart(fig5, key=f"vitals_{var}_{idx}")
 
 elif option == "Curvas":
-    st.title("Gráficos de cada curva")
-    for idx, var in enumerate(corners):
-        fig7 = px.scatter(df2, x='Lap', y=var, color="Car", symbol="Car", trendline="ols", color_discrete_map=car_colors)
+    st.title("Gráficos por curva")
+
+    curvas_disponiveis = df2["Curve"].unique()
+    curva_selecionada = st.selectbox("Escolha a curva para visualizar:", sorted(curvas_disponiveis))
+
+    df_curva = df2[df2["Curve"] == curva_selecionada]
+
+    for idx, var in enumerate(corners[:-1]):  # Ignora "Corr Speed [km/h]" se não quiser incluir
+        fig = px.scatter(
+            df_curva,
+            x="Lap",
+            y=var,
+            color="Car",
+            symbol="Car",
+            trendline="ols",
+            color_discrete_map=car_colors,
+            title=f"{var} - {curva_selecionada}"
+        )
         with st.empty():
-            st.plotly_chart(fig7, key=f"corners_{var}_{idx}")
+            st.plotly_chart(fig, key=f"curva_{curva_selecionada}_{var}_{idx}")
+
 
 elif option == "Outros":
     st.title("Gráfico de comparação entre pilotos")
