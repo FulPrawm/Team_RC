@@ -52,12 +52,14 @@ def converter_tempo(val):
 
 df = pd.read_excel(arquivo_perf, converters={"Calc Lap Time [s]": converter_tempo})
 df1 = pd.read_excel(arquivo_vitals, converters={"Calc Lap Time [s]": converter_tempo})
-df2 = pd.read_excel(arquivo_corners)
+df2 = None
+if os.path.exists(arquivo_corners):
+    df2 = pd.read_excel(arquivo_corners)
+    df2["Car"] = df2["Car"].astype(str)
 
 
 df["Car"] = df["Car"].astype(str)
 df1["Car"] = df1["Car"].astype(str)
-df2["Car"] = df2["Car"].astype(str)
 
 # Driver and Car Performance
 grip_factors=[
@@ -150,11 +152,11 @@ df_filter = df[df["Calc Lap Time [s]"] <= tempo_limite]
 df1_filter = df1[df1["Calc Lap Time [s]"] <= tempo_limite]
 
 #Creating a list to select which type of graphs we want to display
-option = st.selectbox(
-    "Tipo de KPI",
-    ("Grip Factors", "Aceleração", "Frenagem", "Esterçamento", "Vitais", "Curvas", "Outros"),
-    index=0  # number 0 is to open it blank
-)
+opcoes_kpi = ["Grip Factors", "Aceleração", "Frenagem", "Esterçamento", "Vitais", "Outros"]
+if df2 is not None:
+    opcoes_kpi.insert(5, "Curvas")  # Insere "Curvas" na posição certa se o arquivo existir
+
+option = st.selectbox("Tipo de KPI", opcoes_kpi, index=0)
 
 if option == "Grip Factors":
     st.title("Gráficos de Grip Factors")
