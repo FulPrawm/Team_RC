@@ -124,7 +124,7 @@ if option == "Tabelas":
     "SPT": "max",
     "Avg Speed": "max"
     }).style.background_gradient(cmap='coolwarm')
-    st.header("Tabela - Melhor tempo/velocidade por carro")
+    st.header("Melhor tempo/velocidade por carro")
     st.dataframe(tabela1)
  
     tabela2 = sessao_filtrado.groupby("Equipe").agg({
@@ -135,7 +135,7 @@ if option == "Tabelas":
     "SPT": "max",
     "Avg Speed": "max"
     }).style.background_gradient(cmap='coolwarm')
-    st.header("Tabela - Melhor tempo/velocidade por equipe")
+    st.header("Melhor tempo/velocidade por equipe")
     st.dataframe(tabela2)
 
     tabela3 = sessao_filtrado.groupby("Montadora").agg({
@@ -146,7 +146,7 @@ if option == "Tabelas":
     "SPT": "max",
     "Avg Speed": "max"
     }).style.background_gradient(cmap='coolwarm')
-    st.header("Tabela - Melhor volta por montadora")
+    st.header("Melhor tempo/velocidade por montadora")
     st.dataframe(tabela3)
 
 elif option == 'Linhas':
