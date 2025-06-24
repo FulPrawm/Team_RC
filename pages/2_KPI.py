@@ -200,11 +200,11 @@ elif option == "Curvas":
     abas = st.tabs(curvas_disponiveis)
 
     for tab, curva in zip(abas, curvas_disponiveis):
-    with tab:
+        with tab:
         st.subheader(f"Curva: {curva}")
         df_curva = df2[df2["Curve"] == curva]
 
-        for idx, var in enumerate(corners):  # Ignora "Corr Speed [km/h]" se quiser
+    for idx, var in enumerate(corners):
             fig = px.scatter(
                 df_curva,
                 x="Lap",
