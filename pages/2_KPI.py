@@ -200,7 +200,7 @@ elif option == "Curvas":
 
     for tab, curva in zip(abas, curvas_disponiveis):
         with tab:
-            st.subheader(f"Corner: {curva}")
+            st.subheader(f"Seção: {curva}")
             df_curva = df2[df2["Corner"] == curva]
 
             for idx, var in enumerate(corners[:-1]):  # Ignora "Corr Speed [km/h]" se quiser
