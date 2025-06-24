@@ -196,15 +196,15 @@ elif option == "Vitais":
 elif option == "Curvas":
     st.title("Gráficos por curva")
 
-    curvas_disponiveis = sorted(df2["Curve"].unique())
-    abas = st.tabs(curvas_disponiveis)
+curvas_disponiveis = sorted(df2["Curve"].unique())
+abas = st.tabs(curvas_disponiveis)
 
-    for tab, curva in zip(abas, curvas_disponiveis):
-        with tab:
+for tab, curva in zip(abas, curvas_disponiveis):
+    with tab:
         st.subheader(f"Curva: {curva}")
         df_curva = df2[df2["Curve"] == curva]
 
-    for idx, var in enumerate(corners):
+        for idx, var in enumerate(corners[:-1]):  # Ignora "Corr Speed [km/h]" se quiser
             fig = px.scatter(
                 df_curva,
                 x="Lap",
