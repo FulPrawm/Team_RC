@@ -196,24 +196,26 @@ elif option == "Vitais":
 elif option == "Curvas":
     st.title("Gráficos por curva")
 
-    curvas_disponiveis = df2["Corner"].unique()
-    curva_selecionada = st.selectbox("Escolha a curva para visualizar:", sorted(curvas_disponiveis))
+curvas_disponiveis = sorted(df2["Curve"].unique())
+abas = st.tabs(curvas_disponiveis)
 
-    df_curva = df2[df2["Corner"] == curva_selecionada]
+for tab, curva in zip(abas, curvas_disponiveis):
+    with tab:
+        st.subheader(f"Curva: {curva}")
+        df_curva = df2[df2["Curve"] == curva]
 
-    for idx, var in enumerate(corners):  # Ignora "Corr Speed [km/h]" se não quiser incluir
-        fig = px.scatter(
-            df_curva,
-            x="Lap",
-            y=var,
-            color="Car",
-            symbol="Car",
-            trendline="ols",
-            color_discrete_map=car_colors,
-            title=f"{var} - {curva_selecionada}"
-        )
-        with st.empty():
-            st.plotly_chart(fig, key=f"curva_{curva_selecionada}_{var}_{idx}")
+        for idx, var in enumerate(corners):  # Ignora "Corr Speed [km/h]" se quiser
+            fig = px.scatter(
+                df_curva,
+                x="Lap",
+                y=var,
+                color="Car",
+                symbol="Car",
+                trendline="ols",
+                color_discrete_map=car_colors,
+                title=f"{var}"
+            )
+            st.plotly_chart(fig, key=f"curva_{curva}_{var}_{idx}")
 
 
 elif option == "Outros":
