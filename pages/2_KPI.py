@@ -194,10 +194,10 @@ elif option == "Vitais":
 elif option == "Curvas":
     st.title("Gráficos por curva")
 
-    curvas_disponiveis = df2["Curve"].unique()
+    curvas_disponiveis = df2["Corner"].unique()
     curva_selecionada = st.selectbox("Escolha a curva para visualizar:", sorted(curvas_disponiveis))
 
-    df_curva = df2[df2["Curve"] == curva_selecionada]
+    df_curva = df2[df2["Corner"] == curva_selecionada]
 
     for idx, var in enumerate(corners[:-1]):  # Ignora "Corr Speed [km/h]" se não quiser incluir
         fig = px.scatter(
