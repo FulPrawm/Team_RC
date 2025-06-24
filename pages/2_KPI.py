@@ -196,10 +196,10 @@ elif option == "Vitais":
 elif option == "Curvas":
     st.title("Gráficos por curva")
 
-curvas_disponiveis = sorted(df2["Curve"].unique())
-abas = st.tabs(curvas_disponiveis)
+    curvas_disponiveis = sorted(df2["Curve"].unique())
+    abas = st.tabs(curvas_disponiveis)
 
-for tab, curva in zip(abas, curvas_disponiveis):
+    for tab, curva in zip(abas, curvas_disponiveis):
     with tab:
         st.subheader(f"Curva: {curva}")
         df_curva = df2[df2["Curve"] == curva]
