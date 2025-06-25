@@ -159,16 +159,23 @@ if df2 is not None:
 option = st.selectbox("Tipo de KPI", opcoes_kpi, index=0)
 
 if option == "Grip Factors":
-        # Adicionar índice contínuo para ordenação no gráfico
-        df_filter = df_filter.copy()
-        df_filter = df_filter.sort_values(by=["Session", "Lap"])
-        df_filter["IndexPlot"] = range(len(df_filter))
+elif option == "Grip Factors":
+    st.title("Gráficos de Grip Factors")
 
+    # Preparar os dados ordenados por sessão e volta
+    df_filter_plot = df_filter.copy()
+    df_filter_plot = df_filter_plot.sort_values(by=["Session", "Lap"])
+    df_filter_plot["IndexPlot"] = range(len(df_filter_plot))
+    df_filter_plot["SessaoID"] = df_filter_plot["Session"].ne(df_filter_plot["Session"].shift()).cumsum()
+    sessao_inicio = df_filter_plot.groupby("SessaoID")["IndexPlot"].min()
+    sessao_nome = df_filter_plot.groupby("SessaoID")["Session"].first()
+
+    for idx, var in enumerate(grip_factors):
         fig1 = go.Figure()
 
         # Plotar por carro
-        for car_id in df_filter["Car"].unique():
-            df_car = df_filter[df_filter["Car"] == car_id]
+        for car_id in df_filter_plot["Car"].unique():
+            df_car = df_filter_plot[df_filter_plot["Car"] == car_id]
             fig1.add_trace(go.Scatter(
                 x=df_car["IndexPlot"],
                 y=df_car[var],
@@ -178,18 +185,29 @@ if option == "Grip Factors":
                 line=dict(color=car_colors.get(str(car_id), 'white')),
             ))
 
-        # Adicionar linhas verticais entre sessões
-        df_filter["SessaoID"] = df_filter["Session"].ne(df_filter["Session"].shift()).cumsum()
-        sessao_inicio = df_filter.groupby("SessaoID")["IndexPlot"].min()
-        sessao_nome = df_filter.groupby("SessaoID")["Session"].first()
-
+        # Adicionar divisores por sessão
         for x_pos, nome in zip(sessao_inicio, sessao_nome):
             fig1.add_vline(x=x_pos, line_dash="dot", line_color="gray")
-            fig1.add_annotation(x=x_pos, y=df_filter[var].max(), text=f"{nome}", showarrow=False, yanchor="bottom")
+            fig1.add_annotation(
+                x=x_pos,
+                y=df_filter_plot[var].max(),
+                text=f"{nome}",
+                showarrow=False,
+                yanchor="bottom",
+                font=dict(color="white")
+            )
 
-        fig1.update_layout(title=var, xaxis_title="Index (ordenado por sessão e volta)", yaxis_title=var)
+        fig1.update_layout(
+            title=var,
+            xaxis_title="Voltas (ordenadas por sessão)",
+            yaxis_title=var,
+            plot_bgcolor="#2e2e2e",
+            paper_bgcolor="#2e2e2e",
+            font_color="white"
+        )
 
         st.plotly_chart(fig1, key=f"grip_factor_{var}_{idx}")
+
 
 elif option == "Aceleração":
     st.title("Gráficos de Aceleração")
