@@ -158,7 +158,6 @@ if df2 is not None:
 
 option = st.selectbox("Tipo de KPI", opcoes_kpi, index=0)
 
-if option == "Grip Factors":
 elif option == "Grip Factors":
     st.title("Gráficos de Grip Factors")
 
