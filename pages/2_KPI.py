@@ -159,11 +159,37 @@ if df2 is not None:
 option = st.selectbox("Tipo de KPI", opcoes_kpi, index=0)
 
 if option == "Grip Factors":
-    st.title("Gráficos de Grip Factors")
-    for idx, var in enumerate(grip_factors):
-        fig1 = px.scatter(df_filter, x='Lap', y=var, color="Car", symbol="Car", trendline="ols", color_discrete_map=car_colors)
-        with st.empty():
-            st.plotly_chart(fig1, key=f"grip_factor_{var}_{idx}")  #Adding an index (idk how this works but it does)
+# Adicionar índice contínuo para ordenação no gráfico
+df_filter = df_filter.copy()
+df_filter = df_filter.sort_values(by=["Session", "Lap"])
+df_filter["IndexPlot"] = range(len(df_filter))
+
+fig1 = go.Figure()
+
+# Plotar por carro
+for car_id in df_filter["Car"].unique():
+    df_car = df_filter[df_filter["Car"] == car_id]
+    fig1.add_trace(go.Scatter(
+        x=df_car["IndexPlot"],
+        y=df_car[var],
+        mode='markers+lines',
+        name=f"Car {car_id}",
+        marker=dict(color=car_colors.get(str(car_id), 'white')),
+        line=dict(color=car_colors.get(str(car_id), 'white')),
+    ))
+
+# Adicionar linhas verticais entre sessões
+df_filter["SessaoID"] = df_filter["Session"].ne(df_filter["Session"].shift()).cumsum()
+sessao_inicio = df_filter.groupby("SessaoID")["IndexPlot"].min()
+sessao_nome = df_filter.groupby("SessaoID")["Session"].first()
+
+for x_pos, nome in zip(sessao_inicio, sessao_nome):
+    fig1.add_vline(x=x_pos, line_dash="dot", line_color="gray")
+    fig1.add_annotation(x=x_pos, y=df_filter[var].max(), text=f"{nome}", showarrow=False, yanchor="bottom")
+
+fig1.update_layout(title=var, xaxis_title="Index (ordenado por sessão e volta)", yaxis_title=var)
+
+st.plotly_chart(fig1, key=f"grip_factor_{var}_{idx}")
 
 elif option == "Aceleração":
     st.title("Gráficos de Aceleração")
