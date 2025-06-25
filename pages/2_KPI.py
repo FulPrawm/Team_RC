@@ -205,7 +205,8 @@ if option == "Grip Factors":
             font_color="white"
         )
 
-            st.plotly_chart(fig1, key=f"grip_factor_{var}_{idx}")
+        st.plotly_chart(fig1, key=f"grip_factor_{var}_{idx}")
+
 
 
 elif option == "Aceleração":
