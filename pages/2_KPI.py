@@ -158,7 +158,7 @@ if df2 is not None:
 
 option = st.selectbox("Tipo de KPI", opcoes_kpi, index=0)
 
-elif option == "Grip Factors":
+if option == "Grip Factors":
     st.title("Gráficos de Grip Factors")
 
     # Preparar os dados ordenados por sessão e volta
@@ -208,7 +208,7 @@ elif option == "Grip Factors":
              st.plotly_chart(fig1, key=f"grip_factor_{var}_{idx}")
 
 
-if option == "Aceleração":
+elif option == "Aceleração":
     st.title("Gráficos de Aceleração")
     for idx, var in enumerate(accelerating):
         fig2 = px.scatter(df_filter, x='Lap', y=var, color="Car", symbol="Car", trendline="ols", color_discrete_map=car_colors)
