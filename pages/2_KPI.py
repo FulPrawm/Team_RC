@@ -205,10 +205,10 @@ elif option == "Grip Factors":
             font_color="white"
         )
 
-        st.plotly_chart(fig1, key=f"grip_factor_{var}_{idx}")
+             st.plotly_chart(fig1, key=f"grip_factor_{var}_{idx}")
 
 
-elif option == "Aceleração":
+if option == "Aceleração":
     st.title("Gráficos de Aceleração")
     for idx, var in enumerate(accelerating):
         fig2 = px.scatter(df_filter, x='Lap', y=var, color="Car", symbol="Car", trendline="ols", color_discrete_map=car_colors)
