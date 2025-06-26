@@ -208,13 +208,54 @@ if option == "Grip Factors":
         st.plotly_chart(fig1, key=f"grip_factor_{var}_{idx}")
 
 
-
 elif option == "Aceleração":
     st.title("Gráficos de Aceleração")
+
+    # Preparar os dados ordenados por sessão e volta
+    df_filter_plot = df_filter.copy()
+    df_filter_plot = df_filter_plot.sort_values(by=["Session", "Lap"])
+    df_filter_plot["IndexPlot"] = range(len(df_filter_plot))
+    df_filter_plot["SessaoID"] = df_filter_plot["Session"].ne(df_filter_plot["Session"].shift()).cumsum()
+    sessao_inicio = df_filter_plot.groupby("SessaoID")["IndexPlot"].min()
+    sessao_nome = df_filter_plot.groupby("SessaoID")["Session"].first()
+
     for idx, var in enumerate(accelerating):
-        fig2 = px.scatter(df_filter, x='Lap', y=var, color="Car", symbol="Car", trendline="ols", color_discrete_map=car_colors)
-        with st.empty():
-            st.plotly_chart(fig2, key=f"accelerating_{var}_{idx}")
+        fig2 = go.Figure()
+
+        # Plotar por carro
+        for car_id in df_filter_plot["Car"].unique():
+            df_car = df_filter_plot[df_filter_plot["Car"] == car_id]
+            fig2.add_trace(go.Scatter(
+                x=df_car["IndexPlot"],
+                y=df_car[var],
+                mode='markers+lines',
+                name=f"Car {car_id}",
+                marker=dict(color=car_colors.get(str(car_id), 'white')),
+                line=dict(color=car_colors.get(str(car_id), 'white')),
+            ))
+
+        # Adicionar divisores por sessão
+        for x_pos, nome in zip(sessao_inicio, sessao_nome):
+            fig2.add_vline(x=x_pos, line_dash="dot", line_color="gray")
+            fig2.add_annotation(
+                x=x_pos,
+                y=df_filter_plot[var].max(),
+                text=f"{nome}",
+                showarrow=False,
+                yanchor="bottom",
+                font=dict(color="white")
+            )
+
+        fig2.update_layout(
+            title=var,
+            xaxis_title="Voltas (ordenadas por sessão)",
+            yaxis_title=var,
+            plot_bgcolor="#2e2e2e",
+            paper_bgcolor="#2e2e2e",
+            font_color="white"
+        )
+
+        st.plotly_chart(fig2, key=f"accelerating_{var}_{idx}")
 
 elif option == "Frenagem":
     st.title("Gráficos de Frenagem")
