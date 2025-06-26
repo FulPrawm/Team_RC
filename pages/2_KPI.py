@@ -211,7 +211,6 @@ if option == "Grip Factors":
 elif option == "Aceleração":
     st.title("Gráficos de Aceleração")
 
-    # Preparar os dados ordenados por sessão e volta
     df_filter_plot = df_filter.copy()
     df_filter_plot = df_filter_plot.sort_values(by=["Session", "Lap"])
     df_filter_plot["IndexPlot"] = range(len(df_filter_plot))
@@ -222,7 +221,6 @@ elif option == "Aceleração":
     for idx, var in enumerate(accelerating):
         fig2 = go.Figure()
 
-        # Plotar por carro
         for car_id in df_filter_plot["Car"].unique():
             df_car = df_filter_plot[df_filter_plot["Car"] == car_id]
             fig2.add_trace(go.Scatter(
@@ -234,7 +232,6 @@ elif option == "Aceleração":
                 line=dict(color=car_colors.get(str(car_id), 'white')),
             ))
 
-        # Adicionar divisores por sessão
         for x_pos, nome in zip(sessao_inicio, sessao_nome):
             fig2.add_vline(x=x_pos, line_dash="dot", line_color="gray")
             fig2.add_annotation(
@@ -259,24 +256,142 @@ elif option == "Aceleração":
 
 elif option == "Frenagem":
     st.title("Gráficos de Frenagem")
+
+    df_filter_plot = df_filter.copy()
+    df_filter_plot = df_filter_plot.sort_values(by=["Session", "Lap"])
+    df_filter_plot["IndexPlot"] = range(len(df_filter_plot))
+    df_filter_plot["SessaoID"] = df_filter_plot["Session"].ne(df_filter_plot["Session"].shift()).cumsum()
+    sessao_inicio = df_filter_plot.groupby("SessaoID")["IndexPlot"].min()
+    sessao_nome = df_filter_plot.groupby("SessaoID")["Session"].first()
+
     for idx, var in enumerate(braking):
-        fig3 = px.scatter(df_filter, x='Lap', y=var, color="Car", symbol="Car", trendline="ols", color_discrete_map=car_colors)
-        with st.empty():
-            st.plotly_chart(fig3, key=f"braking_{var}_{idx}")
+        fig3 = go.Figure()
+
+        for car_id in df_filter_plot["Car"].unique():
+            df_car = df_filter_plot[df_filter_plot["Car"] == car_id]
+            fig3.add_trace(go.Scatter(
+                x=df_car["IndexPlot"],
+                y=df_car[var],
+                mode='markers+lines',
+                name=f"Car {car_id}",
+                marker=dict(color=car_colors.get(str(car_id), 'white')),
+                line=dict(color=car_colors.get(str(car_id), 'white')),
+            ))
+
+        for x_pos, nome in zip(sessao_inicio, sessao_nome):
+            fig3.add_vline(x=x_pos, line_dash="dot", line_color="gray")
+            fig3.add_annotation(
+                x=x_pos,
+                y=df_filter_plot[var].max(),
+                text=f"{nome}",
+                showarrow=False,
+                yanchor="bottom",
+                font=dict(color="white")
+            )
+
+        fig3.update_layout(
+            title=var,
+            xaxis_title="Voltas (ordenadas por sessão)",
+            yaxis_title=var,
+            plot_bgcolor="#2e2e2e",
+            paper_bgcolor="#2e2e2e",
+            font_color="white"
+        )
+
+        st.plotly_chart(fig3, key=f"braking_{var}_{idx}")
 
 elif option == "Esterçamento":
     st.title("Gráficos de Esterçamento")
+
+    df_filter_plot = df_filter.copy()
+    df_filter_plot = df_filter_plot.sort_values(by=["Session", "Lap"])
+    df_filter_plot["IndexPlot"] = range(len(df_filter_plot))
+    df_filter_plot["SessaoID"] = df_filter_plot["Session"].ne(df_filter_plot["Session"].shift()).cumsum()
+    sessao_inicio = df_filter_plot.groupby("SessaoID")["IndexPlot"].min()
+    sessao_nome = df_filter_plot.groupby("SessaoID")["Session"].first()
+
     for idx, var in enumerate(steering):
-        fig4 = px.scatter(df_filter, x='Lap', y=var, color="Car", symbol="Car", trendline="ols", color_discrete_map=car_colors)
-        with st.empty():
-            st.plotly_chart(fig4, key=f"steering_{var}_{idx}")
+        fig4 = go.Figure()
+
+        for car_id in df_filter_plot["Car"].unique():
+            df_car = df_filter_plot[df_filter_plot["Car"] == car_id]
+            fig4.add_trace(go.Scatter(
+                x=df_car["IndexPlot"],
+                y=df_car[var],
+                mode='markers+lines',
+                name=f"Car {car_id}",
+                marker=dict(color=car_colors.get(str(car_id), 'white')),
+                line=dict(color=car_colors.get(str(car_id), 'white')),
+            ))
+
+        for x_pos, nome in zip(sessao_inicio, sessao_nome):
+            fig4.add_vline(x=x_pos, line_dash="dot", line_color="gray")
+            fig4.add_annotation(
+                x=x_pos,
+                y=df_filter_plot[var].max(),
+                text=f"{nome}",
+                showarrow=False,
+                yanchor="bottom",
+                font=dict(color="white")
+            )
+
+        fig4.update_layout(
+            title=var,
+            xaxis_title="Voltas (ordenadas por sessão)",
+            yaxis_title=var,
+            plot_bgcolor="#2e2e2e",
+            paper_bgcolor="#2e2e2e",
+            font_color="white"
+        )
+
+        st.plotly_chart(fig4, key=f"steering_{var}_{idx}")
+
 
 elif option == "Vitais":
     st.title("Gráficos de vitais")
+
+    df1_filter_plot = df1_filter.copy()
+    df1_filter_plot = df1_filter_plot.sort_values(by=["Session", "Lap"])
+    df1_filter_plot["IndexPlot"] = range(len(df1_filter_plot))
+    df1_filter_plot["SessaoID"] = df1_filter_plot["Session"].ne(df1_filter_plot["Session"].shift()).cumsum()
+    sessao_inicio = df1_filter_plot.groupby("SessaoID")["IndexPlot"].min()
+    sessao_nome = df1_filter_plot.groupby("SessaoID")["Session"].first()
+
     for idx, var in enumerate(vitals):
-        fig5 = px.scatter(df1_filter, x='Lap', y=var, color="Car", symbol="Car", trendline="ols", color_discrete_map=car_colors)
-        with st.empty():
-            st.plotly_chart(fig5, key=f"vitals_{var}_{idx}")
+        fig5 = go.Figure()
+
+        for car_id in df1_filter_plot["Car"].unique():
+            df_car = df1_filter_plot[df1_filter_plot["Car"] == car_id]
+            fig5.add_trace(go.Scatter(
+                x=df_car["IndexPlot"],
+                y=df_car[var],
+                mode='markers+lines',
+                name=f"Car {car_id}",
+                marker=dict(color=car_colors.get(str(car_id), 'white')),
+                line=dict(color=car_colors.get(str(car_id), 'white')),
+            ))
+
+        for x_pos, nome in zip(sessao_inicio, sessao_nome):
+            fig5.add_vline(x=x_pos, line_dash="dot", line_color="gray")
+            fig5.add_annotation(
+                x=x_pos,
+                y=df1_filter_plot[var].max(),
+                text=f"{nome}",
+                showarrow=False,
+                yanchor="bottom",
+                font=dict(color="white")
+            )
+
+        fig5.update_layout(
+            title=var,
+            xaxis_title="Voltas (ordenadas por sessão)",
+            yaxis_title=var,
+            plot_bgcolor="#2e2e2e",
+            paper_bgcolor="#2e2e2e",
+            font_color="white"
+        )
+
+        st.plotly_chart(fig5, key=f"vitals_{var}_{idx}")
 
 elif option == "Curvas":
     st.title("Gráficos por curva")
