@@ -203,7 +203,7 @@ elif option == "Curvas":
             st.subheader(f"Seção: {curva}")
             df_curva = df2[df2["Corner"] == curva]
 
-            for idx, var in enumerate(corners[:-1]):  # Ignora "Corr Speed [km/h]" se quiser
+            for idx, var in enumerate(corners):  # Ignora "Corr Speed [km/h]" se quiser
                 fig = px.scatter(
                     df_curva,
                     x="Lap",
