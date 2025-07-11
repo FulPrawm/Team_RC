@@ -18,7 +18,7 @@ st.image('header.png')
 st.title("Session Data Report")
 
 # Caminho base onde ficam as pastas das etapas
-PASTA_ETAPAS = "Arquivos"
+PASTA_ETAPAS = "Arquivos GT Race"
 
 # Lista todas as etapas (pastas dentro de "resultados")
 etapas_disponiveis = [p for p in os.listdir(PASTA_ETAPAS) if os.path.isdir(os.path.join(PASTA_ETAPAS, p))]
