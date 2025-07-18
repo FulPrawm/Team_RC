@@ -10,3 +10,5 @@ st.write('Race times - gráficos referentes a cronometragem das corridas por tem
 st.write('Minimum times - gráficos referentes a cronometragem dos treinos/qualy por menor tempo/maior velocidade')
 st.write('Também é possível selecionar a etapa e corrida desejada')
 st.write('Todos os dados são filtrados com 4% do menor tempo de volta')
+st.write("Páginas GT Series é APENAS para GT Series")
+st.write("Caso Queiram que eu faça um da Nascar, preciso do arquivo CSV deles")
