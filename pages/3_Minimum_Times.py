@@ -79,7 +79,7 @@ def equipes(x):
         121: 'Car Racing KTF', 101: 'Car Racing KTF',
         7: 'FT Gazoo Racing', 9: 'FT Gazoo Racing',
         120: 'Scuderia Chiarelli', 0: 'Scuderia Chiarelli',
-        6: 'RTR Sports Team'
+        6: 'A. Mattheis Motorsport'
     }
     return equipes_dict.get(x, None)
 
