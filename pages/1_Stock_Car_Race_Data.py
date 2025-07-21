@@ -219,32 +219,32 @@ elif option =='Histogramas':
 
 elif option == 'Outros':
     
-  # Scatter de eficiência
-  fig = px.scatter(sessao_filtrado, x='Avg Speed', y='SPT', color='Equipe', symbol='Equipe',
+   # Scatter de eficiência
+   fig = px.scatter(sessao_filtrado, x='Avg Speed', y='SPT', color='Equipe', symbol='Equipe',
                  title="Car Efficiency")
-  fig.update_traces(marker_size=10)
-  st.plotly_chart(fig)
+   fig.update_traces(marker_size=10)
+   st.plotly_chart(fig)
 
-# Tabs para Gap to Fastest
-tabs = st.tabs(["Gap to Fastest - Lap", "Gap to Fastest - S1", "Gap to Fastest - S2", "Gap to Fastest - S3"])
+  # Tabs para Gap to Fastest
+  tabs = st.tabs(["Gap to Fastest - Lap", "Gap to Fastest - S1", "Gap to Fastest - S2", "Gap to Fastest - S3"])
 
-colunas_setores = {
+  colunas_setores = {
     "Gap to Fastest - Lap": "Lap Tm (S)",
     "Gap to Fastest - S1": "S1 Tm",
     "Gap to Fastest - S2": "S2 Tm",
     "Gap to Fastest - S3": "S3 Tm"
-}
+  }
 
-# Dicionário de cores dos seus carros
-cores_personalizadas = {
+  # Dicionário de cores dos seus carros
+  cores_personalizadas = {
     10: 'red',
     11: 'blue',
     44: 'gray',
     88: 'yellow'
-}
+  }
 
-for i, (tab_name, coluna) in enumerate(colunas_setores.items()):
-    with tabs[i]:
+  for i, (tab_name, coluna) in enumerate(colunas_setores.items()):
+     with tabs[i]:
         media_por_car_id = sessao_filtrado.groupby('Car_ID')[coluna].mean().reset_index()
         min_valor = media_por_car_id[coluna].min()
         media_por_car_id['Diff'] = media_por_car_id[coluna] - min_valor
