@@ -252,7 +252,6 @@ elif option == 'Outros':
 
         st.altair_chart(chart, use_container_width=True)
         st.write(f'Baseado na média de cada carro para {coluna}')
-
 elif option == 'BoxPlots':
     st.write('Média de todos os carros da montadora')
     for var in analise_montadora:
