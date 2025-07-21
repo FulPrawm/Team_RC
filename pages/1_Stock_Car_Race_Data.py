@@ -139,7 +139,6 @@ option = st.selectbox(
 
 if option == "Tabelas":
 
-    # Cores personalizadas
     def cor_carro(val):
         if val == 10:
             return 'background-color: red; color: white'
@@ -163,29 +162,30 @@ if option == "Tabelas":
             return 'background-color: red; color: white'
         return ''
 
-    # TABELA POR CARROS
-    df_carros = sessao_filtrado[analise_carros].groupby(by=["Car_ID"]).mean(numeric_only=True).reset_index()
-    colunas_numericas_carros = df_carros.select_dtypes(include='number').columns.drop('Car_ID')
+    # CARROS
+    df_carros = sessao_filtrado[analise_carros].groupby("Car_ID").mean(numeric_only=True).reset_index(drop=True)
+    colunas_numericas_carros = df_carros.select_dtypes(include='number').columns
     tabela1 = df_carros.style.applymap(cor_carro, subset=['Car_ID']) \
-                             .background_gradient(cmap='coolwarm', subset=colunas_numericas_carros)
+                             .background_gradient(cmap='coolwarm', subset=colunas_numericas_carros.drop('Car_ID'))
     st.header("Tabela ordenada pelos carros")
-    st.dataframe(tabela1.hide(axis="index"))
+    st.dataframe(tabela1)
 
-    # TABELA POR EQUIPES
-    df_equipe = sessao_filtrado[analise_equipe].groupby(by=["Equipe"]).mean(numeric_only=True).reset_index()
+    # EQUIPES
+    df_equipe = sessao_filtrado[analise_equipe].groupby("Equipe").mean(numeric_only=True).reset_index(drop=True)
     colunas_numericas_equipe = df_equipe.select_dtypes(include='number').columns
     tabela2 = df_equipe.style.applymap(cor_equipe, subset=['Equipe']) \
                              .background_gradient(cmap='coolwarm', subset=colunas_numericas_equipe)
     st.header("Tabela ordenada pelas equipes")
-    st.dataframe(tabela2.hide(axis="index"))
+    st.dataframe(tabela2)
 
-    # TABELA POR MONTADORAS
-    df_montadora = sessao_filtrado[analise_montadora].groupby(by=["Montadora"]).mean(numeric_only=True).reset_index()
+    # MONTADORAS
+    df_montadora = sessao_filtrado[analise_montadora].groupby("Montadora").mean(numeric_only=True).reset_index(drop=True)
     colunas_numericas_montadora = df_montadora.select_dtypes(include='number').columns
     tabela3 = df_montadora.style.applymap(cor_montadora, subset=['Montadora']) \
                                 .background_gradient(cmap='coolwarm', subset=colunas_numericas_montadora)
     st.header("Tabela ordenada pelas montadoras")
-    st.dataframe(tabela3.hide(axis="index"))
+    st.dataframe(tabela3)
+
 
 elif option == 'Linhas':
     #Lap Progression
