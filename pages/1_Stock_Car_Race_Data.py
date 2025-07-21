@@ -226,13 +226,13 @@ elif option == 'Outros':
     st.plotly_chart(fig)
 
     # Tabs para Gap to Fastest
-    tabs = st.tabs(["Gap to Fastest - Lap", "Gap to Fastest - S1", "Gap to Fastest - S2", "Gap to Fastest - S3"])
+    tabs = st.tabs(["Gap to Fastest Car - Lap", "Gap to Fastest Car - S1", "Gap to Fastest Car - S2", "Gap to Fastest Car - S3"])
 
     colunas_setores = {
-        "Gap to Fastest - Lap": "Lap Tm (S)",
-        "Gap to Fastest - S1": "S1 Tm",
-        "Gap to Fastest - S2": "S2 Tm",
-        "Gap to Fastest - S3": "S3 Tm"
+        "Gap to Fastest Car - Lap": "Lap Tm (S)",
+        "Gap to Fastest Car - S1": "S1 Tm",
+        "Gap to Fastest Car - S2": "S2 Tm",
+        "Gap to Fastest Car - S3": "S3 Tm"
     }
 
     # Dicionário de cores dos seus carros
