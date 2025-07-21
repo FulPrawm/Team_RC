@@ -117,7 +117,7 @@ if option == "Tabelas":
     "S3 Tm": "min",
     "SPT": "max",
     "Avg Speed": "max"
-    }).style.background_gradient(cmap='coolwarm')
+    }).style.background_gradient(cmap='coolwarm').format(precision=3)
     st.header("Melhor tempo/velocidade por carro")
     st.dataframe(tabela1)
  
@@ -128,7 +128,7 @@ if option == "Tabelas":
     "S3 Tm": "min",
     "SPT": "max",
     "Avg Speed": "max"
-    }).style.background_gradient(cmap='coolwarm')
+    }).style.background_gradient(cmap='coolwarm').format(precision=3)
     st.header("Melhor tempo/velocidade por equipe")
     st.dataframe(tabela2)
 
@@ -139,7 +139,7 @@ if option == "Tabelas":
     "S3 Tm": "min",
     "SPT": "max",
     "Avg Speed": "max"
-    }).style.background_gradient(cmap='coolwarm')
+    }).style.background_gradient(cmap='coolwarm').format(precision=3)
     st.header("Melhor tempo/velocidade por montadora")
     st.dataframe(tabela3)
 
