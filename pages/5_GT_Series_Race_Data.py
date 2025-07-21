@@ -133,16 +133,16 @@ option = st.selectbox(
 )
 # Ordenando pela velocidade dos carros
 if option == "Tabelas":
-    tabela1 = sessao_filtrado[analise_carros].groupby(by=["Car_ID"]).mean(numeric_only=True).style.background_gradient(cmap='coolwarm')
+    tabela1 = sessao_filtrado[analise_carros].groupby(by=["Car_ID"]).mean(numeric_only=True).style.background_gradient(cmap='coolwarm').format(precision=3)
     st.header("Tabela ordenada pelos carros")
     st.dataframe(tabela1)
 
     # Ordenando pelo tempo de volta das equipes
-    tabela2 = sessao_filtrado[analise_equipe].groupby(by=["Equipe"]).mean(numeric_only=True).style.background_gradient(cmap='coolwarm')
+    tabela2 = sessao_filtrado[analise_equipe].groupby(by=["Equipe"]).mean(numeric_only=True).style.background_gradient(cmap='coolwarm').format(precision=3)
     st.header("Tabela ordenada pelas equipes")
     st.dataframe(tabela2)
 
-    tabela3 = sessao_filtrado[analise_montadora].groupby(by=["Montadora"]).mean(numeric_only=True).style.background_gradient(cmap='coolwarm')
+    tabela3 = sessao_filtrado[analise_montadora].groupby(by=["Montadora"]).mean(numeric_only=True).style.background_gradient(cmap='coolwarm').format(precision=3)
     st.header("Tabela ordenada pelas montadoras")
     st.dataframe(tabela3)
 
