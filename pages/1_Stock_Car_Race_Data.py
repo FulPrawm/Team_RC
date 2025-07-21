@@ -187,9 +187,6 @@ if option == "Tabelas":
     st.header("Tabela ordenada pelas montadoras")
     st.dataframe(tabela3.hide(axis="index"))
 
-
-
-
 elif option == 'Linhas':
     #Lap Progression
     graf1 = px.line(sessao, x="Lap", y= "Lap Tm (S)", color="Car_ID", title='Lap Time Progression')
