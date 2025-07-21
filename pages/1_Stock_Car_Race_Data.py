@@ -138,16 +138,49 @@ option = st.selectbox(
 )
 # Ordenando pela velocidade dos carros
 if option == "Tabelas":
-    tabela1 = sessao_filtrado[analise_carros].groupby(by=["Car_ID"]).mean(numeric_only=True).style.background_gradient(cmap='coolwarm')
+
+    # Cores personalizadas
+    def cor_carro(val):
+        if val == 10:
+            return 'background-color: red; color: white'
+        elif val == 11:
+            return 'background-color: blue; color: white'
+        elif val == 44:
+            return 'background-color: gray; color: white'
+        elif val == 88:
+            return 'background-color: yellow; color: black'
+        return ''
+
+    def cor_equipe(val):
+        if val == 'Eurofarma RC':
+            return 'background-color: yellow; color: black'
+        elif val == 'RCM Motorsport':
+            return 'background-color: gray; color: white'
+        return ''
+
+    def cor_montadora(val):
+        if val == 'Mitsubishi':
+            return 'background-color: red; color: white'
+        return ''
+
+    # TABELA POR CARROS
+    df_carros = sessao_filtrado[analise_carros].groupby(by=["Car_ID"]).mean(numeric_only=True)
+    tabela1 = df_carros.style.background_gradient(cmap='coolwarm')
+    tabela1 = tabela1.applymap(cor_carro, subset=['Car_ID'])
     st.header("Tabela ordenada pelos carros")
     st.dataframe(tabela1)
 
-    # Ordenando pelo tempo de volta das equipes
-    tabela2 = sessao_filtrado[analise_equipe].groupby(by=["Equipe"]).mean(numeric_only=True).style.background_gradient(cmap='coolwarm')
+    # TABELA POR EQUIPES
+    df_equipe = sessao_filtrado[analise_equipe].groupby(by=["Equipe"]).mean(numeric_only=True)
+    tabela2 = df_equipe.style.background_gradient(cmap='coolwarm')
+    tabela2 = tabela2.applymap(cor_equipe, subset=['Equipe'])
     st.header("Tabela ordenada pelas equipes")
     st.dataframe(tabela2)
 
-    tabela3 = sessao_filtrado[analise_montadora].groupby(by=["Montadora"]).mean(numeric_only=True).style.background_gradient(cmap='coolwarm')
+    # TABELA POR MONTADORAS
+    df_montadora = sessao_filtrado[analise_montadora].groupby(by=["Montadora"]).mean(numeric_only=True)
+    tabela3 = df_montadora.style.background_gradient(cmap='coolwarm')
+    tabela3 = tabela3.applymap(cor_montadora, subset=['Montadora'])
     st.header("Tabela ordenada pelas montadoras")
     st.dataframe(tabela3)
 
