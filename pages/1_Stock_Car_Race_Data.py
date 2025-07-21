@@ -100,11 +100,28 @@ analise_montadora = ['Montadora', "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT",
 melhor_volta = sessao["Lap Tm (S)"].min()
 tempo_limite = melhor_volta * 1.04
 
-st.subheader("Filtro automático aplicado")
-st.write(f"Melhor volta da sessão: **{melhor_volta:.3f} s**")
-st.write(f"Filtro de 4% aplicado: **{tempo_limite:.3f} s**")
+# Cálculo de voltas por piloto
+voltas_por_piloto = sessao.groupby('Car_ID')['Lap'].nunique()
 
-sessao_filtrado = sessao[sessao["Lap Tm (S)"] <= tempo_limite]
+# Piloto com mais voltas (vencedor)
+max_voltas = voltas_por_piloto.max()
+min_voltas_necessarias = int(np.floor(max_voltas * 0.5))  # arredonda para baixo
+
+# Lista de pilotos que completaram ao menos 50% das voltas
+pilotos_validos = voltas_por_piloto[voltas_por_piloto >= min_voltas_necessarias].index
+
+# Aplica filtro de pilotos válidos
+sessao_filtrado = sessao[sessao['Car_ID'].isin(pilotos_validos)]
+
+# Aplica filtro de tempo de volta (dentro de 4% da melhor volta)
+sessao_filtrado = sessao_filtrado[sessao_filtrado["Lap Tm (S)"] <= tempo_limite]
+
+# Exibição informativa no app
+st.subheader("Filtro automático aplicado")
+st.write(f"🔍 Melhor volta da sessão: **{melhor_volta:.3f} s**")
+st.write(f"📏 Filtro de 4% aplicado: **{tempo_limite:.3f} s**")
+st.write(f"🧮 Máximo de voltas completadas: **{max_voltas} voltas**")
+st.write(f"⚠️ Apenas pilotos com **pelo menos {min_voltas_necessarias} voltas completadas** foram considerados na análise.")
 
 # Lista das colunas que devem ser numéricas
 colunas_temporais = ["Lap Tm (S)", "S1 Tm", "S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
