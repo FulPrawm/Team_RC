@@ -136,7 +136,7 @@ option = st.selectbox(
     ("Tabelas", "Linhas", "Histogramas", "BoxPlots", "Outros", "All Laps"),
     index=0  # number 0 is to open it blank
 )
-# Ordenando pela velocidade dos carros
+
 if option == "Tabelas":
 
     # Cores personalizadas
@@ -166,23 +166,23 @@ if option == "Tabelas":
     # TABELA POR CARROS
     df_carros = sessao_filtrado[analise_carros].groupby(by=["Car_ID"]).mean(numeric_only=True).reset_index()
     tabela1 = df_carros.style.background_gradient(cmap='coolwarm')
-    tabela1 = tabela1.applymap(cor_carro, subset=['Car_ID']).hide(axis="index")
+    tabela1 = tabela1.applymap(cor_carro, subset=['Car_ID'])
     st.header("Tabela ordenada pelos carros")
-    st.markdown(tabela1.to_html(uuid="tabela1", doctype_html=False), unsafe_allow_html=True)
+    st.dataframe(tabela1)
 
     # TABELA POR EQUIPES
     df_equipe = sessao_filtrado[analise_equipe].groupby(by=["Equipe"]).mean(numeric_only=True).reset_index()
     tabela2 = df_equipe.style.background_gradient(cmap='coolwarm')
-    tabela2 = tabela2.applymap(cor_equipe, subset=['Equipe']).hide(axis="index")
+    tabela2 = tabela2.applymap(cor_equipe, subset=['Equipe'])
     st.header("Tabela ordenada pelas equipes")
-    st.markdown(tabela2.to_html(uuid="tabela2", doctype_html=False), unsafe_allow_html=True)
+    st.dataframe(tabela2)
 
     # TABELA POR MONTADORAS
     df_montadora = sessao_filtrado[analise_montadora].groupby(by=["Montadora"]).mean(numeric_only=True).reset_index()
     tabela3 = df_montadora.style.background_gradient(cmap='coolwarm')
-    tabela3 = tabela3.applymap(cor_montadora, subset=['Montadora']).hide(axis="index")
+    tabela3 = tabela3.applymap(cor_montadora, subset=['Montadora'])
     st.header("Tabela ordenada pelas montadoras")
-    st.markdown(tabela3.to_html(uuid="tabela3", doctype_html=False), unsafe_allow_html=True)
+    st.dataframe(tabela3)
 
 elif option == 'Linhas':
     #Lap Progression
