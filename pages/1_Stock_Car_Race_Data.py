@@ -162,32 +162,69 @@ if option == "Tabelas":
             return 'background-color: red; color: white'
         return ''
 
-    # --- TABELA POR CARROS ---
-    df_carros = sessao_filtrado[analise_carros].groupby("Car_ID").mean(numeric_only=True).reset_index()
-    df_carros.index = pd.RangeIndex(len(df_carros))  # remove índice visual
-    colunas_numericas_carros = df_carros.select_dtypes(include='number').columns.drop('Car_ID')
-    tabela1 = df_carros.style.applymap(cor_carro, subset=['Car_ID']) \
-                             .background_gradient(cmap='coolwarm', subset=colunas_numericas_carros)
-    st.header("Tabela ordenada pelos carros")
-    st.dataframe(tabela1)
+# Tabela por Carros — COM CSS para ocultar índice
+df_carros = sessao_filtrado[analise_carros].groupby("Car_ID").mean(numeric_only=True).reset_index()
+colunas_numericas_carros = df_carros.select_dtypes(include='number').columns.drop('Car_ID')
 
-    # --- TABELA POR EQUIPES ---
-    df_equipe = sessao_filtrado[analise_equipe].groupby("Equipe").mean(numeric_only=True).reset_index()
-    df_equipe.index = pd.RangeIndex(len(df_equipe))
-    colunas_numericas_equipe = df_equipe.select_dtypes(include='number').columns
-    tabela2 = df_equipe.style.applymap(cor_equipe, subset=['Equipe']) \
-                             .background_gradient(cmap='coolwarm', subset=colunas_numericas_equipe)
-    st.header("Tabela ordenada pelas equipes")
-    st.dataframe(tabela2)
+def cor_carro(val):
+    if val == 10:
+        return 'background-color: red; color: white'
+    elif val == 11:
+        return 'background-color: blue; color: white'
+    elif val == 44:
+        return 'background-color: gray; color: white'
+    elif val == 88:
+        return 'background-color: yellow; color: black'
+    return ''
 
-    # --- TABELA POR MONTADORAS ---
-    df_montadora = sessao_filtrado[analise_montadora].groupby("Montadora").mean(numeric_only=True).reset_index()
-    df_montadora.index = pd.RangeIndex(len(df_montadora))
-    colunas_numericas_montadora = df_montadora.select_dtypes(include='number').columns
-    tabela3 = df_montadora.style.applymap(cor_montadora, subset=['Montadora']) \
-                                .background_gradient(cmap='coolwarm', subset=colunas_numericas_montadora)
-    st.header("Tabela ordenada pelas montadoras")
-    st.dataframe(tabela3)
+tabela1 = df_carros.style \
+    .applymap(cor_carro, subset=['Car_ID']) \
+    .background_gradient(cmap='coolwarm', subset=colunas_numericas_carros)
+
+# CSS para esconder a primeira coluna (índice)
+css_hide_index = """
+    <style>
+    thead tr th:first-child {display:none}
+    tbody th {display:none}
+    </style>
+"""
+
+# Renderiza no Streamlit
+st.header("Tabela ordenada pelos carros")
+st.markdown(css_hide_index + tabela1.to_html(index=False), unsafe_allow_html=True)
+
+
+df_equipe = sessao_filtrado[analise_equipe].groupby("Equipe").mean(numeric_only=True).reset_index()
+colunas_numericas_equipe = df_equipe.select_dtypes(include='number').columns
+
+def cor_equipe(val):
+    if val == 'Eurofarma RC':
+        return 'background-color: yellow; color: black'
+    elif val == 'RCM Motorsport':
+        return 'background-color: gray; color: white'
+    return ''
+
+tabela2 = df_equipe.style \
+    .applymap(cor_equipe, subset=['Equipe']) \
+    .background_gradient(cmap='coolwarm', subset=colunas_numericas_equipe)
+
+st.header("Tabela ordenada pelas equipes")
+st.markdown(css_hide_index + tabela2.to_html(index=False), unsafe_allow_html=True)
+
+df_montadora = sessao_filtrado[analise_montadora].groupby("Montadora").mean(numeric_only=True).reset_index()
+colunas_numericas_montadora = df_montadora.select_dtypes(include='number').columns
+
+def cor_montadora(val):
+    if val == 'Mitsubishi':
+        return 'background-color: red; color: white'
+    return ''
+
+tabela3 = df_montadora.style \
+    .applymap(cor_montadora, subset=['Montadora']) \
+    .background_gradient(cmap='coolwarm', subset=colunas_numericas_montadora)
+
+st.header("Tabela ordenada pelas montadoras")
+st.markdown(css_hide_index + tabela3.to_html(index=False), unsafe_allow_html=True)
 
 
 elif option == 'Linhas':
