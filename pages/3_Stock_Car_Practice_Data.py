@@ -208,7 +208,7 @@ elif option == 'Outros':
         melhor_por_car_id['Car_ID'] = melhor_por_car_id['Car_ID'].astype(str)
 
         # Adiciona a cor personalizada ou padrão
-        melhor_por_car_id['Color'] = melhor_por_car_id['Car_ID'].map(cores_personalizadas).fillna('lightgray')
+        melhor_por_car_id['Color'] = melhor_por_car_id['Car_ID'].map(cores_personalizadas).fillna('white')
      
         chart = alt.Chart(melhor_por_car_id).mark_bar().encode(
             x=alt.X('Car_ID:N', sort=melhor_por_car_id['Diff'].tolist()),
