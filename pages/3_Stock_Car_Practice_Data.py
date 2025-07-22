@@ -191,13 +191,13 @@ elif option == 'Outros':
     "Gap to Fastest Car - S3": "S3 Tm"
   }
 
-    #Dicionário de cores
-    cores_personalizadas = {
-        10: 'red',
-        11: 'blue',
-        44: 'gray',
-        88: 'yellow'
-    }
+  #Dicionário de cores
+  cores_personalizadas = {
+      10: 'red',
+      11: 'blue',
+      44: 'gray',
+      88: 'yellow'
+  }
 
   for i, (tab_name, coluna) in enumerate(colunas_setores.items()):
     with tabs[i]:
