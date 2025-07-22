@@ -212,7 +212,8 @@ elif option == 'Outros':
      
         chart = alt.Chart(melhor_por_car_id).mark_bar().encode(
             x=alt.X('Car_ID:N', sort=melhor_por_car_id['Diff'].tolist()),
-            y=alt.Y('Diff', title=f'Diff to Best {coluna} (s)')
+            y=alt.Y('Diff', title=f'Diff to Best {coluna} (s)'),
+            color=alt.Color('Color:N', scale=None)
         ).properties(
             title=f'{tab_name}'
         )
