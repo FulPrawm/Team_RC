@@ -204,7 +204,6 @@ elif option == 'Outros':
         melhor_por_car_id = sessao_filtrado.groupby('Car_ID')[coluna].min().reset_index()
         min_valor = melhor_por_car_id[coluna].min()
         melhor_por_car_id['Diff'] = melhor_por_car_id[coluna] - min_valor
-
         melhor_por_car_id = melhor_por_car_id.sort_values(by='Diff')
         melhor_por_car_id['Car_ID'] = melhor_por_car_id['Car_ID'].astype(str)
 
@@ -215,7 +214,7 @@ elif option == 'Outros':
                 x=alt.X('Car_ID_str:N', sort=melhor_por_car_id['Diff'].tolist()),
                 y=alt.Y('Diff', title=f'Diff to Best {coluna} (s)'),
                 color=alt.Color('Color:N', scale=None)
-            ).properties(
+        ).properties(
                 title=f'{tab_name}'
         )
 
