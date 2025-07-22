@@ -246,7 +246,7 @@ elif option == 'Outros':
             media_por_car_id['Car_ID_str'] = media_por_car_id['Car_ID'].astype(str)
 
             # Adiciona a cor personalizada ou padrão
-            media_por_car_id['Color'] = media_por_car_id['Car_ID'].map(cores_personalizadas).fillna('lightgray')
+            media_por_car_id['Color'] = media_por_car_id['Car_ID'].map(cores_personalizadas).fillna('white')
 
             chart = alt.Chart(media_por_car_id).mark_bar().encode(
                 x=alt.X('Car_ID_str:N', sort=media_por_car_id['Diff'].tolist()),
