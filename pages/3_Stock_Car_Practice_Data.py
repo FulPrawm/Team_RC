@@ -198,7 +198,7 @@ elif option == 'Outros':
     44: 'gray',
     88: 'yellow'
    }
-  for i, (tab_name, coluna) in enumerate(colunas_setores.items()):
+   for i, (tab_name, coluna) in enumerate(colunas_setores.items()):
     with tabs[i]:
         melhor_por_car_id = sessao_filtrado.groupby('Car_ID')[coluna].min().reset_index()
         min_valor = melhor_por_car_id[coluna].min()
