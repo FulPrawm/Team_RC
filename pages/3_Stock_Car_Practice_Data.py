@@ -211,7 +211,7 @@ elif option == 'Outros':
         #Adiciona a cor personalizadas
         melhor_por_car_id['Color'] = melhor_por_car_id['Car_ID'].map(cores_personalizadas).fillna('lightgray')
      
-        chart = alt.Chart(media_por_car_id).mark_bar().encode(
+        chart = alt.Chart(melhor_por_car_id).mark_bar().encode(
                 x=alt.X('Car_ID_str:N', sort=melhor_por_car_id['Diff'].tolist()),
                 y=alt.Y('Diff', title=f'Diff to Best {coluna} (s)'),
                 color=alt.Color('Color:N', scale=None)
