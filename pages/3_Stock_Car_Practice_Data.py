@@ -181,23 +181,23 @@ elif option == 'Linhas':
     st.plotly_chart(graf6)
 
 elif option == 'Outros':
-  # Tabs para Gap to Fastest
-  tabs = st.tabs(["Gap to Fastest Car - Lap", "Gap to Fastest Car - S1", "Gap to Fastest Car - S2", "Gap to Fastest Car - S3"])
+    # Tabs para Gap to Fastest
+    tabs = st.tabs(["Gap to Fastest Car - Lap", "Gap to Fastest Car - S1", "Gap to Fastest Car - S2", "Gap to Fastest Car - S3"])
 
-  colunas_setores = {
-    "Gap to Fastest Car - Lap": "Lap Tm (S)",
-    "Gap to Fastest Car - S1": "S1 Tm",
-    "Gap to Fastest Car - S2": "S2 Tm",
-    "Gap to Fastest Car - S3": "S3 Tm"
-  }
-
-  #Dicionário de cores
-  cores_personalizadas = {
-   10: 'red',
-   11: 'blue',
-   44: 'gray',
-   88: 'yellow'
+    colunas_setores = {
+     "Gap to Fastest Car - Lap": "Lap Tm (S)",
+     "Gap to Fastest Car - S1": "S1 Tm",
+     "Gap to Fastest Car - S2": "S2 Tm",
+     "Gap to Fastest Car - S3": "S3 Tm"
    }
+
+    #Dicionário de cores
+    cores_personalizadas = {
+    10: 'red',
+    11: 'blue',
+    44: 'gray',
+    88: 'yellow'
+    }
   for i, (tab_name, coluna) in enumerate(colunas_setores.items()):
     with tabs[i]:
         melhor_por_car_id = sessao_filtrado.groupby('Car_ID')[coluna].min().reset_index()
