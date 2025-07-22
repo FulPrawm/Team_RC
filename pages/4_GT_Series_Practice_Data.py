@@ -176,13 +176,20 @@ elif option == 'Linhas':
 
 elif option == 'Outros':
   # Tabs para Gap to Fastest
-  tabs = st.tabs(["Gap to Fastest - Lap", "Gap to Fastest - S1", "Gap to Fastest - S2", "Gap to Fastest - S3"])
+  tabs = st.tabs(["Gap to Fastest Car - Lap", "Gap to Fastest Car - S1", "Gap to Fastest Car - S2", "Gap to Fastest Car - S3"])
 
   colunas_setores = {
-    "Gap to Fastest - Lap": "Lap Tm (S)",
-    "Gap to Fastest - S1": "S1 Tm",
-    "Gap to Fastest - S2": "S2 Tm",
-    "Gap to Fastest - S3": "S3 Tm"
+    "Gap to Fastest Car - Lap": "Lap Tm (S)",
+    "Gap to Fastest Car - S1": "S1 Tm",
+    "Gap to Fastest Car - S2": "S2 Tm",
+    "Gap to Fastest Car - S3": "S3 Tm"
+  }
+
+  #Dicionário de cores
+  cores_personalizadas = {
+      "8": 'red',
+      "27": 'gray',
+      "34": 'yellow'
   }
 
   for i, (tab_name, coluna) in enumerate(colunas_setores.items()):
@@ -190,31 +197,22 @@ elif option == 'Outros':
         melhor_por_car_id = sessao_filtrado.groupby('Car_ID')[coluna].min().reset_index()
         min_valor = melhor_por_car_id[coluna].min()
         melhor_por_car_id['Diff'] = melhor_por_car_id[coluna] - min_valor
-
         melhor_por_car_id = melhor_por_car_id.sort_values(by='Diff')
         melhor_por_car_id['Car_ID'] = melhor_por_car_id['Car_ID'].astype(str)
 
+        # Adiciona a cor personalizada ou padrão
+        melhor_por_car_id['Color'] = melhor_por_car_id['Car_ID'].map(cores_personalizadas).fillna('white')
+     
         chart = alt.Chart(melhor_por_car_id).mark_bar().encode(
             x=alt.X('Car_ID:N', sort=melhor_por_car_id['Diff'].tolist()),
-            y=alt.Y('Diff', title=f'Diff to Best {coluna} (s)')
+            y=alt.Y('Diff', title=f'Diff to Best {coluna} (s)'),
+            color=alt.Color('Color:N', scale=None)
         ).properties(
             title=f'{tab_name}'
         )
 
         st.altair_chart(chart, use_container_width=True)
         st.write(f'Baseado no melhor tempo de cada carro para {coluna}')
-
-elif option == 'BoxPlots':
-    st.write('Valores de todos os carros da montadora')
-    for var in analise_montadora:
-        if var == 'Montadora':
-            continue
-        fig = px.box(sessao_filtrado, 
-                     x=sessao_filtrado[var], 
-                     points='all', 
-                     color='Montadora',
-                     title=f'Distribuição de {var}')  # Título dentro do gráfico
-        st.plotly_chart(fig)
 
 
 elif option == 'All Laps':
