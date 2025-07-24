@@ -223,12 +223,30 @@ elif option =='Histogramas':
 elif option == 'Outros':
     st.header("Car Efficiency")
 
-    # Filtragem geral
     sessao_eff = sessao_filtrado.copy()
 
-    # Médias para definir os cortes
     media_avg_speed = sessao_eff["Avg Speed"].mean()
     media_spt = sessao_eff["SPT"].mean()
+
+    # Seletor de quadrante
+    quadrante = st.selectbox("Filtrar por tipo de comportamento aerodinâmico", [
+        "Todos",
+        "Alta eficiência (↑Avg Speed, ↑SPT)",
+        "Alta downforce (↑Avg Speed, ↓SPT)",
+        "Baixa downforce (↓Avg Speed, ↑SPT)",
+        "Baixa eficiência (↓Avg Speed, ↓SPT)"
+    ])
+
+    # Filtro de dados com base no quadrante
+    if quadrante == "Alta eficiência (↑Avg Speed, ↑SPT)":
+        sessao_eff = sessao_eff[(sessao_eff["Avg Speed"] >= media_avg_speed) & (sessao_eff["SPT"] >= media_spt)]
+    elif quadrante == "Alta downforce (↑Avg Speed, ↓SPT)":
+        sessao_eff = sessao_eff[(sessao_eff["Avg Speed"] >= media_avg_speed) & (sessao_eff["SPT"] < media_spt)]
+    elif quadrante == "Baixa downforce (↓Avg Speed, ↑SPT)":
+        sessao_eff = sessao_eff[(sessao_eff["Avg Speed"] < media_avg_speed) & (sessao_eff["SPT"] >= media_spt)]
+    elif quadrante == "Baixa eficiência (↓Avg Speed, ↓SPT)":
+        sessao_eff = sessao_eff[(sessao_eff["Avg Speed"] < media_avg_speed) & (sessao_eff["SPT"] < media_spt)]
+    # Se for "Todos", não faz nada
 
     # Gráfico
     fig = px.scatter(sessao_eff, x='Avg Speed', y='SPT', color='Equipe', symbol='Equipe',
@@ -237,22 +255,33 @@ elif option == 'Outros':
 
     fig.update_traces(marker_size=10)
 
-    # Linhas de corte no meio dos dados
-    fig.add_vline(x=media_avg_speed, line_dash="dash", line_color="gray", annotation_text="Média Avg Speed", 
-                  annotation_position="bottom left", annotation_font_color="gray")
+    # Linhas médias
+    fig.add_vline(x=media_avg_speed, line_dash="dash", line_color="gray",
+                  annotation_text="Média Avg Speed", annotation_position="bottom left", annotation_font_color="gray")
+    fig.add_hline(y=media_spt, line_dash="dash", line_color="gray",
+                  annotation_text="Média SPT", annotation_position="top right", annotation_font_color="gray")
 
-    fig.add_hline(y=media_spt, line_dash="dash", line_color="gray", annotation_text="Média SPT",
-                  annotation_position="top right", annotation_font_color="gray")
-
-    # Texto descritivo sobre os quadrantes
-    st.markdown("""
-    - **↗ Quadrante Superior Direito**: Alta eficiência geral (reta + curva)
-    - **↖ Quadrante Superior Esquerdo**: Baixa downforce (boa reta, ruim curva)
-    - **↘ Quadrante Inferior Direito**: Alta downforce (boa curva, ruim reta)
-    - **↙ Quadrante Inferior Esquerdo**: Baixa eficiência (nenhuma das duas)
-    """)
+    # Cores de fundo dos quadrantes
+    fig.add_shape(type="rect", x0=media_avg_speed, x1=sessao_filtrado["Avg Speed"].max(),
+                  y0=media_spt, y1=sessao_filtrado["SPT"].max(), fillcolor="green", opacity=0.1, line_width=0)
+    fig.add_shape(type="rect", x0=0, x1=media_avg_speed,
+                  y0=media_spt, y1=sessao_filtrado["SPT"].max(), fillcolor="red", opacity=0.1, line_width=0)
+    fig.add_shape(type="rect", x0=media_avg_speed, x1=sessao_filtrado["Avg Speed"].max(),
+                  y0=0, y1=media_spt, fillcolor="blue", opacity=0.1, line_width=0)
+    fig.add_shape(type="rect", x0=0, x1=media_avg_speed,
+                  y0=0, y1=media_spt, fillcolor="orange", opacity=0.1, line_width=0)
 
     st.plotly_chart(fig, use_container_width=True)
+
+    # Legenda opcional
+    st.markdown("""
+    **Quadrantes:**
+    - 🟩 Verde (superior direito): Alta eficiência (reta + curva)
+    - 🟥 Vermelho (superior esquerdo): Baixa downforce (muita reta, perde curva)
+    - 🟦 Azul (inferior direito): Alta downforce (muita curva, perde reta)
+    - 🟧 Laranja (inferior esquerdo): Baixa eficiência (nenhuma das duas)
+    """)
+
 
     # Tabs para Gap to Fastest
     tabs = st.tabs(["Gap to Fastest Car - Lap", "Gap to Fastest Car - S1", "Gap to Fastest Car - S2", "Gap to Fastest Car - S3"])
