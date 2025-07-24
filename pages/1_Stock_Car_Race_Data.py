@@ -333,7 +333,7 @@ elif option == 'Outros':
                 x=bloco['Lap'],
                 y=y_pred,
                 mode='lines',
-                line=dict(color='lightgray', width=2, dash='dot'),
+                line=dict(color='green', width=2, dash='dot'),
                 opacity=0.4,
                 showlegend=False
                 ))
