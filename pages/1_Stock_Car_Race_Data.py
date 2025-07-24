@@ -264,7 +264,38 @@ elif option == 'Outros':
 
             st.altair_chart(chart, use_container_width=True)
             st.write(f'Baseado na média de cada carro para {coluna}')
-     
+
+    st.header("Diferença percentual para a melhor volta de cada piloto")
+
+    carros_desejados = [10, 11, 44, 88]
+    nomes_carros = {
+        10: "Carro 10 - Vermelho",
+        11: "Carro 11 - Azul",
+        44: "Carro 44 - Cinza",
+        88: "Carro 88 - Amarelo"
+    }
+
+    cores_carros = {
+        10: "red",
+        11: "blue",
+        44: "gray",
+        88: "yellow"
+    }
+
+    tabs = st.tabs([nomes_carros[carro] for carro in carros_desejados])
+
+    for i, carro in enumerate(carros_desejados):
+        with tabs[i]:
+            df = sessao[sessao['Car_ID'] == carro].copy()
+            melhor_volta = df['Lap Tm (S)'].min()
+            df['Diff %'] = ((df['Lap Tm (S)'] - melhor_volta) / melhor_volta) * 100
+
+            fig = px.bar(df, x="Lap", y="Diff %", color_discrete_sequence=[cores_carros[carro]],
+                         title=f"Carro {carro} - Diferença % por volta")
+            fig.update_layout(yaxis_title="Diferença para melhor volta (%)",
+                              xaxis_title="Volta")
+            st.plotly_chart(fig, use_container_width=True)
+         
 elif option == 'BoxPlots':
     st.write('Média de todos os carros da montadora')
     for var in analise_montadora:
