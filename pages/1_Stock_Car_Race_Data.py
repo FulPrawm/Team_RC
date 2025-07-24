@@ -286,7 +286,6 @@ elif option == 'Outros':
 
     for i, carro in enumerate(carros_desejados):
         with tabs[i]:
-            # Aplica a filtragem de voltas (sem pit/safety) conforme seu código
             df = sessao_filtrado[sessao_filtrado['Car_ID'] == carro].copy()
 
             if df.empty:
@@ -297,6 +296,12 @@ elif option == 'Outros':
             volta_mais_rapida = df[df['Lap Tm (S)'] == melhor_volta]['Lap'].iloc[0]
             df['Diff %'] = ((df['Lap Tm (S)'] - melhor_volta) / melhor_volta) * 100
 
+            # Identifica blocos contínuos de voltas
+            df = df.sort_values('Lap')
+            df['Gap'] = df['Lap'].diff().fillna(1)
+            df['Bloco'] = (df['Gap'] > 1).cumsum()
+
+            # Cria gráfico principal
             fig = px.bar(df,
                          x="Lap",
                          y="Diff %",
@@ -306,19 +311,40 @@ elif option == 'Outros':
 
             fig.update_traces(textposition='outside')
 
-            # Adiciona linha para a volta mais rápida
+            # Linha da melhor volta
             fig.add_vline(x=volta_mais_rapida, line_dash="dash", line_color="white",
-                          annotation_text="Melhor Volta", annotation_position="top")
+                          annotation_text="Melhor Volta", annotation_position="top", annotation_font_color="white")
+
+            # Linhas de tendência por bloco
+            for bloco_id in df['Bloco'].unique():
+                bloco = df[df['Bloco'] == bloco_id]
+                if len(bloco) < 2:
+                    continue  # precisa de pelo menos 2 pontos para regressão
+
+                X = bloco['Lap'].values.reshape(-1, 1)
+                y = bloco['Diff %'].values
+                modelo = LinearRegression().fit(X, y)
+                y_pred = modelo.predict(X)
+
+                fig.add_trace(go.Scatter(
+                    x=bloco['Lap'],
+                    y=y_pred,
+                    mode='lines',
+                    line=dict(color='white', width=2, dash='dot'),
+                    showlegend=False
+                ))
 
             fig.update_layout(
                 yaxis_title="Diferença para melhor volta (%)",
                 xaxis_title="Volta",
                 uniformtext_minsize=8,
-                uniformtext_mode='show'
+                uniformtext_mode='show',
+                plot_bgcolor='black',
+                paper_bgcolor='black',
+                font_color='white'
             )
 
             st.plotly_chart(fig, use_container_width=True)
-
          
 elif option == 'BoxPlots':
     st.write('Média de todos os carros da montadora')
