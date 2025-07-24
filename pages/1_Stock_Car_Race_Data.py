@@ -334,15 +334,13 @@ elif option == 'Outros':
                     showlegend=False
                 ))
 
-            fig.update_layout(
+                fig.update_layout(
                 yaxis_title="Diferença para melhor volta (%)",
                 xaxis_title="Volta",
                 uniformtext_minsize=8,
-                uniformtext_mode='show',
-                plot_bgcolor='black',
-                paper_bgcolor='black',
-                font_color='white'
-            )
+                uniformtext_mode='show'
+                )
+
 
             st.plotly_chart(fig, use_container_width=True)
          
