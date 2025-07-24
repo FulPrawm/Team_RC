@@ -221,12 +221,38 @@ elif option =='Histogramas':
         st.plotly_chart(fig)
 
 elif option == 'Outros':
+    st.header("Car Efficiency")
 
-    # Scatter de eficiência
-    fig = px.scatter(sessao_filtrado, x='Avg Speed', y='SPT', color='Equipe', symbol='Equipe',
-                     title="Car Efficiency")
+    # Filtragem geral
+    sessao_eff = sessao_filtrado.copy()
+
+    # Médias para definir os cortes
+    media_avg_speed = sessao_eff["Avg Speed"].mean()
+    media_spt = sessao_eff["SPT"].mean()
+
+    # Gráfico
+    fig = px.scatter(sessao_eff, x='Avg Speed', y='SPT', color='Equipe', symbol='Equipe',
+                     title="Eficiência Aerodinâmica - Avg Speed vs SPT",
+                     hover_data=['Car_ID'])
+
     fig.update_traces(marker_size=10)
-    st.plotly_chart(fig)
+
+    # Linhas de corte no meio dos dados
+    fig.add_vline(x=media_avg_speed, line_dash="dash", line_color="gray", annotation_text="Média Avg Speed", 
+                  annotation_position="bottom left", annotation_font_color="gray")
+
+    fig.add_hline(y=media_spt, line_dash="dash", line_color="gray", annotation_text="Média SPT",
+                  annotation_position="top right", annotation_font_color="gray")
+
+    # Texto descritivo sobre os quadrantes
+    st.markdown("""
+    - **↗ Quadrante Superior Direito**: Alta eficiência geral (reta + curva)
+    - **↖ Quadrante Superior Esquerdo**: Baixa downforce (boa reta, ruim curva)
+    - **↘ Quadrante Inferior Direito**: Alta downforce (boa curva, ruim reta)
+    - **↙ Quadrante Inferior Esquerdo**: Baixa eficiência (nenhuma das duas)
+    """)
+
+    st.plotly_chart(fig, use_container_width=True)
 
     # Tabs para Gap to Fastest
     tabs = st.tabs(["Gap to Fastest Car - Lap", "Gap to Fastest Car - S1", "Gap to Fastest Car - S2", "Gap to Fastest Car - S3"])
