@@ -8,6 +8,8 @@ import streamlit as st
 import altair as alt
 import os
 from sklearn.linear_model import LinearRegression
+import plotly.graph_objects as go
+
 # Ignorando warnings - por detalhes estéticos
 import warnings
 warnings.filterwarnings('ignore')
