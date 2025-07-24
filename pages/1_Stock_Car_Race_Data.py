@@ -286,7 +286,7 @@ elif option == 'Outros':
 
     for i, carro in enumerate(carros_desejados):
         with tabs[i]:
-            df = sessao_filter[sessao_filter['Car_ID'] == carro].copy()
+            df = sessao_filtrado[sessao_filtrado['Car_ID'] == carro].copy()
             melhor_volta = df['Lap Tm (S)'].min()
             df['Diff %'] = ((df['Lap Tm (S)'] - melhor_volta) / melhor_volta) * 100
 
