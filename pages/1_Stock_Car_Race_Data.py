@@ -265,7 +265,7 @@ elif option == 'Outros':
             st.altair_chart(chart, use_container_width=True)
             st.write(f'Baseado na média de cada carro para {coluna}')
 
-    st.header("Diferença percentual para a melhor volta de cada piloto")
+    st.subheader("Diferença percentual para a melhor volta dos pilotos da equipe")
 
     carros_desejados = [10, 11, 44, 88]
     nomes_carros = {
@@ -286,15 +286,39 @@ elif option == 'Outros':
 
     for i, carro in enumerate(carros_desejados):
         with tabs[i]:
+            # Aplica a filtragem de voltas (sem pit/safety) conforme seu código
             df = sessao_filtrado[sessao_filtrado['Car_ID'] == carro].copy()
+
+            if df.empty:
+                st.write("Nenhuma volta disponível para este carro após o filtro.")
+                continue
+
             melhor_volta = df['Lap Tm (S)'].min()
+            volta_mais_rapida = df[df['Lap Tm (S)'] == melhor_volta]['Lap'].iloc[0]
             df['Diff %'] = ((df['Lap Tm (S)'] - melhor_volta) / melhor_volta) * 100
 
-            fig = px.bar(df, x="Lap", y="Diff %", color_discrete_sequence=[cores_carros[carro]],
-                         title=f"Carro {carro} - Diferença % por volta")
-            fig.update_layout(yaxis_title="Diferença para melhor volta (%)",
-                              xaxis_title="Volta")
+            fig = px.bar(df,
+                         x="Lap",
+                         y="Diff %",
+                         text=df['Diff %'].map(lambda x: f"{x:.2f}%"),
+                         color_discrete_sequence=[cores_carros[carro]],
+                         title=f"{nomes_carros[carro]} - Diferença % por volta")
+
+            fig.update_traces(textposition='outside')
+
+            # Adiciona linha para a volta mais rápida
+            fig.add_vline(x=volta_mais_rapida, line_dash="dash", line_color="black",
+                          annotation_text="Melhor Volta", annotation_position="top")
+
+            fig.update_layout(
+                yaxis_title="Diferença para melhor volta (%)",
+                xaxis_title="Volta",
+                uniformtext_minsize=8,
+                uniformtext_mode='show'
+            )
+
             st.plotly_chart(fig, use_container_width=True)
+
          
 elif option == 'BoxPlots':
     st.write('Média de todos os carros da montadora')
