@@ -330,12 +330,14 @@ elif option == 'Outros':
                 y_pred = modelo.predict(X)
 
                 fig.add_trace(go.Scatter(
-                    x=bloco['Lap'],
-                    y=y_pred,
-                    mode='lines',
-                    line=dict(color='white', width=2, dash='dot'),
-                    showlegend=False
+                x=bloco['Lap'],
+                y=y_pred,
+                mode='lines',
+                line=dict(color='lightgray', width=2, dash='dot'),
+                opacity=0.4,
+                showlegend=False
                 ))
+
 
                 fig.update_layout(
                 yaxis_title="Diferença para melhor volta (%)",
