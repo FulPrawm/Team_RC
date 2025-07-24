@@ -307,7 +307,7 @@ elif option == 'Outros':
             fig.update_traces(textposition='outside')
 
             # Adiciona linha para a volta mais rápida
-            fig.add_vline(x=volta_mais_rapida, line_dash="dash", line_color="black",
+            fig.add_vline(x=volta_mais_rapida, line_dash="dash", line_color="white",
                           annotation_text="Melhor Volta", annotation_position="top")
 
             fig.update_layout(
