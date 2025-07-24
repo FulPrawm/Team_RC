@@ -9,5 +9,4 @@ openpyxl
 missingno
 statsmodels
 scipy==1.11.4
-LinearRegression
 scikit-learn
