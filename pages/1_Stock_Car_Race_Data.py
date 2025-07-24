@@ -269,10 +269,10 @@ elif option == 'Outros':
 
     carros_desejados = [10, 11, 44, 88]
     nomes_carros = {
-        10: "Carro 10 - Vermelho",
-        11: "Carro 11 - Azul",
-        44: "Carro 44 - Cinza",
-        88: "Carro 88 - Amarelo"
+        10: "Ricardo Zonta",
+        11: "Gaetano Di Mauro",
+        44: "Bruno Baptista",
+        88: "Felipe Fraga"
     }
 
     cores_carros = {
@@ -286,7 +286,7 @@ elif option == 'Outros':
 
     for i, carro in enumerate(carros_desejados):
         with tabs[i]:
-            df = sessao[sessao['Car_ID'] == carro].copy()
+            df = sessao_filter[sessao_filter['Car_ID'] == carro].copy()
             melhor_volta = df['Lap Tm (S)'].min()
             df['Diff %'] = ((df['Lap Tm (S)'] - melhor_volta) / melhor_volta) * 100
 
