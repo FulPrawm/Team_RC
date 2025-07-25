@@ -223,45 +223,36 @@ elif option =='Histogramas':
 elif option == 'Outros':
     st.header("Car Efficiency")
 
+    # Filtragem geral
     sessao_eff = sessao_filtrado.copy()
 
-    # Médias para traçar as linhas
+    # Médias para definir os cortes
     media_avg_speed = sessao_eff["Avg Speed"].mean()
     media_spt = sessao_eff["SPT"].mean()
 
-    # Gráfico de dispersão completo
+    # Gráfico
     fig = px.scatter(sessao_eff, x='Avg Speed', y='SPT', color='Equipe', symbol='Equipe',
                      title="Eficiência Aerodinâmica - Avg Speed vs SPT",
                      hover_data=['Car_ID'])
 
     fig.update_traces(marker_size=10)
 
-    # Linhas de média
-    fig.add_vline(x=media_avg_speed, line_dash="dash", line_color="gray",
-                  annotation_text="Média Avg Speed", annotation_position="bottom left", annotation_font_color="gray")
-    fig.add_hline(y=media_spt, line_dash="dash", line_color="gray",
-                  annotation_text="Média SPT", annotation_position="top right", annotation_font_color="gray")
+    # Linhas de corte no meio dos dados
+    fig.add_vline(x=media_avg_speed, line_dash="dash", line_color="gray", annotation_text="Média Avg Speed", 
+                  annotation_position="bottom left", annotation_font_color="gray")
 
-    # Quadrantes com cores suaves
-    fig.add_shape(type="rect", x0=media_avg_speed, x1=sessao_eff["Avg Speed"].max(),
-                  y0=media_spt, y1=sessao_eff["SPT"].max(), fillcolor="green", opacity=0.1, line_width=0)
-    fig.add_shape(type="rect", x0=0, x1=media_avg_speed,
-                  y0=media_spt, y1=sessao_eff["SPT"].max(), fillcolor="red", opacity=0.1, line_width=0)
-    fig.add_shape(type="rect", x0=media_avg_speed, x1=sessao_eff["Avg Speed"].max(),
-                  y0=0, y1=media_spt, fillcolor="blue", opacity=0.1, line_width=0)
-    fig.add_shape(type="rect", x0=0, x1=media_avg_speed,
-                  y0=0, y1=media_spt, fillcolor="orange", opacity=0.1, line_width=0)
+    fig.add_hline(y=media_spt, line_dash="dash", line_color="gray", annotation_text="Média SPT",
+                  annotation_position="top right", annotation_font_color="gray")
 
-    st.plotly_chart(fig, use_container_width=True)
-
+    # Texto descritivo sobre os quadrantes
     st.markdown("""
-    **Quadrantes:**
-    - 🟩 Verde (↑Avg Speed, ↑SPT): Alta eficiência (reta + curva)
-    - 🟥 Vermelho (↓Avg Speed, ↑SPT): Baixa downforce (muita reta, perde curva)
-    - 🟦 Azul (↑Avg Speed, ↓SPT): Alta downforce (muita curva, perde reta)
-    - 🟧 Laranja (↓Avg Speed, ↓SPT): Baixa eficiência (nenhuma das duas)
+    - **↗ Quadrante Superior Direito**: Alta eficiência geral (reta + curva)
+    - **↖ Quadrante Superior Esquerdo**: Baixa downforce (boa reta, ruim curva)
+    - **↘ Quadrante Inferior Direito**: Alta downforce (boa curva, ruim reta)
+    - **↙ Quadrante Inferior Esquerdo**: Baixa eficiência (nenhuma das duas)
     """)
 
+    st.plotly_chart(fig, use_container_width=True)
 
 
     # Tabs para Gap to Fastest
