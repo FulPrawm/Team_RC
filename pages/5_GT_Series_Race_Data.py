@@ -239,25 +239,41 @@ elif option == 'Outros':
 
     for i, (tab_name, coluna) in enumerate(colunas_setores.items()):
         with tabs[i]:
-            media_por_car_id = sessao_filtrado.groupby('Car_ID')[coluna].mean().reset_index()
-            min_valor = media_por_car_id[coluna].min()
-            media_por_car_id['Diff'] = media_por_car_id[coluna] - min_valor
-            media_por_car_id = media_por_car_id.sort_values(by='Diff')
-            media_por_car_id['Car_ID_str'] = media_por_car_id['Car_ID'].astype(str)
+           media_por_car_id = sessao_filtrado.groupby('Car_ID')[coluna].mean().reset_index()
+           min_valor = media_por_car_id[coluna].min()
+           media_por_car_id['Diff'] = media_por_car_id[coluna] - min_valor
+           media_por_car_id = media_por_car_id.sort_values(by='Diff')
+           media_por_car_id['Car_ID_str'] = media_por_car_id['Car_ID'].astype(str)
 
-            # Adiciona a cor personalizada ou padrão
-            media_por_car_id['Color'] = media_por_car_id['Car_ID'].map(cores_personalizadas).fillna('white')
+        # Adiciona cor personalizada ou padrão
+        media_por_car_id['Color'] = media_por_car_id['Car_ID'].map(cores_personalizadas).fillna('white')
 
-            chart = alt.Chart(media_por_car_id).mark_bar().encode(
-                x=alt.X('Car_ID_str:N', sort=media_por_car_id['Diff'].tolist()),
-                y=alt.Y('Diff', title=f'Diff to Best {coluna} (s)'),
-                color=alt.Color('Color:N', scale=None)
-            ).properties(
-                title=f'{tab_name}'
-            )
+        # Gráfico de barras
+        bars = alt.Chart(media_por_car_id).mark_bar().encode(
+            x=alt.X('Car_ID_str:N', sort=media_por_car_id['Diff'].tolist()),
+            y=alt.Y('Diff', title=f'Diff to Best {coluna} (s)'),
+            color=alt.Color('Color:N', scale=None)
+        )
 
-            st.altair_chart(chart, use_container_width=True)
-            st.write(f'Baseado na média de cada carro para {coluna}')
+        # Rótulos de valor
+        labels = alt.Chart(media_por_car_id).mark_text(
+            align='center',
+            baseline='bottom',
+            dy=-2,  # distância do topo da barra
+            color='white'
+        ).encode(
+            x=alt.X('Car_ID_str:N', sort=media_por_car_id['Diff'].tolist()),
+            y='Diff',
+            text=alt.Text('Diff', format='.2f')
+        )
+
+        chart = (bars + labels).properties(
+            title=f'{tab_name}'
+        )
+
+        st.altair_chart(chart, use_container_width=True)
+        st.write(f'Baseado na média de cada carro para {coluna}')
+
 
 elif option == 'BoxPlots':
     st.write('Média de todos os carros da montadora')
