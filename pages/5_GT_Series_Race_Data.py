@@ -93,7 +93,7 @@ analise_montadora = ['Montadora', "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT",
 
 # Filtragem automática baseada em 4% da melhor volta da sessão
 melhor_volta = sessao["Lap Tm (S)"].min()
-tempo_limite = melhor_volta * 1.04
+tempo_limite = melhor_volta * 1.07
 
 # Cálculo de voltas por piloto
 voltas_por_piloto = sessao.groupby('Car_ID')['Lap'].nunique()
