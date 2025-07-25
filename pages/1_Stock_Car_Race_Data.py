@@ -281,31 +281,35 @@ elif option == 'Outros':
            media_por_car_id = media_por_car_id.sort_values(by='Diff')
            media_por_car_id['Car_ID_str'] = media_por_car_id['Car_ID'].astype(str)
 
-        # Adiciona a cor personalizada ou branco por padrão
+        # Adiciona cor personalizada ou padrão
         media_por_car_id['Color'] = media_por_car_id['Car_ID'].map(cores_personalizadas).fillna('white')
 
         # Gráfico de barras
-        chart = alt.Chart(media_por_car_id).mark_bar().encode(
+        bars = alt.Chart(media_por_car_id).mark_bar().encode(
             x=alt.X('Car_ID_str:N', sort=media_por_car_id['Diff'].tolist()),
             y=alt.Y('Diff', title=f'Diff to Best {coluna} (s)'),
             color=alt.Color('Color:N', scale=None)
         )
 
-        # Rótulos acima das colunas
-        text = alt.Chart(media_por_car_id).mark_text(
+        # Rótulos de valor
+        labels = alt.Chart(media_por_car_id).mark_text(
             align='center',
             baseline='bottom',
-            dy=-2,  # desloca o texto levemente para cima
+            dy=-2,  # distância do topo da barra
             color='white'
         ).encode(
-            x='Car_ID_str:N',
+            x=alt.X('Car_ID_str:N', sort=media_por_car_id['Diff'].tolist()),
             y='Diff',
             text=alt.Text('Diff', format='.2f')
         )
 
-        st.altair_chart((chart + text).properties(title=f'{tab_name}'), use_container_width=True)
+        chart = (bars + labels).properties(
+            title=f'{tab_name}'
+        )
 
+        st.altair_chart(chart, use_container_width=True)
         st.write(f'Baseado na média de cada carro para {coluna}')
+
 
     st.subheader("Diferença percentual para a melhor volta dos pilotos da equipe")
 
