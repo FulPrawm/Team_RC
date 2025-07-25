@@ -255,33 +255,33 @@ elif option == 'Outros':
     st.plotly_chart(fig, use_container_width=True)
 
 
-    # Tabs para Gap to Fastest
-    tabs = st.tabs(["Gap to Fastest Car - Lap", "Gap to Fastest Car - S1", "Gap to Fastest Car - S2", "Gap to Fastest Car - S3"])
+# Tabs para Gap to Fastest
+tabs = st.tabs(["Gap to Fastest Car - Lap", "Gap to Fastest Car - S1", "Gap to Fastest Car - S2", "Gap to Fastest Car - S3"])
 
-    colunas_setores = {
-        "Gap to Fastest Car - Lap": "Lap Tm (S)",
-        "Gap to Fastest Car - S1": "S1 Tm",
-        "Gap to Fastest Car - S2": "S2 Tm",
-        "Gap to Fastest Car - S3": "S3 Tm"
-    }
+colunas_setores = {
+    "Gap to Fastest Car - Lap": "Lap Tm (S)",
+    "Gap to Fastest Car - S1": "S1 Tm",
+    "Gap to Fastest Car - S2": "S2 Tm",
+    "Gap to Fastest Car - S3": "S3 Tm"
+}
 
-    # Dicionário de cores dos seus carros
-    cores_personalizadas = {
-        10: 'red',
-        11: 'blue',
-        44: 'gray',
-        88: 'yellow'
-    }
+# Dicionário de cores dos seus carros
+cores_personalizadas = {
+    10: 'red',
+    11: 'blue',
+    44: 'gray',
+    88: 'yellow'
+}
 
-    for i, (tab_name, coluna) in enumerate(colunas_setores.items()):
-        with tabs[i]:
-           media_por_car_id = sessao_filtrado.groupby('Car_ID')[coluna].mean().reset_index()
-           min_valor = media_por_car_id[coluna].min()
-           media_por_car_id['Diff'] = media_por_car_id[coluna] - min_valor
-           media_por_car_id = media_por_car_id.sort_values(by='Diff')
-           media_por_car_id['Car_ID_str'] = media_por_car_id['Car_ID'].astype(str)
+for i, (tab_name, coluna) in enumerate(colunas_setores.items()):
+    with tabs[i]:
+        media_por_car_id = sessao_filtrado.groupby('Car_ID')[coluna].mean().reset_index()
+        min_valor = media_por_car_id[coluna].min()
+        media_por_car_id['Diff'] = media_por_car_id[coluna] - min_valor
+        media_por_car_id = media_por_car_id.sort_values(by='Diff')
+        media_por_car_id['Car_ID_str'] = media_por_car_id['Car_ID'].astype(str)
 
-        # Adiciona cor personalizada ou padrão
+        # Adiciona cor personalizada ou branca padrão
         media_por_car_id['Color'] = media_por_car_id['Car_ID'].map(cores_personalizadas).fillna('white')
 
         # Gráfico de barras
@@ -291,11 +291,11 @@ elif option == 'Outros':
             color=alt.Color('Color:N', scale=None)
         )
 
-        # Rótulos de valor
+        # Rótulos de valor acima das barras
         labels = alt.Chart(media_por_car_id).mark_text(
             align='center',
             baseline='bottom',
-            dy=-2,  # distância do topo da barra
+            dy=-2,
             color='white'
         ).encode(
             x=alt.X('Car_ID_str:N', sort=media_por_car_id['Diff'].tolist()),
@@ -303,12 +303,12 @@ elif option == 'Outros':
             text=alt.Text('Diff', format='.2f')
         )
 
-        chart = (bars + labels).properties(
-            title=f'{tab_name}'
-        )
+        chart = (bars + labels).properties(title=tab_name)
 
+        # ✅ Exibe dentro da aba correta
         st.altair_chart(chart, use_container_width=True)
-        st.write(f'Baseado na média de cada carro para {coluna}')
+        st.write(f'Baseado na média de cada carro para **{coluna}**")
+
 
 
     st.subheader("Diferença percentual para a melhor volta dos pilotos da equipe")
