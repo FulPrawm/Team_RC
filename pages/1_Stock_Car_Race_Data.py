@@ -275,11 +275,11 @@ elif option == 'Outros':
 
     for i, (tab_name, coluna) in enumerate(colunas_setores.items()):
         with tabs[i]:
-        media_por_car_id = sessao_filtrado.groupby('Car_ID')[coluna].mean().reset_index()
-        min_valor = media_por_car_id[coluna].min()
-        media_por_car_id['Diff'] = media_por_car_id[coluna] - min_valor
-        media_por_car_id = media_por_car_id.sort_values(by='Diff')
-        media_por_car_id['Car_ID_str'] = media_por_car_id['Car_ID'].astype(str)
+           media_por_car_id = sessao_filtrado.groupby('Car_ID')[coluna].mean().reset_index()
+           min_valor = media_por_car_id[coluna].min()
+           media_por_car_id['Diff'] = media_por_car_id[coluna] - min_valor
+           media_por_car_id = media_por_car_id.sort_values(by='Diff')
+           media_por_car_id['Car_ID_str'] = media_por_car_id['Car_ID'].astype(str)
 
         # Adiciona a cor personalizada ou branco por padrão
         media_por_car_id['Color'] = media_por_car_id['Car_ID'].map(cores_personalizadas).fillna('white')
