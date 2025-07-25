@@ -244,34 +244,34 @@ elif option == 'Outros':
     fig.add_hline(y=media_spt, line_dash="dash", line_color="gray", annotation_text="Média SPT",
                   annotation_position="top right", annotation_font_color="gray")
 
-# Adiciona anotações nos 4 quadrantes
-fig.add_annotation(
+    # Adiciona anotações nos 4 quadrantes
+    fig.add_annotation(
     x=media_avg_speed * 0.5, y=media_spt * 1.1,
     text="↖ Low Downforce",
     showarrow=False,
     font=dict(color="gray", size=12)
-)
+    )
 
-fig.add_annotation(
+    fig.add_annotation(
     x=media_avg_speed * 1.5, y=media_spt * 1.1,
     text="↗ High Efficiency",
     showarrow=False,
     font=dict(color="gray", size=12)
-)
+    )
 
-fig.add_annotation(
+    fig.add_annotation(
     x=media_avg_speed * 0.5, y=media_spt * 0.9,
     text="↙ Low Efficiency",
     showarrow=False,
     font=dict(color="gray", size=12)
-)
+    )
 
-fig.add_annotation(
+    fig.add_annotation(
     x=media_avg_speed * 1.5, y=media_spt * 0.9,
     text="↘ High Downforce",
     showarrow=False,
     font=dict(color="gray", size=12)
-)
+    )
 
 
     st.plotly_chart(fig, use_container_width=True)
