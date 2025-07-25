@@ -244,37 +244,16 @@ elif option == 'Outros':
     fig.add_hline(y=media_spt, line_dash="dash", line_color="gray", annotation_text="Média SPT",
                   annotation_position="top right", annotation_font_color="gray")
 
-    # Adiciona anotações nos 4 quadrantes
-    fig.add_annotation(
-    x=media_avg_speed * 0.5, y=media_spt * 1.1,
-    text="↖ Low Downforce",
-    showarrow=False,
-    font=dict(color="gray", size=12)
-    )
-
-    fig.add_annotation(
-    x=media_avg_speed * 1.5, y=media_spt * 1.1,
-    text="↗ High Efficiency",
-    showarrow=False,
-    font=dict(color="gray", size=12)
-    )
-
-    fig.add_annotation(
-    x=media_avg_speed * 0.5, y=media_spt * 0.9,
-    text="↙ Low Efficiency",
-    showarrow=False,
-    font=dict(color="gray", size=12)
-    )
-
-    fig.add_annotation(
-    x=media_avg_speed * 1.5, y=media_spt * 0.9,
-    text="↘ High Downforce",
-    showarrow=False,
-    font=dict(color="gray", size=12)
-    )
-
+    # Texto descritivo sobre os quadrantes
+    st.markdown("""
+    - **↗ Quadrante Superior Direito**: Alta eficiência geral (reta + curva)
+    - **↖ Quadrante Superior Esquerdo**: Baixa downforce (boa reta, ruim curva)
+    - **↘ Quadrante Inferior Direito**: Alta downforce (boa curva, ruim reta)
+    - **↙ Quadrante Inferior Esquerdo**: Baixa eficiência (nenhuma das duas)
+    """)
 
     st.plotly_chart(fig, use_container_width=True)
+
 
 
     # Tabs para Gap to Fastest
