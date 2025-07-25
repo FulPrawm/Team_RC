@@ -87,11 +87,11 @@ analise_montadora = ['Montadora', "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT",
 
 # Filtragem automática baseada em 4% da melhor volta da sessão
 melhor_volta = sessao["Lap Tm (S)"].min()
-tempo_limite = melhor_volta * 1.04
+tempo_limite = melhor_volta * 1.05
 
 st.subheader("Filtro automático aplicado")
 st.write(f"Melhor volta da sessão: **{melhor_volta:.3f} s**")
-st.write(f"Filtro de 4% aplicado: **{tempo_limite:.3f} s**")
+st.write(f"Filtro de 5% aplicado: **{tempo_limite:.3f} s**")
 
 sessao_filtrado = sessao[sessao["Lap Tm (S)"] <= tempo_limite]
 
