@@ -114,7 +114,7 @@ sessao_filtrado = sessao_filtrado[sessao_filtrado["Lap Tm (S)"] <= tempo_limite]
 # Exibição informativa no app
 st.subheader("Filtro automático aplicado")
 st.write(f"🔍 Melhor volta da sessão: **{melhor_volta:.3f} s**")
-st.write(f"📏 Filtro de 4% aplicado: **{tempo_limite:.3f} s**")
+st.write(f"📏 Filtro de 7% aplicado: **{tempo_limite:.3f} s**")
 st.write(f"🧮 Máximo de voltas completadas: **{max_voltas} voltas**")
 st.write(f"⚠️ Apenas pilotos com **pelo menos {min_voltas_necessarias} voltas completadas** foram considerados na análise.")
 
