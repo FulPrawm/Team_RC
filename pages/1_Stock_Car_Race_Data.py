@@ -220,98 +220,102 @@ elif option =='Histogramas':
         fig = px.histogram(sessao_filtrado[var], nbins=25,title=f'Distribuição de {var}')
         st.plotly_chart(fig)
 
+
+         
+elif option == 'BoxPlots':
+    st.write('Média de todos os carros da montadora')
+    for var in analise_montadora:
+        if var == 'Montadora':
+            continue
+        fig = px.box(sessao_filtrado, 
+                     x=sessao_filtrado[var], 
+                     points='all', 
+                     color='Montadora',
+                     title=f'Distribuição de {var}')  # Título dentro do gráfico
+        st.plotly_chart(fig)
+
 elif option == 'Outros':
     st.header("Car Efficiency")
 
-    # Filtragem geral
+    # Gráfico 1: Car Efficiency
     sessao_eff = sessao_filtrado.copy()
-
-    # Médias para definir os cortes
     media_avg_speed = sessao_eff["Avg Speed"].mean()
     media_spt = sessao_eff["SPT"].mean()
 
-    # Gráfico
-    fig = px.scatter(sessao_eff, x='Avg Speed', y='SPT', color='Equipe', symbol='Equipe',
-                     title="Eficiência Aerodinâmica - Avg Speed vs SPT",
-                     hover_data=['Car_ID'])
+    fig_eff = px.scatter(
+        sessao_eff, x='Avg Speed', y='SPT',
+        color='Equipe', symbol='Equipe', hover_data=['Car_ID'],
+        title="Eficiência Aerodinâmica - Avg Speed vs SPT"
+    )
 
-    fig.update_traces(marker_size=10)
+    fig_eff.update_traces(marker_size=10)
 
-    # Linhas de corte no meio dos dados
-    fig.add_vline(x=media_avg_speed, line_dash="dash", line_color="white", annotation_text="Média Avg Speed", 
-                  annotation_position="bottom left", annotation_font_color="white")
+    fig_eff.add_vline(x=media_avg_speed, line_dash="dash", line_color="gray", 
+                      annotation_text="Média Avg Speed", annotation_position="bottom left", annotation_font_color="gray")
+    fig_eff.add_hline(y=media_spt, line_dash="dash", line_color="gray", 
+                      annotation_text="Média SPT", annotation_position="top right", annotation_font_color="gray")
 
-    fig.add_hline(y=media_spt, line_dash="dash", line_color="white", annotation_text="Média SPT",
-                  annotation_position="top right", annotation_font_color="white")
+    st.plotly_chart(fig_eff, use_container_width=True)
 
-    # Texto descritivo sobre os quadrantes
     st.markdown("""
     - **↗ Quadrante Superior Direito**: Alta eficiência geral (reta + curva)
     - **↖ Quadrante Superior Esquerdo**: Baixa downforce (boa reta, ruim curva)
     - **↘ Quadrante Inferior Direito**: Alta downforce (boa curva, ruim reta)
-    - **↙ Quadrante Inferior Esquerdo**: Baixa eficiência (nenhuma das duas)
+    - **↙ Quadrante Inferior Esquerdo**: Baixa eficiência (nem reta nem curva)
     """)
 
-    st.plotly_chart(fig, use_container_width=True)
+    # Gráfico 2: Gap to Fastest (Altair com Tabs)
+    st.header("Gap to Fastest")
 
+    tabs = st.tabs(["Gap to Fastest Car - Lap", "Gap to Fastest Car - S1", "Gap to Fastest Car - S2", "Gap to Fastest Car - S3"])
 
-# Tabs para Gap to Fastest
-tabs = st.tabs(["Gap to Fastest Car - Lap", "Gap to Fastest Car - S1", "Gap to Fastest Car - S2", "Gap to Fastest Car - S3"])
+    colunas_setores = {
+        "Gap to Fastest Car - Lap": "Lap Tm (S)",
+        "Gap to Fastest Car - S1": "S1 Tm",
+        "Gap to Fastest Car - S2": "S2 Tm",
+        "Gap to Fastest Car - S3": "S3 Tm"
+    }
 
-colunas_setores = {
-    "Gap to Fastest Car - Lap": "Lap Tm (S)",
-    "Gap to Fastest Car - S1": "S1 Tm",
-    "Gap to Fastest Car - S2": "S2 Tm",
-    "Gap to Fastest Car - S3": "S3 Tm"
-}
+    cores_personalizadas = {
+        10: 'red',
+        11: 'blue',
+        44: 'gray',
+        88: 'yellow'
+    }
 
-# Dicionário de cores dos seus carros
-cores_personalizadas = {
-    10: 'red',
-    11: 'blue',
-    44: 'gray',
-    88: 'yellow'
-}
+    for i, (tab_name, coluna) in enumerate(colunas_setores.items()):
+        with tabs[i]:
+            media_por_car_id = sessao_filtrado.groupby('Car_ID')[coluna].mean().reset_index()
+            min_valor = media_por_car_id[coluna].min()
+            media_por_car_id['Diff'] = media_por_car_id[coluna] - min_valor
+            media_por_car_id = media_por_car_id.sort_values(by='Diff')
+            media_por_car_id['Car_ID_str'] = media_por_car_id['Car_ID'].astype(str)
+            media_por_car_id['Color'] = media_por_car_id['Car_ID'].map(cores_personalizadas).fillna('white')
 
-for i, (tab_name, coluna) in enumerate(colunas_setores.items()):
-    with tabs[i]:
-        media_por_car_id = sessao_filtrado.groupby('Car_ID')[coluna].mean().reset_index()
-        min_valor = media_por_car_id[coluna].min()
-        media_por_car_id['Diff'] = media_por_car_id[coluna] - min_valor
-        media_por_car_id = media_por_car_id.sort_values(by='Diff')
-        media_por_car_id['Car_ID_str'] = media_por_car_id['Car_ID'].astype(str)
+            bars = alt.Chart(media_por_car_id).mark_bar().encode(
+                x=alt.X('Car_ID_str:N', sort=media_por_car_id['Diff'].tolist()),
+                y=alt.Y('Diff', title=f'Diff to Best {coluna} (s)'),
+                color=alt.Color('Color:N', scale=None)
+            )
 
-        # Adiciona cor personalizada ou branca padrão
-        media_por_car_id['Color'] = media_por_car_id['Car_ID'].map(cores_personalizadas).fillna('white')
+            labels = alt.Chart(media_por_car_id).mark_text(
+                align='center',
+                baseline='bottom',
+                dy=-2,
+                color='white'
+            ).encode(
+                x=alt.X('Car_ID_str:N', sort=media_por_car_id['Diff'].tolist()),
+                y='Diff',
+                text=alt.Text('Diff', format='.2f')
+            )
 
-        # Gráfico de barras
-        bars = alt.Chart(media_por_car_id).mark_bar().encode(
-            x=alt.X('Car_ID_str:N', sort=media_por_car_id['Diff'].tolist()),
-            y=alt.Y('Diff', title=f'Diff to Best {coluna} (s)'),
-            color=alt.Color('Color:N', scale=None)
-        )
+            chart = (bars + labels).properties(title=tab_name)
 
-        # Rótulos de valor acima das barras
-        labels = alt.Chart(media_por_car_id).mark_text(
-            align='center',
-            baseline='bottom',
-            dy=-2,
-            color='white'
-        ).encode(
-            x=alt.X('Car_ID_str:N', sort=media_por_car_id['Diff'].tolist()),
-            y='Diff',
-            text=alt.Text('Diff', format='.2f')
-        )
+            st.altair_chart(chart, use_container_width=True)
+            st.write(f'Baseado na média de cada carro para **{coluna}**")
 
-        chart = (bars + labels).properties(title=tab_name)
-
-        # ✅ Exibe dentro da aba correta
-        st.altair_chart(chart, use_container_width=True)
-        st.write(f'Baseado na média de cada carro para **{coluna}**")
-
-
-
-    st.subheader("Diferença percentual para a melhor volta dos pilotos da equipe")
+    # Gráfico 3: Diferença percentual por volta com tendência
+    st.header("Diferença percentual para a melhor volta dos pilotos da equipe")
 
     carros_desejados = [10, 11, 44, 88]
     nomes_carros = {
@@ -328,10 +332,10 @@ for i, (tab_name, coluna) in enumerate(colunas_setores.items()):
         88: "yellow"
     }
 
-    tabs = st.tabs([nomes_carros[carro] for carro in carros_desejados])
+    tabs_dif = st.tabs([nomes_carros[carro] for carro in carros_desejados])
 
     for i, carro in enumerate(carros_desejados):
-        with tabs[i]:
+        with tabs_dif[i]:
             df = sessao_filtrado[sessao_filtrado['Car_ID'] == carro].copy()
 
             if df.empty:
@@ -342,67 +346,52 @@ for i, (tab_name, coluna) in enumerate(colunas_setores.items()):
             volta_mais_rapida = df[df['Lap Tm (S)'] == melhor_volta]['Lap'].iloc[0]
             df['Diff %'] = ((df['Lap Tm (S)'] - melhor_volta) / melhor_volta) * 100
 
-            # Identifica blocos contínuos de voltas
+            # Quebra em blocos contínuos
             df = df.sort_values('Lap')
             df['Gap'] = df['Lap'].diff().fillna(1)
             df['Bloco'] = (df['Gap'] > 1).cumsum()
 
-            # Cria gráfico principal
-            fig = px.bar(df,
-                         x="Lap",
-                         y="Diff %",
-                         text=df['Diff %'].map(lambda x: f"{x:.2f}%"),
-                         color_discrete_sequence=[cores_carros[carro]],
-                         title=f"{nomes_carros[carro]} - Diferença % por volta")
+            fig = px.bar(
+                df, x="Lap", y="Diff %",
+                text=df['Diff %'].map(lambda x: f"{x:.2f}%"),
+                color_discrete_sequence=[cores_carros[carro]],
+                title=f"{nomes_carros[carro]} - Diferença % por volta"
+            )
 
             fig.update_traces(textposition='outside')
 
-            # Linha da melhor volta
             fig.add_vline(x=volta_mais_rapida, line_dash="dash", line_color="white",
-                          annotation_text="Melhor Volta", annotation_position="top", annotation_font_color="white")
+                          annotation_text="Melhor Volta", annotation_position="top")
 
             # Linhas de tendência por bloco
             for bloco_id in df['Bloco'].unique():
                 bloco = df[df['Bloco'] == bloco_id]
                 if len(bloco) < 2:
-                    continue  # precisa de pelo menos 2 pontos para regressão
+                    continue
 
+                from sklearn.linear_model import LinearRegression
                 X = bloco['Lap'].values.reshape(-1, 1)
                 y = bloco['Diff %'].values
                 modelo = LinearRegression().fit(X, y)
                 y_pred = modelo.predict(X)
 
                 fig.add_trace(go.Scatter(
-                x=bloco['Lap'],
-                y=y_pred,
-                mode='lines',
-                line=dict(color='green', width=2, dash='dot'),
-                opacity=0.6,
-                showlegend=False
+                    x=bloco['Lap'],
+                    y=y_pred,
+                    mode='lines',
+                    line=dict(color='lightgray', width=2, dash='dot'),
+                    opacity=0.4,
+                    showlegend=False
                 ))
 
-
-                fig.update_layout(
+            fig.update_layout(
                 yaxis_title="Diferença para melhor volta (%)",
                 xaxis_title="Volta",
                 uniformtext_minsize=8,
                 uniformtext_mode='show'
-                )
-
+            )
 
             st.plotly_chart(fig, use_container_width=True)
-         
-elif option == 'BoxPlots':
-    st.write('Média de todos os carros da montadora')
-    for var in analise_montadora:
-        if var == 'Montadora':
-            continue
-        fig = px.box(sessao_filtrado, 
-                     x=sessao_filtrado[var], 
-                     points='all', 
-                     color='Montadora',
-                     title=f'Distribuição de {var}')  # Título dentro do gráfico
-        st.plotly_chart(fig)
 
 
 elif option == 'All Laps':
