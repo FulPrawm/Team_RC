@@ -312,7 +312,7 @@ elif option == 'Outros':
             chart = (bars + labels).properties(title=tab_name)
 
             st.altair_chart(chart, use_container_width=True)
-            st.write(f'Baseado na média de cada carro para **{coluna}**")
+            st.write(f"Baseado na média de cada carro para **{coluna}**")
 
     # Gráfico 3: Diferença percentual por volta com tendência
     st.header("Diferença percentual para a melhor volta dos pilotos da equipe")
