@@ -400,64 +400,44 @@ if etapa_escolhida != "Selecione uma etapa...":
         
             tabs_dif = st.tabs([nomes_carros[carro] for carro in carros_desejados])
         
-            for i, carro in enumerate(carros_desejados):
-                with tabs_dif[i]:
-                    df = sessao_filtrado[sessao_filtrado['Car_ID'] == carro].copy()
-        
-                    if df.empty:
-                        st.write("Nenhuma volta disponível para este carro após o filtro.")
-                        continue
-        
-                    melhor_volta = df['Lap Tm (S)'].min()
-                    volta_mais_rapida = df[df['Lap Tm (S)'] == melhor_volta]['Lap'].iloc[0]
-                    df['Diff %'] = ((df['Lap Tm (S)'] - melhor_volta) / melhor_volta) * 100
-        
-                    # Quebra em blocos contínuos
-                    df = df.sort_values('Lap')
-                    df['Gap'] = df['Lap'].diff().fillna(1)
-                    df['Bloco'] = (df['Gap'] > 1).cumsum()
-        
-                    fig = px.bar(
-                        df, x="Lap", y="Diff %",
-                        text=df['Diff %'].map(lambda x: f"{x:.2f}%"),
-                        color_discrete_sequence=[cores_carros[carro]],
-                        title=f"{nomes_carros[carro]} - Diferença % por volta"
+            for i, (tab_nome, coluna) in enumerate(colunas_boxplot.items()):
+                with tabs_box[i]:
+                    df_plot = sessao_filtrado.copy()
+            
+                    # Converte Car_ID para string e cria coluna categórica para plotagem
+                    df_plot["Car_ID"] = df_plot["Car_ID"].astype(str)
+                    df_plot["Car_ID"] = pd.Categorical(df_plot["Car_ID"])  # <-- força eixo categórico
+            
+                    # Ordena os carros pela mediana do tempo
+                    ordem_carros = (
+                        df_plot.groupby("Car_ID")[coluna]
+                        .median()
+                        .sort_values()
+                        .index
+                        .tolist()
                     )
-        
-                    fig.update_traces(textposition='outside')
-        
-                    fig.add_vline(x=volta_mais_rapida, line_dash="dash", line_color="white",
-                                  annotation_text="Melhor Volta", annotation_position="top")
-        
-                    # Linhas de tendência por bloco
-                    for bloco_id in df['Bloco'].unique():
-                        bloco = df[df['Bloco'] == bloco_id]
-                        if len(bloco) < 2:
-                            continue
-        
-                        from sklearn.linear_model import LinearRegression
-                        X = bloco['Lap'].values.reshape(-1, 1)
-                        y = bloco['Diff %'].values
-                        modelo = LinearRegression().fit(X, y)
-                        y_pred = modelo.predict(X)
-        
-                        fig.add_trace(go.Scatter(
-                            x=bloco['Lap'],
-                            y=y_pred,
-                            mode='lines',
-                            line=dict(color='lightgray', width=2, dash='dot'),
-                            opacity=0.4,
-                            showlegend=False
-                        ))
-        
+            
+                    df_plot["Car_ID"] = df_plot["Car_ID"].cat.set_categories(ordem_carros, ordered=True)
+            
+                    fig = px.box(
+                        df_plot,
+                        x="Car_ID",
+                        y=coluna,
+                        points="all",
+                        color="Car_ID",
+                        category_orders={"Car_ID": ordem_carros},
+                        color_discrete_map=cores_carros
+                    )
+            
                     fig.update_layout(
-                        yaxis_title="Diferença para melhor volta (%)",
-                        xaxis_title="Volta",
-                        uniformtext_minsize=8,
-                        uniformtext_mode='show'
+                        xaxis_title="Carro",
+                        yaxis_title=coluna,
+                        title=f"Boxplot - {coluna}",
+                        showlegend=False
                     )
-        
+            
                     st.plotly_chart(fig, use_container_width=True)
+
         
         
         elif option == 'All Laps':
