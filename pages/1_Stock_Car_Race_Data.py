@@ -244,10 +244,10 @@ if etapa_escolhida != "Selecione uma etapa...":
                              x=sessao_filtrado[var], 
                              points='all', 
                              color='Montadora',
-                             title=f'Distribuição de {var}')  # Título dentro do gráfico
+                             title=f'Distribuição de {var}')
                 st.plotly_chart(fig)
         
-            # Bloco 2 — por Car_ID em tabs
+            # Bloco 2 — por Car_ID (como rótulo) em tabs
             tabs_box = st.tabs(["Volta", "S1", "S2", "S3", "SPT"])
             colunas_boxplot = {
                 "Volta": "Lap Tm (S)",
@@ -257,57 +257,39 @@ if etapa_escolhida != "Selecione uma etapa...":
                 "SPT": "SPT"
             }
         
-            cores_personalizadas = {
-                "10": "red",
-                "11": "blue",
-                "44": "gray",
-                "88": "yellow"
+            cores_carros = {
+                "Carro 10": "red",
+                "Carro 11": "blue",
+                "Carro 44": "gray",
+                "Carro 88": "yellow"
             }
-            
+        
             for i, (tab_nome, coluna) in enumerate(colunas_boxplot.items()):
                 with tabs_box[i]:
                     df_plot = sessao_filtrado.copy()
-            
-                    # Converte Car_ID para string
                     df_plot["Car_ID"] = df_plot["Car_ID"].astype(str)
-            
-                    # Lista de carros únicos reais (sem criar eixo artificial)
-                    carros_unicos = sorted(df_plot["Car_ID"].unique().tolist())
-            
-                    # Cria coluna auxiliar de cor
-                    df_plot["cor_personalizada"] = df_plot["Car_ID"].map(cores_personalizadas).fillna("lightgray")
-            
-                    # Cria boxplot com cor fixa (sem usar Car_ID como agrupador de cor)
+                    df_plot["Car_Label"] = "Carro " + df_plot["Car_ID"]
+        
+                    carros_unicos = sorted(df_plot["Car_Label"].unique())
+        
                     fig = px.box(
                         df_plot,
-                        x="Car_ID",
+                        x="Car_Label",
                         y=coluna,
                         points="all",
-                        color_discrete_sequence=["white"],  # boxplots em branco
-                        category_orders={"Car_ID": carros_unicos}
+                        color="Car_Label",
+                        category_orders={"Car_Label": carros_unicos},
+                        color_discrete_map={**cores_carros}  # outras cores default serão automáticas
                     )
-            
-                    # Adiciona pontos coloridos manualmente sobre o boxplot
-                    for carro in carros_unicos:
-                        sub = df_plot[df_plot["Car_ID"] == carro]
-                        fig.add_scatter(
-                            x=[carro] * len(sub),
-                            y=sub[coluna],
-                            mode='markers',
-                            marker=dict(color=sub["cor_personalizada"], size=6),
-                            showlegend=False
-                        )
-            
+        
                     fig.update_layout(
                         xaxis_title="Carro",
                         yaxis_title=coluna,
                         title=f"Boxplot - {coluna}",
                         showlegend=False
                     )
-            
+        
                     st.plotly_chart(fig, use_container_width=True)
-
-
 
         elif option == 'Outros':
             st.header("Car Efficiency")
