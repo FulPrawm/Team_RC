@@ -269,29 +269,34 @@ if etapa_escolhida != "Selecione uma etapa...":
                     df_plot = sessao_filtrado.copy()
                     df_plot["Car_ID"] = df_plot["Car_ID"].astype(str)
                     df_plot["Car_Label"] = "Carro " + df_plot["Car_ID"]
-        
-                    carros_unicos = sorted(df_plot["Car_Label"].unique())
-        
+            
+                    # Ordenar pela mediana dos tempos
+                    ordem_carros = (
+                        df_plot.groupby("Car_Label")[coluna]
+                        .median()
+                        .sort_values()
+                        .index
+                        .tolist()
+                    )
+            
                     fig = px.box(
                         df_plot,
                         x="Car_Label",
                         y=coluna,
                         points="all",
                         color="Car_Label",
-                        category_orders={"Car_Label": carros_unicos},
-                        color_discrete_map={**cores_carros}  # outras cores default serão automáticas
+                        category_orders={"Car_Label": ordem_carros},
+                        color_discrete_map={**cores_carros}
                     )
-        
+            
                     fig.update_layout(
                         xaxis_title="Carro",
                         yaxis_title=coluna,
                         title=f"Boxplot - {coluna}",
                         showlegend=False
                     )
-        
+            
                     st.plotly_chart(fig, use_container_width=True)
-
-
 
         elif option == 'Outros':
             st.header("Car Efficiency")
