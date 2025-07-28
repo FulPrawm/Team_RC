@@ -396,40 +396,34 @@ if etapa_escolhida != "Selecione uma etapa...":
             for i, (tab_nome, coluna) in enumerate(colunas_boxplot.items()):
                 with tabs_box[i]:
                     df_plot = sessao_filtrado.copy()
-            
-                    # Converte Car_ID para string e cria coluna categórica para plotagem
                     df_plot["Car_ID"] = df_plot["Car_ID"].astype(str)
-                    df_plot["Car_ID"] = pd.Categorical(df_plot["Car_ID"])  # <-- força eixo categórico
+                    df_plot["Car_Label"] = "Carro " + df_plot["Car_ID"]
             
-                    # Ordena os carros pela mediana do tempo
+                    # Ordenar pela mediana dos tempos
                     ordem_carros = (
-                        df_plot.groupby("Car_ID")[coluna]
+                        df_plot.groupby("Car_Label")[coluna]
                         .median()
                         .sort_values()
                         .index
                         .tolist()
                     )
             
-                    df_plot["Car_ID"] = df_plot["Car_ID"].cat.set_categories(ordem_carros, ordered=True)
-            
                     fig = px.box(
                         df_plot,
-                        x="Car_ID",
+                        x="Car_Label",
                         y=coluna,
                         points="all",
-                        color="Car_ID",
-                        category_orders={"Car_ID": ordem_carros},
-                        color_discrete_map=cores_carros
+                        color="Car_Label",
+                        category_orders={"Car_Label": ordem_carros},
+                        color_discrete_map={**cores_carros}
                     )
             
                     fig.update_layout(
                         xaxis_title="Carro",
                         yaxis_title=coluna,
                         title=f"Boxplot - {coluna}",
-                        showlegend=False
-                    )
-            
-                    st.plotly_chart(fig, use_container_width=True)
+                        showlegend
+
 
         
         
