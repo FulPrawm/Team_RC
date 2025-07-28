@@ -200,9 +200,9 @@ if etapa_escolhida != "Selecione uma etapa...":
         
           #Dicionário de cores
           cores_personalizadas = {
-              "8": 'red',
-              "27": 'gray',
-              "34": 'yellow'
+              8: 'red',
+              27: 'gray',
+              34: 'yellow'
           }
         
           for i, (tab_name, coluna) in enumerate(colunas_setores.items()):
@@ -211,21 +211,30 @@ if etapa_escolhida != "Selecione uma etapa...":
                 min_valor = melhor_por_car_id[coluna].min()
                 melhor_por_car_id['Diff'] = melhor_por_car_id[coluna] - min_valor
                 melhor_por_car_id = melhor_por_car_id.sort_values(by='Diff')
-                melhor_por_car_id['Car_ID'] = melhor_por_car_id['Car_ID'].astype(str)
-        
-                # Adiciona a cor personalizada ou padrão
+                melhor_por_car_id['Car_ID_str'] = melhor_por_car_id['Car_ID'].astype(str)
                 melhor_por_car_id['Color'] = melhor_por_car_id['Car_ID'].map(cores_personalizadas).fillna('white')
-             
-                chart = alt.Chart(melhor_por_car_id).mark_bar().encode(
-                    x=alt.X('Car_ID:N', sort=melhor_por_car_id['Diff'].tolist()),
-                    y=alt.Y('Diff', title=f'Diff to Best {coluna} (s)'),
-                    color=alt.Color('Color:N', scale=None)
-                ).properties(
-                    title=f'{tab_name}'
+
+                bars = alt.Chart(melhor_por_car_id).mark_bar().encode(
+                        x=alt.X('Car_ID_str:N', sort=melhor_por_car_id['Diff'].tolist()),
+                        y=alt.Y('Diff', title=f'Diff to Best {coluna} (s)'),
+                        color=alt.Color('Color:N', scale=None)
                 )
         
+                labels = alt.Chart(melhor_por_car_id).mark_text(
+                        align='center',
+                        baseline='bottom',
+                        dy=-2,
+                        color='white'
+                ).encode(
+                        x=alt.X('Car_ID_str:N', sort=melhor_por_car_id['Diff'].tolist()),
+                        y='Diff',
+                        text=alt.Text('Diff', format='.2f')
+                )
+        
+                chart = (bars + labels).properties(title=tab_name)
+        
                 st.altair_chart(chart, use_container_width=True)
-                st.write(f'Baseado no melhor tempo de cada carro para {coluna}')
+                st.write(f"Baseado no melhor tempo de cada carro para **{coluna}**")
         
         
         elif option == 'All Laps':
