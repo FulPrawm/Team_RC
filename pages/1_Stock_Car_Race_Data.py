@@ -32,10 +32,6 @@ st.header("Seletor de Etapa e Sessão")
 etapas_opcoes = ["Selecione uma etapa..."] + sorted(etapas_disponiveis)
 etapa_escolhida = st.selectbox("Escolha a etapa:", etapas_opcoes)
 
-# Etapas com opção neutra
-etapas_opcoes = ["Selecione uma etapa..."] + sorted(etapas_disponiveis)
-etapa_escolhida = st.selectbox("Escolha a etapa:", etapas_opcoes)
-
 if etapa_escolhida != "Selecione uma etapa...":
     pasta_etapa = os.path.join(PASTA_ETAPAS, etapa_escolhida)
 
@@ -61,6 +57,7 @@ if etapa_escolhida != "Selecione uma etapa...":
         st.warning("Por favor, selecione uma corrida.")
 else:
     st.warning("Por favor, selecione uma etapa.")
+
 
 
 # Caminho final do arquivo a ser carregado
