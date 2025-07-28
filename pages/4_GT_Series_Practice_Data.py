@@ -20,6 +20,9 @@ st.title("Fastest Time Session Data Report")
 # Caminho base onde ficam as pastas das etapas
 PASTA_ETAPAS = "Arquivos GT Minimum"
 
+# Lista todas as etapas (pastas dentro de "resultados")
+etapas_disponiveis = [p for p in os.listdir(PASTA_ETAPAS) if os.path.isdir(os.path.join(PASTA_ETAPAS, p))]
+
 etapas_opcoes = ["Selecione uma etapa..."] + sorted(etapas_disponiveis)
 etapa_escolhida = st.selectbox("Escolha a etapa:", etapas_opcoes)
 
