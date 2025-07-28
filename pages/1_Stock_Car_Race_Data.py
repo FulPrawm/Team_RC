@@ -254,8 +254,8 @@ if etapa_escolhida != "Selecione uma etapa...":
                    "SPT": "SPT"
                }
                
-               for i, (tab_nome, coluna) in enumerate(colunas_boxplot.items()):
-                   with tabs_box[i]:
+            for i, (tab_nome, coluna) in enumerate(colunas_boxplot.items()):
+               with tabs_box[i]:
                        df_plot = sessao_filtrado.copy()
                        df_plot["Car_ID"] = df_plot["Car_ID"].astype(str)  # ✅ força categórico
                
