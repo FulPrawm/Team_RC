@@ -207,10 +207,10 @@ if etapa_escolhida != "Selecione uma etapa...":
         
           #Dicionário de cores
           cores_personalizadas = {
-              "10": 'red',
-              "11": 'blue',
-              "44": 'gray',
-              "88": 'yellow'
+              10: 'red',
+              11: 'blue',
+              44: 'gray',
+              88: 'yellow'
           }
         
           for i, (tab_name, coluna) in enumerate(colunas_setores.items()):
