@@ -28,15 +28,36 @@ etapas_disponiveis = [p for p in os.listdir(PASTA_ETAPAS) if os.path.isdir(os.pa
 
 st.header("Seletor de Etapa e Sessão")
 
-# Seletor de etapa
-etapa_escolhida = st.selectbox("Escolha a etapa:", sorted(etapas_disponiveis))
+# Etapas com opção neutra
+etapas_opcoes = ["Selecione uma etapa..."] + sorted(etapas_disponiveis)
+etapa_escolhida = st.selectbox("Escolha a etapa:", etapas_opcoes)
 
-# Lista arquivos de corrida (.xlsx) dentro da etapa selecionada
-pasta_etapa = os.path.join(PASTA_ETAPAS, etapa_escolhida)
-corridas_disponiveis = [f for f in os.listdir(pasta_etapa) if f.endswith(".xlsx")]
+if etapa_escolhida != "Selecione uma etapa...":
+    pasta_etapa = os.path.join(PASTA_ETAPAS, etapa_escolhida)
 
-# Seletor de corrida
-corrida_escolhida = st.selectbox("Escolha a corrida:", sorted(corridas_disponiveis))
+    # Lista arquivos .xlsx e cria rótulos sem extensão
+    arquivos_xlsx = [f for f in os.listdir(pasta_etapa) if f.endswith(".xlsx")]
+    corrida_labels = [os.path.splitext(f)[0] for f in arquivos_xlsx]  # Remove .xlsx
+    corridas_opcoes = ["Selecione uma corrida..."] + sorted(corrida_labels)
+
+    corrida_label = st.selectbox("Escolha a corrida:", corridas_opcoes)
+
+    if corrida_label != "Selecione uma corrida...":
+        # Recupera o nome real do arquivo com .xlsx
+        corrida_index = corrida_labels.index(corrida_label)
+        corrida_arquivo = arquivos_xlsx[corrida_index]
+
+        caminho_corrida = os.path.join(pasta_etapa, corrida_arquivo)
+
+        # Carrega o DataFrame
+        sessao = pd.read_excel(caminho_corrida)
+
+        # (continua normalmente com o restante do seu código)
+    else:
+        st.warning("Por favor, selecione uma corrida.")
+else:
+    st.warning("Por favor, selecione uma etapa.")
+
 
 # Caminho final do arquivo a ser carregado
 caminho_corrida = os.path.join(pasta_etapa, corrida_escolhida)
