@@ -231,21 +231,21 @@ if etapa_escolhida != "Selecione uma etapa...":
                 fig = px.histogram(sessao_filtrado[var], nbins=25,title=f'Distribuição de {var}')
                 st.plotly_chart(fig)
                  
-        elif option == 'BoxPlots':
-            st.write('Média de todos os carros da montadora')
-        
-            # Bloco 1 — por Montadora
-            for var in analise_montadora:
-                if var == 'Montadora':
-                    continue
-                    fig = px.box(
-                        sessao_filtrado,
-                        x='Montadora',
-                        y=var,
-                        points='all',
-                        title=f'Distribuição de {var}'
-                    )
+elif option == 'BoxPlots':
+    st.write('Média de todos os carros da montadora')
 
+    # Por Montadora
+    for var in analise_montadora:
+        if var == 'Montadora':
+            continue
+        fig = px.box(
+            sessao_filtrado,
+            x='Montadora',
+            y=var,
+            points='all',
+            title=f'Distribuição de {var}'
+        )
+        st.plotly_chart(fig)
         
             # Bloco 2 — por Car_ID (como rótulo) em tabs
             tabs_box = st.tabs(["Volta", "S1", "S2", "S3", "SPT"])
