@@ -267,9 +267,11 @@ if etapa_escolhida != "Selecione uma etapa...":
             for i, (tab_nome, coluna) in enumerate(colunas_boxplot.items()):
                 with tabs_box[i]:
                     df_plot = sessao_filtrado.copy()
+            
+                    # Converte para string logo no início
                     df_plot["Car_ID"] = df_plot["Car_ID"].astype(str)
-        
-                    # Calcular a mediana por carro para ordenar
+            
+                    # Ordena pela mediana do tempo
                     ordem_carros = (
                         df_plot.groupby("Car_ID")[coluna]
                         .median()
@@ -277,7 +279,7 @@ if etapa_escolhida != "Selecione uma etapa...":
                         .index
                         .tolist()
                     )
-        
+            
                     fig = px.box(
                         df_plot,
                         x="Car_ID",
@@ -287,15 +289,16 @@ if etapa_escolhida != "Selecione uma etapa...":
                         category_orders={"Car_ID": ordem_carros},
                         color_discrete_map=cores_carros
                     )
-        
+            
                     fig.update_layout(
                         xaxis_title="Carro",
                         yaxis_title=coluna,
                         title=f"Boxplot - {coluna}",
                         showlegend=False
                     )
-        
+            
                     st.plotly_chart(fig, use_container_width=True)
+
 
         elif option == 'Outros':
             st.header("Car Efficiency")
