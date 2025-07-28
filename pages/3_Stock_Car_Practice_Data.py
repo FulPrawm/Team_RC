@@ -219,7 +219,7 @@ if etapa_escolhida != "Selecione uma etapa...":
                 min_valor = melhor_por_car_id[coluna].min()
                 melhor_por_car_id['Diff'] = melhor_por_car_id[coluna] - min_valor
                 melhor_por_car_id = melhor_por_car_id.sort_values(by='Diff')
-                melhor_por_car_id['Car_ID'] = melhor_por_car_id['Car_ID'].astype(str)
+                melhor_por_car_id['Car_ID_str'] = melhor_por_car_id['Car_ID'].astype(str)
                 melhor_por_car_id['Color'] = melhor_por_car_id['Car_ID'].map(cores_personalizadas).fillna('white')
 
                 bars = alt.Chart(melhor_por_car_id).mark_bar().encode(
