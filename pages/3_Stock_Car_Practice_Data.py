@@ -225,7 +225,7 @@ if etapa_escolhida != "Selecione uma etapa...":
                         color=alt.Color('Color:N', scale=None)
                 )
         
-                    labels = alt.Chart(melhor_por_car_id).mark_text(
+                labels = alt.Chart(melhor_por_car_id).mark_text(
                         align='center',
                         baseline='bottom',
                         dy=-2,
