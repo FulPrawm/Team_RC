@@ -247,22 +247,22 @@ elif option == 'BoxPlots':
         )
         st.plotly_chart(fig)
         
-            # Bloco 2 — por Car_ID (como rótulo) em tabs
-            tabs_box = st.tabs(["Volta", "S1", "S2", "S3", "SPT"])
-            colunas_boxplot = {
-                "Volta": "Lap Tm (S)",
-                "S1": "S1 Tm",
-                "S2": "S2 Tm",
-                "S3": "S3 Tm",
-                "SPT": "SPT"
-            }
+        # Bloco 2 — por Car_ID (como rótulo) em tabs
+        tabs_box = st.tabs(["Volta", "S1", "S2", "S3", "SPT"])
+        colunas_boxplot = {
+          "Volta": "Lap Tm (S)",
+          "S1": "S1 Tm",
+          "S2": "S2 Tm",
+          "S3": "S3 Tm",
+          "SPT": "SPT"
+         }
         
-            cores_carros = {
-                "Carro 10": "red",
-                "Carro 11": "blue",
-                "Carro 44": "gray",
-                "Carro 88": "yellow"
-            }
+         cores_carros = {
+          "Carro 10": "red",
+          "Carro 11": "blue",
+          "Carro 44": "gray",
+          "Carro 88": "yellow"
+         }
         
             for i, (tab_nome, coluna) in enumerate(colunas_boxplot.items()):
                 with tabs_box[i]:
