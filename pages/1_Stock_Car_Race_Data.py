@@ -247,7 +247,7 @@ if etapa_escolhida != "Selecione uma etapa...":
                              title=f'Distribuição de {var}')
                 st.plotly_chart(fig)
         
-            # Bloco 2 — por Car_ID (como rótulo) em tabs
+            # Bloco 2 — por Car_ID em tabs
             tabs_box = st.tabs(["Volta", "S1", "S2", "S3", "SPT"])
             colunas_boxplot = {
                 "Volta": "Lap Tm (S)",
@@ -258,45 +258,45 @@ if etapa_escolhida != "Selecione uma etapa...":
             }
         
             cores_carros = {
-                "Carro 10": "red",
-                "Carro 11": "blue",
-                "Carro 44": "gray",
-                "Carro 88": "yellow"
+                "10": "red",
+                "11": "blue",
+                "44": "gray",
+                "88": "yellow"
             }
         
             for i, (tab_nome, coluna) in enumerate(colunas_boxplot.items()):
                 with tabs_box[i]:
                     df_plot = sessao_filtrado.copy()
                     df_plot["Car_ID"] = df_plot["Car_ID"].astype(str)
-                    df_plot["Car_Label"] = "Carro " + df_plot["Car_ID"]
-            
+        
                     # Ordenar pela mediana dos tempos
                     ordem_carros = (
-                        df_plot.groupby("Car_Label")[coluna]
+                        df_plot.groupby("Car_ID")[coluna]
                         .median()
                         .sort_values()
                         .index
                         .tolist()
                     )
-            
+        
                     fig = px.box(
                         df_plot,
-                        x="Car_Label",
+                        x="Car_ID",
                         y=coluna,
                         points="all",
-                        color="Car_Label",
-                        category_orders={"Car_Label": ordem_carros},
-                        color_discrete_map={**cores_carros}
+                        color="Car_ID",
+                        category_orders={"Car_ID": ordem_carros},
+                        color_discrete_map=cores_carros  # pode manter só os definidos
                     )
-            
+        
                     fig.update_layout(
                         xaxis_title="Carro",
                         yaxis_title=coluna,
                         title=f"Boxplot - {coluna}",
                         showlegend=False
                     )
-            
-                    st.plotly_chart(fig, use_container_width=True)
+        
+                    st.plotly_ch_
+
 
         elif option == 'Outros':
             st.header("Car Efficiency")
