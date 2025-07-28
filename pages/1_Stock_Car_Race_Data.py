@@ -28,33 +28,30 @@ etapas_disponiveis = [p for p in os.listdir(PASTA_ETAPAS) if os.path.isdir(os.pa
 
 st.header("Seletor de Etapa e Sessão")
 
-# Etapas com opção neutra
 etapas_opcoes = ["Selecione uma etapa..."] + sorted(etapas_disponiveis)
 etapa_escolhida = st.selectbox("Escolha a etapa:", etapas_opcoes)
 
 if etapa_escolhida != "Selecione uma etapa...":
     pasta_etapa = os.path.join(PASTA_ETAPAS, etapa_escolhida)
 
-    # Lista arquivos .xlsx e cria rótulos sem extensão
     arquivos_xlsx = [f for f in os.listdir(pasta_etapa) if f.endswith(".xlsx")]
-    corrida_labels = [os.path.splitext(f)[0] for f in arquivos_xlsx]  # Remove .xlsx
+    corrida_labels = [os.path.splitext(f)[0] for f in arquivos_xlsx]
     corridas_opcoes = ["Selecione uma corrida..."] + sorted(corrida_labels)
 
     corrida_label = st.selectbox("Escolha a corrida:", corridas_opcoes)
 
     if corrida_label != "Selecione uma corrida...":
-        # Recupera o nome real do arquivo com .xlsx
         corrida_index = corrida_labels.index(corrida_label)
         corrida_arquivo = arquivos_xlsx[corrida_index]
-
-        corrida_escolhida = corrida_arquivo
+        corrida_escolhida = corrida_arquivo  # para manter compatibilidade
 
         caminho_corrida = os.path.join(pasta_etapa, corrida_arquivo)
 
-        # Carrega o DataFrame
+        # ✅ Tudo abaixo só será executado se etapa e corrida forem válidas
         sessao = pd.read_excel(caminho_corrida)
 
-        # (continua normalmente com o restante do seu código)
+        # ... o restante do seu código aqui dentro ...
+
     else:
         st.warning("Por favor, selecione uma corrida.")
 else:
