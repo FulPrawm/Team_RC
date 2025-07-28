@@ -238,12 +238,14 @@ if etapa_escolhida != "Selecione uma etapa...":
             for var in analise_montadora:
                 if var == 'Montadora':
                     continue
-                fig = px.box(sessao_filtrado, 
-                             x=sessao_filtrado[var], 
-                             points='all', 
-                             color='Montadora',
-                             title=f'Distribuição de {var}')
-                st.plotly_chart(fig)
+                    fig = px.box(
+                        sessao_filtrado,
+                        x='Montadora',
+                        y=var,
+                        points='all',
+                        title=f'Distribuição de {var}'
+                    )
+
         
             # Bloco 2 — por Car_ID (como rótulo) em tabs
             tabs_box = st.tabs(["Volta", "S1", "S2", "S3", "SPT"])
