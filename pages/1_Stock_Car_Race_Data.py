@@ -34,27 +34,24 @@ etapa_escolhida = st.selectbox("Escolha a etapa:", etapas_opcoes)
 
 if etapa_escolhida != "Selecione uma etapa...":
     pasta_etapa = os.path.join(PASTA_ETAPAS, etapa_escolhida)
-
-    # Lista arquivos .xlsx e cria rótulos sem extensão
     arquivos_xlsx = [f for f in os.listdir(pasta_etapa) if f.endswith(".xlsx")]
-    corrida_labels = [os.path.splitext(f)[0] for f in arquivos_xlsx]  # Remove .xlsx
+    corrida_labels = [os.path.splitext(f)[0] for f in arquivos_xlsx]
     corridas_opcoes = ["Selecione uma corrida..."] + sorted(corrida_labels)
 
     corrida_label = st.selectbox("Escolha a corrida:", corridas_opcoes)
 
     if corrida_label != "Selecione uma corrida...":
-        # Recupera o nome real do arquivo com .xlsx
         corrida_index = corrida_labels.index(corrida_label)
         corrida_arquivo = arquivos_xlsx[corrida_index]
 
-        corrida_escolhida = corrida_arquivo
-
         caminho_corrida = os.path.join(pasta_etapa, corrida_arquivo)
+        corrida_escolhida = corrida_arquivo  # compatibilidade
 
-        # Carrega o DataFrame
+        # ✅ Aqui é seguro carregar os dados e seguir com análise
         sessao = pd.read_excel(caminho_corrida)
 
-        # (continua normalmente com o restante do seu código)
+        # 👇 TODO o resto do código que depende de `sessao`, `pasta_etapa`, etc
+        ...
     else:
         st.warning("Por favor, selecione uma corrida.")
 else:
