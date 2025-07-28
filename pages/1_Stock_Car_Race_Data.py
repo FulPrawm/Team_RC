@@ -268,22 +268,35 @@ if etapa_escolhida != "Selecione uma etapa...":
                 with tabs_box[i]:
                     df_plot = sessao_filtrado.copy()
             
-                    # Converte para string e gera lista de carros únicos ordenada como string
+                    # Converte Car_ID para string
                     df_plot["Car_ID"] = df_plot["Car_ID"].astype(str)
-                    carros_unicos = sorted(df_plot["Car_ID"].unique())
             
-                    # Mapeia as cores
+                    # Lista de carros únicos reais (sem criar eixo artificial)
+                    carros_unicos = sorted(df_plot["Car_ID"].unique().tolist())
+            
+                    # Cria coluna auxiliar de cor
                     df_plot["cor_personalizada"] = df_plot["Car_ID"].map(cores_personalizadas).fillna("lightgray")
             
+                    # Cria boxplot com cor fixa (sem usar Car_ID como agrupador de cor)
                     fig = px.box(
                         df_plot,
                         x="Car_ID",
                         y=coluna,
                         points="all",
-                        color="Car_ID",
-                        color_discrete_map=cores_personalizadas,
+                        color_discrete_sequence=["white"],  # boxplots em branco
                         category_orders={"Car_ID": carros_unicos}
                     )
+            
+                    # Adiciona pontos coloridos manualmente sobre o boxplot
+                    for carro in carros_unicos:
+                        sub = df_plot[df_plot["Car_ID"] == carro]
+                        fig.add_scatter(
+                            x=[carro] * len(sub),
+                            y=sub[coluna],
+                            mode='markers',
+                            marker=dict(color=sub["cor_personalizada"], size=6),
+                            showlegend=False
+                        )
             
                     fig.update_layout(
                         xaxis_title="Carro",
@@ -291,7 +304,9 @@ if etapa_escolhida != "Selecione uma etapa...":
                         title=f"Boxplot - {coluna}",
                         showlegend=False
                     )
+            
                     st.plotly_chart(fig, use_container_width=True)
+
 
 
         elif option == 'Outros':
