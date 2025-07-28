@@ -219,13 +219,13 @@ if etapa_escolhida != "Selecione uma etapa...":
                 melhor_por_car_id['Car_ID'] = melhor_por_car_id['Car_ID'].astype(str)
                 melhor_por_car_id['Color'] = melhor_por_car_id['Car_ID'].map(cores_personalizadas).fillna('white')
 
-                bars = alt.Chart(media_por_car_id).mark_bar().encode(
+                bars = alt.Chart(melhor_por_car_id).mark_bar().encode(
                         x=alt.X('Car_ID_str:N', sort=melhor_por_car_id['Diff'].tolist()),
                         y=alt.Y('Diff', title=f'Diff to Best {coluna} (s)'),
                         color=alt.Color('Color:N', scale=None)
                 )
         
-                    labels = alt.Chart(media_por_car_id).mark_text(
+                    labels = alt.Chart(melhor_por_car_id).mark_text(
                         align='center',
                         baseline='bottom',
                         dy=-2,
