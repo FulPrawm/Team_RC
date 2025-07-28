@@ -22,14 +22,6 @@ PASTA_ETAPAS = "Arquivos GT Race"
 
 # Lista todas as etapas (pastas dentro de "resultados")
 etapas_disponiveis = [p for p in os.listdir(PASTA_ETAPAS) if os.path.isdir(os.path.join(PASTA_ETAPAS, p))]
-
-st.header("Seletor de Etapa e Sessão")
-
-# Seletor de etapa
-etapa_escolhida = st.selectbox("Escolha a etapa:", sorted(etapas_disponiveis))
-
-# Lista arquivos de corrida (.xlsx) dentro da etapa selecionada
-pasta_etapa = os.path.join(PASTA_ETAPAS, etapa_escolhida)
 etapas_opcoes = ["Selecione uma etapa..."] + sorted(etapas_disponiveis)
 etapa_escolhida = st.selectbox("Escolha a etapa:", etapas_opcoes)
 
