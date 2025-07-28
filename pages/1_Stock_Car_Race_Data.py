@@ -244,7 +244,30 @@ if etapa_escolhida != "Selecione uma etapa...":
                              color='Montadora',
                              title=f'Distribuição de {var}')  # Título dentro do gráfico
                 st.plotly_chart(fig)
-        
+
+               tabs_box = st.tabs(["Volta", "S1", "S2", "S3", "SPT"])
+               colunas_boxplot = {
+                   "Volta": "Lap Tm (S)",
+                   "S1": "S1 Tm",
+                   "S2": "S2 Tm",
+                   "S3": "S3 Tm",
+                   "SPT": "SPT"
+               }
+               
+               for i, (tab_nome, coluna) in enumerate(colunas_boxplot.items()):
+                   with tabs_box[i]:
+                       df_plot = sessao_filtrado.copy()
+                       df_plot["Car_ID"] = df_plot["Car_ID"].astype(str)  # ✅ força categórico
+               
+                       fig = px.box(df_plot, x="Car_ID", y=coluna, points="all", color="Car_ID")
+                       fig.update_layout(
+                           xaxis_title="Carro",
+                           yaxis_title=coluna,
+                           title=f"Boxplot - {coluna}",
+                           showlegend=False
+                       )
+                       st.plotly_chart(fig, use_container_width=True)
+
         elif option == 'Outros':
             st.header("Car Efficiency")
         
