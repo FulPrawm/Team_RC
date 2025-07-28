@@ -7,6 +7,8 @@ import plotly.express as px
 import streamlit as st
 import altair as alt
 import os
+from sklearn.linear_model import LinearRegression
+import plotly.graph_objects as go
 # Ignorando warnings - por detalhes estéticos
 import warnings
 warnings.filterwarnings('ignore')
@@ -192,6 +194,7 @@ if etapa_escolhida != "Selecione uma etapa...":
             st.plotly_chart(graf6)
         
         elif option == 'Outros':
+          st.header("Gap to Fastest")
           # Tabs para Gap to Fastest
           tabs = st.tabs(["Gap to Fastest Car - Lap", "Gap to Fastest Car - S1", "Gap to Fastest Car - S2", "Gap to Fastest Car - S3"])
         
