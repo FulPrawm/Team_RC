@@ -47,6 +47,8 @@ if etapa_escolhida != "Selecione uma etapa...":
         corrida_index = corrida_labels.index(corrida_label)
         corrida_arquivo = arquivos_xlsx[corrida_index]
 
+        corrida_escolhida = corrida_arquivo
+
         caminho_corrida = os.path.join(pasta_etapa, corrida_arquivo)
 
         # Carrega o DataFrame
