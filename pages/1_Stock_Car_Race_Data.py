@@ -419,7 +419,7 @@ if etapa_escolhida != "Selecione uma etapa...":
                         yaxis_title=coluna,
                         title=f"Boxplot - {coluna}",
                         showlegend
-
+                    )
 
         
         
