@@ -261,17 +261,18 @@ if etapa_escolhida != "Selecione uma etapa...":
                 with tabs_box[i]:
                     df_plot = sessao_filtrado.copy()
                     df_plot["Car_ID"] = df_plot["Car_ID"].astype(str)  # ✅ força categórico
-        
+            
                     carros_unicos = sorted(df_plot["Car_ID"].unique())
+            
                     fig = px.box(
                         df_plot,
                         x="Car_ID",
                         y=coluna,
                         points="all",
-                        color="Car_ID",
-                        category_orders={"Car_ID": carros_unicos}  # força a ordem e retira gaps
+                        color_discrete_sequence=["#1f77b4"],  # cor única ou defina manualmente
+                        category_orders={"Car_ID": carros_unicos}
                     )
-
+            
                     fig.update_layout(
                         xaxis_title="Carro",
                         yaxis_title=coluna,
