@@ -257,19 +257,31 @@ if etapa_escolhida != "Selecione uma etapa...":
                 "SPT": "SPT"
             }
         
+            cores_personalizadas = {
+                "10": "red",
+                "11": "blue",
+                "44": "gray",
+                "88": "yellow"
+            }
+            
             for i, (tab_nome, coluna) in enumerate(colunas_boxplot.items()):
                 with tabs_box[i]:
                     df_plot = sessao_filtrado.copy()
-                    df_plot["Car_ID"] = df_plot["Car_ID"].astype(str)  # ✅ força categórico
             
+                    # Converte para string e gera lista de carros únicos ordenada como string
+                    df_plot["Car_ID"] = df_plot["Car_ID"].astype(str)
                     carros_unicos = sorted(df_plot["Car_ID"].unique())
+            
+                    # Mapeia as cores
+                    df_plot["cor_personalizada"] = df_plot["Car_ID"].map(cores_personalizadas).fillna("lightgray")
             
                     fig = px.box(
                         df_plot,
                         x="Car_ID",
                         y=coluna,
                         points="all",
-                        color_discrete_sequence=["#1f77b4"],  # cor única ou defina manualmente
+                        color="Car_ID",
+                        color_discrete_map=cores_personalizadas,
                         category_orders={"Car_ID": carros_unicos}
                     )
             
@@ -280,6 +292,7 @@ if etapa_escolhida != "Selecione uma etapa...":
                         showlegend=False
                     )
                     st.plotly_chart(fig, use_container_width=True)
+
 
         elif option == 'Outros':
             st.header("Car Efficiency")
