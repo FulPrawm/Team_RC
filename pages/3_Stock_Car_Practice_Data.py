@@ -242,7 +242,7 @@ if etapa_escolhida != "Selecione uma etapa...":
                 chart = (bars + labels).properties(title=tab_name)
         
                 st.altair_chart(chart, use_container_width=True)
-                st.write(f'Baseado no melhor tempo de cada carro para {coluna}')
+                st.write(f"Baseado no melhor tempo de cada carro para **{coluna}**")
         
         elif option == 'BoxPlots':
             st.write('Valores de todos os carros da montadora')
