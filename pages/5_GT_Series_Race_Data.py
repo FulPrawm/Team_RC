@@ -226,13 +226,7 @@ if etapa_escolhida != "Selecione uma etapa...":
                 st.plotly_chart(fig)
         
         elif option == 'Outros':
-        
-            # Scatter de eficiência
-            fig = px.scatter(sessao_filtrado, x='Avg Speed', y='SPT', color='Equipe', symbol='Equipe',
-                             title="Car Efficiency")
-            fig.update_traces(marker_size=10)
-            st.plotly_chart(fig)
-        
+         
             # Tabs para Gap to Fastest
             tabs = st.tabs(["Gap to Fastest Car - Lap", "Gap to Fastest Car - S1", "Gap to Fastest Car - S2", "Gap to Fastest Car - S3"])
         
