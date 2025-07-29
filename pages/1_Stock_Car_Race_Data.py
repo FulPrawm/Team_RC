@@ -393,14 +393,16 @@ if etapa_escolhida != "Selecione uma etapa...":
                         """)
 
                     fig.update_layout(
-                        yaxis_title="Diferença para melhor volta (%)",
-                        xaxis_title="Volta",
-                        uniformtext_minsize=8,
-                        uniformtext_mode='show'
+                       yaxis_title="Diferença para melhor volta (%)",
+                       xaxis_title="Volta",
+                       uniformtext_minsize=8,
+                       uniformtext_mode='show'
                     )
-        
+                    # Exibe todas as equações após o gráfico
+                    for equacao in equacoes_linhas:
+                        st.markdown(f"> {equacao}")
                     st.plotly_chart(fig, use_container_width=True)
-        
+                            
         
         elif option == 'BoxPlots':
             st.write('Média de todos os carros da montadora')
