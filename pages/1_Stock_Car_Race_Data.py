@@ -327,68 +327,74 @@ if etapa_escolhida != "Selecione uma etapa...":
                 11: "blue",
                 44: "gray",
                 88: "yellow"
-            }
-        
-            tabs_dif = st.tabs([nomes_carros[carro] for carro in carros_desejados])
-        
-            for i, carro in enumerate(carros_desejados):
-                with tabs_dif[i]:
-                    df = sessao_filtrado[sessao_filtrado['Car_ID'] == carro].copy()
-        
-                    if df.empty:
-                        st.write("Nenhuma volta disponível para este carro após o filtro.")
-                        continue
-        
-                    melhor_volta = df['Lap Tm (S)'].min()
-                    volta_mais_rapida = df[df['Lap Tm (S)'] == melhor_volta]['Lap'].iloc[0]
-                    df['Diff %'] = ((df['Lap Tm (S)'] - melhor_volta) / melhor_volta) * 100
-        
-                    # Quebra em blocos contínuos
-                    df = df.sort_values('Lap')
-                    df['Gap'] = df['Lap'].diff().fillna(1)
-                    df['Bloco'] = (df['Gap'] > 1).cumsum()
-        
+            }        
+            # Diferença percentual por volta para os carros de interesse
+            tabs = st.tabs(list(nomes_carros.values()))
+            
+            for i, carro in enumerate(carros_alvo):
+                with tabs[i]:
+                    df_carro = sessao_filtrado[sessao_filtrado["Car_ID"] == carro].copy()
+                    df_carro["Diff %"] = 100 * (df_carro["Lap Tm (S)"] - df_carro["Lap Tm (S)"].min()) / df_carro["Lap Tm (S)"].min()
+            
                     fig = px.bar(
-                        df, x="Lap", y="Diff %",
-                        text=df['Diff %'].map(lambda x: f"{x:.2f}%"),
-                        color_discrete_sequence=[cores_carros[carro]],
-                        title=f"{nomes_carros[carro]} - Diferença % por volta"
+                        df_carro,
+                        x="Lap",
+                        y="Diff %",
+                        text="Diff %",
+                        color_discrete_sequence=[cores_personalizadas.get(carro, "white")]
                     )
-        
-                    fig.update_traces(textposition='outside')
-        
-                    fig.add_vline(x=volta_mais_rapida, line_dash="dash", line_color="white",
-                                  annotation_text="Melhor Volta", annotation_position="top")
-        
-                    # Linhas de tendência por bloco
-                    for bloco_id in df['Bloco'].unique():
-                        bloco = df[df['Bloco'] == bloco_id]
-                        if len(bloco) < 2:
+            
+                    # Adicionar linha de tendência por trecho contínuo
+                    df_carro = df_carro.reset_index(drop=True)
+                    df_carro["grupo"] = (df_carro["Lap"].diff() > 1).cumsum()
+            
+                    for _, grupo_df in df_carro.groupby("grupo"):
+                        if len(grupo_df) < 2:
                             continue
-        
-                        from sklearn.linear_model import LinearRegression
-                        X = bloco['Lap'].values.reshape(-1, 1)
-                        y = bloco['Diff %'].values
-                        modelo = LinearRegression().fit(X, y)
+            
+                        X = grupo_df["Lap"].values.reshape(-1, 1)
+                        y = grupo_df["Diff %"].values
+                        modelo = LinearRegression()
+                        modelo.fit(X, y)
+            
                         y_pred = modelo.predict(X)
-        
-                        fig.add_trace(go.Scatter(
-                            x=bloco['Lap'],
+            
+                        fig.add_traces(go.Scatter(
+                            x=grupo_df["Lap"],
                             y=y_pred,
-                            mode='lines',
-                            line=dict(color='lightgray', width=2, dash='dot'),
-                            opacity=0.4,
+                            mode="lines",
+                            line=dict(color="white", width=2, dash="dot"),
                             showlegend=False
                         ))
-        
+            
+                        # ⚠️ Mostrar fórmula apenas do primeiro trecho
+                        if grupo_df["grupo"].iloc[0] == 0:
+                            equacao = f"y = {modelo.coef_[0]:.3f}x + {modelo.intercept_:.3f}"
+                            fig.add_annotation(
+                                text=equacao,
+                                xref="paper", yref="paper",
+                                x=0.95, y=0.95,
+                                showarrow=False,
+                                font=dict(color="white", size=12),
+                                align="right",
+                                bgcolor="rgba(0,0,0,0.4)",
+                                bordercolor="white",
+                                borderwidth=1
+                            )
+            
                     fig.update_layout(
-                        yaxis_title="Diferença para melhor volta (%)",
+                        title=f"Variação percentual por volta - {nomes_carros[carro]}",
                         xaxis_title="Volta",
-                        uniformtext_minsize=8,
-                        uniformtext_mode='show'
+                        yaxis_title="Diferença % para a melhor do piloto",
+                        plot_bgcolor="black",
+                        paper_bgcolor="black",
+                        font=dict(color="white"),
                     )
-        
+            
+                    fig.update_traces(texttemplate="%{text:.2f}%", textposition="outside")
+            
                     st.plotly_chart(fig, use_container_width=True)
+
 
         elif option == 'BoxPlots':
             st.write('Média de todos os carros da montadora')
