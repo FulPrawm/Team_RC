@@ -158,6 +158,35 @@ if etapa_escolhida != "Selecione uma etapa...":
             tabela3 = sessao_filtrado[analise_montadora].groupby(by=["Montadora"]).mean(numeric_only=True).style.background_gradient(cmap='coolwarm').format(precision=3)
             st.header("Tabela ordenada pelas montadoras")
             st.dataframe(tabela3)
+            st.subheader("Heatmap de Tempos de Volta")
+
+            # Prepara os dados do heatmap
+            df_heatmap = sessao_filtrado.copy()
+            df_heatmap = df_heatmap[['Car_ID', 'Lap', 'Lap Tm (S)']]
+            
+            # Converte para formato de matriz: index = Car_ID, colunas = Voltas
+            pivot = df_heatmap.pivot_table(index='Car_ID', columns='Lap', values='Lap Tm (S)', aggfunc='mean')
+            
+            # Ordena por tempo médio de volta para ficar mais intuitivo
+            pivot = pivot.loc[pivot.mean(axis=1).sort_values().index]
+            
+            # Cria o heatmap
+            fig_heatmap = px.imshow(
+                pivot,
+                labels=dict(x="Volta", y="Carro", color="Lap Time (s)"),
+                color_continuous_scale='RdYlGn_r',  # verde = melhor, vermelho = pior
+                aspect="auto",
+                text_auto=".2f"
+            )
+            
+            fig_heatmap.update_layout(
+                xaxis_title="Volta",
+                yaxis_title="Carro",
+                title="Heatmap de Tempos de Volta por Carro",
+                yaxis=dict(tickmode='linear')  # garante que todos os carros apareçam
+            )
+            
+            st.plotly_chart(fig_heatmap, use_container_width=True)
         
         elif option == 'Linhas':
             #Lap Progression
