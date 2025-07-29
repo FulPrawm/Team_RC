@@ -348,6 +348,8 @@ if etapa_escolhida != "Selecione uma etapa...":
                     df_carro = df_carro.reset_index(drop=True)
                     df_carro["grupo"] = (df_carro["Lap"].diff() > 1).cumsum()
             
+                    adicionou_equacao = False
+            
                     for _, grupo_df in df_carro.groupby("grupo"):
                         if len(grupo_df) < 2:
                             continue
@@ -356,7 +358,6 @@ if etapa_escolhida != "Selecione uma etapa...":
                         y = grupo_df["Diff %"].values
                         modelo = LinearRegression()
                         modelo.fit(X, y)
-            
                         y_pred = modelo.predict(X)
             
                         fig.add_traces(go.Scatter(
@@ -367,8 +368,7 @@ if etapa_escolhida != "Selecione uma etapa...":
                             showlegend=False
                         ))
             
-                        # ⚠️ Mostrar fórmula apenas do primeiro trecho
-                        if grupo_df["grupo"].iloc[0] == 0:
+                        if not adicionou_equacao:
                             equacao = f"y = {modelo.coef_[0]:.3f}x + {modelo.intercept_:.3f}"
                             fig.add_annotation(
                                 text=equacao,
@@ -381,6 +381,8 @@ if etapa_escolhida != "Selecione uma etapa...":
                                 bordercolor="white",
                                 borderwidth=1
                             )
+                            adicionou_equacao = True
+
             
                     fig.update_layout(
                         title=f"Variação percentual por volta - {nomes_carros[carro]}",
