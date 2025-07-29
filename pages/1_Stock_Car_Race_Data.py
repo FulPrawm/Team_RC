@@ -334,7 +334,7 @@ if etapa_escolhida != "Selecione uma etapa...":
             for i, carro in enumerate(carros_desejados):
                 with tabs_dif[i]:
                     df = sessao_filtrado[sessao_filtrado['Car_ID'] == carro].copy()
-        
+                        equacoes_linhas = []
                     if df.empty:
                         st.write("Nenhuma volta disponível para este carro após o filtro.")
                         continue
