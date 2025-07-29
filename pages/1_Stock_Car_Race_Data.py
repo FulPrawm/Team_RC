@@ -380,21 +380,6 @@ if etapa_escolhida != "Selecione uma etapa...":
                             opacity=0.4,
                             showlegend=False
                         ))
-                            # Criar string da fórmula com 3 casas decimais
-                    equacao = f"y = {coef:.3f}x + {intercept:.3f}"
-                    
-                    # Adicionar anotação no gráfico
-                    fig.add_annotation(
-                        text=equacao,
-                        xref="paper", yref="paper",
-                        x=0.95, y=0.95,  # canto superior direito do gráfico
-                        showarrow=False,
-                        font=dict(color="white", size=12),
-                        align="right",
-                        bgcolor="rgba(0,0,0,0.4)",
-                        bordercolor="white",
-                        borderwidth=1
-                    )
 
                     fig.update_layout(
                         yaxis_title="Diferença para melhor volta (%)",
