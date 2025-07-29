@@ -380,6 +380,12 @@ if etapa_escolhida != "Selecione uma etapa...":
                             opacity=0.4,
                             showlegend=False
                         ))
+                        
+                        # Mostra a equação da reta deste bloco
+                        coef = modelo.coef_[0]
+                        intercept = modelo.intercept_
+                        st.write(f"**Equação da linha de tendência (Bloco {bloco_id}):** y = {coef:.3f}x + {intercept:.3f}")
+
 
                     fig.update_layout(
                         yaxis_title="Diferença para melhor volta (%)",
