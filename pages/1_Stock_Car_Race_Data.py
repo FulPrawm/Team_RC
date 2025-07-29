@@ -333,11 +333,14 @@ if etapa_escolhida != "Selecione uma etapa...":
         
             for i, carro in enumerate(carros_desejados):
                 with tabs_dif[i]:
-                    df = sessao_filtrado[sessao_filtrado['Car_ID'] == carro].copy()
-                        equacoes_linhas = []
-                    if df.empty:
-                        st.write("Nenhuma volta disponível para este carro após o filtro.")
-                        continue
+                df = sessao_filtrado[sessao_filtrado['Car_ID'] == carro].copy()
+                
+                # ✅ Inicializa a lista para guardar equações do gráfico atual
+                equacoes_linhas = []
+            
+                if df.empty:
+                    st.write("Nenhuma volta disponível para este carro após o filtro.")
+                    continue
         
                     melhor_volta = df['Lap Tm (S)'].min()
                     volta_mais_rapida = df[df['Lap Tm (S)'] == melhor_volta]['Lap'].iloc[0]
