@@ -178,9 +178,11 @@ if etapa_escolhida != "Selecione uma etapa...":
                 y=heatmap_data.index,
                 colorscale='RdYlGn_r',
                 colorbar=dict(title="Tempo (s)"),
+                zmin=90,  # valor mínimo esperado
+                zmax=120,  # valor máximo esperado
                 hovertemplate='Carro: %{y}<br>Volta: %{x}<br>Tempo: %{z:.3f}s<extra></extra>',
             ))
-            
+
             fig.update_layout(
                 title="Heatmap de Tempos de Volta por Carro",
                 xaxis_title="Volta",
