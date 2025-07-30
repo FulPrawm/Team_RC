@@ -161,37 +161,6 @@ if etapa_escolhida != "Selecione uma etapa...":
          
             st.subheader("Heatmap de Tempos de Volta por Carro")
             
-            # Prepara os dados
-            df_heatmap = sessao[['Car_ID', 'Lap', 'Lap Tm (S)']].copy()
-            df_heatmap['Car_ID'] = df_heatmap['Car_ID'].astype(str)
-            
-            # Cria a matriz (Car_IDs nas linhas, voltas nas colunas)
-            heatmap_data = df_heatmap.pivot_table(index='Car_ID', columns='Lap', values='Lap Tm (S)', aggfunc='mean')
-            
-            # Ordena os carros por tempo médio (opcional)
-            heatmap_data = heatmap_data.loc[heatmap_data.mean(axis=1).sort_values().index]
-            
-            # Cria o gráfico
-            fig = go.Figure(data=go.Heatmap(
-                z=heatmap_data.values,
-                x=heatmap_data.columns,
-                y=heatmap_data.index,
-                colorscale='RdYlGn_r',
-                colorbar=dict(title="Tempo (s)"),
-                zmin=90,  # valor mínimo esperado
-                zmax=120,  # valor máximo esperado
-                hovertemplate='Carro: %{y}<br>Volta: %{x}<br>Tempo: %{z:.3f}s<extra></extra>',
-            ))
-
-            fig.update_layout(
-                title="Heatmap de Tempos de Volta por Carro",
-                xaxis_title="Volta",
-                yaxis_title="Carro",
-                height=500,  # Força altura razoável mesmo com poucos carros
-                margin=dict(t=60, l=100, r=20, b=40),
-            )
-            
-            st.plotly_chart(fig, use_container_width=True)
         
         elif option == 'Linhas':
             #Lap Progression
