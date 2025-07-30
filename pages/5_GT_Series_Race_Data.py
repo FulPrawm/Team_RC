@@ -162,7 +162,7 @@ if etapa_escolhida != "Selecione uma etapa...":
             st.subheader("Heatmap de Tempos de Volta por Carro")
             
             # Prepara os dados
-            df_heatmap = df[['Car_ID', 'Lap', 'Lap Tm (S)']].copy()
+            df_heatmap = sessao[['Car_ID', 'Lap', 'Lap Tm (S)']].copy()
             df_heatmap['Car_ID'] = df_heatmap['Car_ID'].astype(str)
             
             # Cria a matriz (Car_IDs nas linhas, voltas nas colunas)
