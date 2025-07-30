@@ -160,30 +160,38 @@ if etapa_escolhida != "Selecione uma etapa...":
             st.dataframe(tabela3)
             st.subheader("Heatmap de Tempos de Volta")
 
-            # Prepara os dados do heatmap
+            st.subheader("Heatmap de Tempos de Volta")
+            
+            # Prepara os dados
             df_heatmap = sessao_filtrado.copy()
             df_heatmap = df_heatmap[['Car_ID', 'Lap', 'Lap Tm (S)']]
             
-            # Converte para formato de matriz: index = Car_ID, colunas = Voltas
+            # Garante que os IDs de carro sejam string para evitar espaçamento exagerado
+            df_heatmap['Car_ID'] = df_heatmap['Car_ID'].astype(str)
+            
+            # Cria a tabela pivô
             pivot = df_heatmap.pivot_table(index='Car_ID', columns='Lap', values='Lap Tm (S)', aggfunc='mean')
             
-            # Ordena por tempo médio de volta para ficar mais intuitivo
+            # Ordena os carros pela média dos tempos
             pivot = pivot.loc[pivot.mean(axis=1).sort_values().index]
             
-            # Cria o heatmap
+            # Cria o heatmap com melhor escala de cores e mais espaço
             fig_heatmap = px.imshow(
                 pivot,
                 labels=dict(x="Volta", y="Carro", color="Lap Time (s)"),
                 color_continuous_scale='RdYlGn_r',  # verde = melhor, vermelho = pior
                 aspect="auto",
-                text_auto=".2f"
+                text_auto=False
             )
             
             fig_heatmap.update_layout(
                 xaxis_title="Volta",
                 yaxis_title="Carro",
                 title="Heatmap de Tempos de Volta por Carro",
-                yaxis=dict(tickmode='linear')  # garante que todos os carros apareçam
+                yaxis=dict(tickmode='array', tickvals=list(range(len(pivot.index))), ticktext=pivot.index),
+                autosize=True,
+                margin=dict(t=60, l=80, r=20, b=50),
+                height=800
             )
             
             st.plotly_chart(fig_heatmap, use_container_width=True)
