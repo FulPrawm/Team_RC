@@ -354,62 +354,104 @@ if etapa_escolhida != "Selecione uma etapa...":
                     )
         
                     st.plotly_chart(fig, use_container_width=True)
-        
-        
-        elif option == 'BoxPlots':
-            st.write('Média de todos os carros da montadora')
-            for var in analise_montadora:
-                if var == 'Montadora':
-                    continue
-                fig = px.box(sessao_filtrado, 
-                             x=sessao_filtrado[var], 
-                             points='all', 
-                             color='Montadora',
-                             title=f'Distribuição de {var}')  # Título dentro do gráfico
-                st.plotly_chart(fig)
-
-                 # Bloco 2 — por Car_ID (como rótulo) em tabs
-            tabs_box = st.tabs(["Volta", "S1", "S2", "S3", "SPT"])
-            colunas_boxplot = {
-                "Volta": "Lap Tm (S)",
-                "S1": "S1 Tm",
-                "S2": "S2 Tm",
-                "S3": "S3 Tm",
-                "SPT": "SPT"
-            }
-        
-            cores_carros = {
-                "Carro 8": "red",
-                "Carro 27": "gray",
-                "Carro 34": "yellow"
-            }
-        
-            for i, (tab_nome, coluna) in enumerate(colunas_boxplot.items()):
-                with tabs_box[i]:
-                    df_plot = sessao_filtrado.copy()
-                    df_plot["Car_ID"] = df_plot["Car_ID"].astype(str)
-                    df_plot["Car_Label"] = "Carro " + df_plot["Car_ID"]
-        
-                    carros_unicos = sorted(df_plot["Car_Label"].unique())
-        
-                    fig = px.box(
-                        df_plot,
-                        x="Car_Label",
-                        y=coluna,
-                        points="all",
-                        color="Car_Label",
-                        category_orders={"Car_Label": carros_unicos},
-                        color_discrete_map={**cores_carros}  # outras cores default serão automáticas
-                    )
-        
-                    fig.update_layout(
-                        xaxis_title="Carro",
-                        yaxis_title=coluna,
-                        title=f"Boxplot - {coluna}",
-                        showlegend=False
-                    )
-        
-                    st.plotly_chart(fig, use_container_width=True)
+            with st.expander("Comparação entre voltas IN e OUT de pit"):
+             
+           st.subheader("Comparação dos tempos em voltas de entrada (IN) e saída (OUT) de pit")
+       
+           # Identificação com base nos setores ausentes
+           df_pit = sessao_filtrado.copy()
+           df_pit['Pit_IN'] = df_pit['S3 Tm'].isna()
+           df_pit['Pit_OUT'] = df_pit['S1 Tm'].isna()
+       
+           # Filtragem
+           df_in = df_pit[df_pit['Pit_IN']].copy()
+           df_in['Tipo'] = 'Entrada (IN)'
+       
+           df_out = df_pit[df_pit['Pit_OUT']].copy()
+           df_out['Tipo'] = 'Saída (OUT)'
+       
+           # Junta os dois
+           df_comparacao = pd.concat([df_in, df_out])
+           df_comparacao["Car_ID"] = df_comparacao["Car_ID"].astype(str)
+       
+           if df_comparacao.empty:
+               st.write("Nenhuma volta de entrada ou saída de pit encontrada.")
+           else:
+               fig = px.bar(
+                   df_comparacao,
+                   x="Car_ID",
+                   y="Lap Tm (S)",
+                   color="Tipo",
+                   barmode="group",
+                   text=df_comparacao["Lap Tm (S)"].round(3),
+                   color_discrete_map={"Entrada (IN)": "orange", "Saída (OUT)": "lightblue"},
+                   title="Tempo de volta nas voltas de entrada e saída de pit"
+               )
+               fig.update_traces(textposition="outside")
+               fig.update_layout(
+                   xaxis_title="Carro",
+                   yaxis_title="Tempo de volta (s)",
+                   legend_title="Tipo de volta",
+                   uniformtext_minsize=8,
+                   uniformtext_mode='show'
+               )
+               st.plotly_chart(fig, use_container_width=True)
+               
+               
+               elif option == 'BoxPlots':
+                   st.write('Média de todos os carros da montadora')
+                   for var in analise_montadora:
+                       if var == 'Montadora':
+                           continue
+                       fig = px.box(sessao_filtrado, 
+                                    x=sessao_filtrado[var], 
+                                    points='all', 
+                                    color='Montadora',
+                                    title=f'Distribuição de {var}')  # Título dentro do gráfico
+                       st.plotly_chart(fig)
+       
+                        # Bloco 2 — por Car_ID (como rótulo) em tabs
+                   tabs_box = st.tabs(["Volta", "S1", "S2", "S3", "SPT"])
+                   colunas_boxplot = {
+                       "Volta": "Lap Tm (S)",
+                       "S1": "S1 Tm",
+                       "S2": "S2 Tm",
+                       "S3": "S3 Tm",
+                       "SPT": "SPT"
+                   }
+               
+                   cores_carros = {
+                       "Carro 8": "red",
+                       "Carro 27": "gray",
+                       "Carro 34": "yellow"
+                   }
+               
+                   for i, (tab_nome, coluna) in enumerate(colunas_boxplot.items()):
+                       with tabs_box[i]:
+                           df_plot = sessao_filtrado.copy()
+                           df_plot["Car_ID"] = df_plot["Car_ID"].astype(str)
+                           df_plot["Car_Label"] = "Carro " + df_plot["Car_ID"]
+               
+                           carros_unicos = sorted(df_plot["Car_Label"].unique())
+               
+                           fig = px.box(
+                               df_plot,
+                               x="Car_Label",
+                               y=coluna,
+                               points="all",
+                               color="Car_Label",
+                               category_orders={"Car_Label": carros_unicos},
+                               color_discrete_map={**cores_carros}  # outras cores default serão automáticas
+                           )
+               
+                           fig.update_layout(
+                               xaxis_title="Carro",
+                               yaxis_title=coluna,
+                               title=f"Boxplot - {coluna}",
+                               showlegend=False
+                           )
+               
+                           st.plotly_chart(fig, use_container_width=True)
         
         elif option == 'All Laps':
             alllaps3 = sessao[sessao['Car_ID'] == 3]
@@ -445,4 +487,5 @@ if etapa_escolhida != "Selecione uma etapa...":
         st.warning("Por favor, selecione uma corrida.")
 else:
     st.warning("Por favor, selecione uma etapa.")
+
 
