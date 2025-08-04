@@ -278,123 +278,123 @@ if etapa_escolhida != "Selecione uma etapa...":
                     st.altair_chart(chart, use_container_width=True)
                     st.write(f"Baseado na média de cada carro para **{coluna}**")
         
-            # Gráfico 3: Diferença percentual por volta com tendência
-            st.header("Diferença percentual para a melhor volta dos pilotos da equipe")
-        
-            carros_desejados = [8, 27, 34]
-            nomes_carros = {
-                8: "Guilherme Figueiroa",
-                27: "Ricardo Baptista",
-                34: "Maurizio Billi"
-            }
-        
-            cores_carros = {
-                8: "red",
-                34: "yellow",
-                27: "gray"
-            }
-        
-            tabs_dif = st.tabs([nomes_carros[carro] for carro in carros_desejados])
-        
-            for i, carro in enumerate(carros_desejados):
-                with tabs_dif[i]:
-                    df = sessao_filtrado[sessao_filtrado['Car_ID'] == carro].copy()
-        
-                    if df.empty:
-                        st.write("Nenhuma volta disponível para este carro após o filtro.")
-                        continue
-        
-                    melhor_volta = df['Lap Tm (S)'].min()
-                    volta_mais_rapida = df[df['Lap Tm (S)'] == melhor_volta]['Lap'].iloc[0]
-                    df['Diff %'] = ((df['Lap Tm (S)'] - melhor_volta) / melhor_volta) * 100
-        
-                    # Quebra em blocos contínuos
-                    df = df.sort_values('Lap')
-                    df['Gap'] = df['Lap'].diff().fillna(1)
-                    df['Bloco'] = (df['Gap'] > 1).cumsum()
-        
-                    fig = px.bar(
-                        df, x="Lap", y="Diff %",
-                        text=df['Diff %'].map(lambda x: f"{x:.2f}%"),
-                        color_discrete_sequence=[cores_carros[carro]],
-                        title=f"{nomes_carros[carro]} - Diferença % por volta"
-                    )
-        
-                    fig.update_traces(textposition='outside')
-        
-                    fig.add_vline(x=volta_mais_rapida, line_dash="dash", line_color="white",
-                                  annotation_text="Melhor Volta", annotation_position="top")
-        
-                    # Linhas de tendência por bloco
-                    for bloco_id in df['Bloco'].unique():
-                        bloco = df[df['Bloco'] == bloco_id]
-                        if len(bloco) < 2:
-                            continue
-        
-                        from sklearn.linear_model import LinearRegression
-                        X = bloco['Lap'].values.reshape(-1, 1)
-                        y = bloco['Diff %'].values
-                        modelo = LinearRegression().fit(X, y)
-                        y_pred = modelo.predict(X)
-        
-                        fig.add_trace(go.Scatter(
-                            x=bloco['Lap'],
-                            y=y_pred,
-                            mode='lines',
-                            line=dict(color='lightgray', width=2, dash='dot'),
-                            opacity=0.4,
-                            showlegend=False
-                        ))
-        
-                    fig.update_layout(
-                        yaxis_title="Diferença para melhor volta (%)",
-                        xaxis_title="Volta",
-                        uniformtext_minsize=8,
-                        uniformtext_mode='show'
-                    )
-        
-                    st.plotly_chart(fig, use_container_width=True)
-     
-           st.subheader("Comparação dos tempos em voltas de entrada (IN) e saída (OUT) de pit")
+              # Gráfico 3: Diferença percentual por volta com tendência
+              st.header("Diferença percentual para a melhor volta dos pilotos da equipe")
+          
+              carros_desejados = [8, 27, 34]
+              nomes_carros = {
+                  8: "Guilherme Figueiroa",
+                  27: "Ricardo Baptista",
+                  34: "Maurizio Billi"
+              }
+          
+              cores_carros = {
+                  8: "red",
+                  34: "yellow",
+                  27: "gray"
+              }
+          
+              tabs_dif = st.tabs([nomes_carros[carro] for carro in carros_desejados])
+          
+              for i, carro in enumerate(carros_desejados):
+                  with tabs_dif[i]:
+                      df = sessao_filtrado[sessao_filtrado['Car_ID'] == carro].copy()
+          
+                      if df.empty:
+                          st.write("Nenhuma volta disponível para este carro após o filtro.")
+                          continue
+          
+                      melhor_volta = df['Lap Tm (S)'].min()
+                      volta_mais_rapida = df[df['Lap Tm (S)'] == melhor_volta]['Lap'].iloc[0]
+                      df['Diff %'] = ((df['Lap Tm (S)'] - melhor_volta) / melhor_volta) * 100
+          
+                      # Quebra em blocos contínuos
+                      df = df.sort_values('Lap')
+                      df['Gap'] = df['Lap'].diff().fillna(1)
+                      df['Bloco'] = (df['Gap'] > 1).cumsum()
+          
+                      fig = px.bar(
+                          df, x="Lap", y="Diff %",
+                          text=df['Diff %'].map(lambda x: f"{x:.2f}%"),
+                          color_discrete_sequence=[cores_carros[carro]],
+                          title=f"{nomes_carros[carro]} - Diferença % por volta"
+                      )
+          
+                      fig.update_traces(textposition='outside')
+          
+                      fig.add_vline(x=volta_mais_rapida, line_dash="dash", line_color="white",
+                                    annotation_text="Melhor Volta", annotation_position="top")
+          
+                      # Linhas de tendência por bloco
+                      for bloco_id in df['Bloco'].unique():
+                          bloco = df[df['Bloco'] == bloco_id]
+                          if len(bloco) < 2:
+                              continue
+          
+                          from sklearn.linear_model import LinearRegression
+                          X = bloco['Lap'].values.reshape(-1, 1)
+                          y = bloco['Diff %'].values
+                          modelo = LinearRegression().fit(X, y)
+                          y_pred = modelo.predict(X)
+          
+                          fig.add_trace(go.Scatter(
+                              x=bloco['Lap'],
+                              y=y_pred,
+                              mode='lines',
+                              line=dict(color='lightgray', width=2, dash='dot'),
+                              opacity=0.4,
+                              showlegend=False
+                          ))
+          
+                      fig.update_layout(
+                          yaxis_title="Diferença para melhor volta (%)",
+                          xaxis_title="Volta",
+                          uniformtext_minsize=8,
+                          uniformtext_mode='show'
+                      )
+          
+                      st.plotly_chart(fig, use_container_width=True)
        
-           # Identificação com base nos setores ausentes
-           df_pit = sessao_filtrado.copy()
-           df_pit['Pit_IN'] = df_pit['S3 Tm'].isna()
-           df_pit['Pit_OUT'] = df_pit['S1 Tm'].isna()
-       
-           # Filtragem
-           df_in = df_pit[df_pit['Pit_IN']].copy()
-           df_in['Tipo'] = 'Entrada (IN)'
-       
-           df_out = df_pit[df_pit['Pit_OUT']].copy()
-           df_out['Tipo'] = 'Saída (OUT)'
-       
-           # Junta os dois
-           df_comparacao = pd.concat([df_in, df_out])
-           df_comparacao["Car_ID"] = df_comparacao["Car_ID"].astype(str)
-       
-           if df_comparacao.empty:
-               st.write("Nenhuma volta de entrada ou saída de pit encontrada.")
-           else:
-               fig = px.bar(
-                   df_comparacao,
-                   x="Car_ID",
-                   y="Lap Tm (S)",
-                   color="Tipo",
-                   barmode="group",
-                   text=df_comparacao["Lap Tm (S)"].round(3),
-                   color_discrete_map={"Entrada (IN)": "orange", "Saída (OUT)": "lightblue"},
-                   title="Tempo de volta nas voltas de entrada e saída de pit"
-               )
-               fig.update_traces(textposition="outside")
-               fig.update_layout(
-                   xaxis_title="Carro",
-                   yaxis_title="Tempo de volta (s)",
-                   legend_title="Tipo de volta",
-                   uniformtext_minsize=8,
-                   uniformtext_mode='show'
-               )
-               st.plotly_chart(fig, use_container_width=True)
+             st.subheader("Comparação dos tempos em voltas de entrada (IN) e saída (OUT) de pit")
+         
+             # Identificação com base nos setores ausentes
+             df_pit = sessao_filtrado.copy()
+             df_pit['Pit_IN'] = df_pit['S3 Tm'].isna()
+             df_pit['Pit_OUT'] = df_pit['S1 Tm'].isna()
+         
+             # Filtragem
+             df_in = df_pit[df_pit['Pit_IN']].copy()
+             df_in['Tipo'] = 'Entrada (IN)'
+         
+             df_out = df_pit[df_pit['Pit_OUT']].copy()
+             df_out['Tipo'] = 'Saída (OUT)'
+         
+             # Junta os dois
+             df_comparacao = pd.concat([df_in, df_out])
+             df_comparacao["Car_ID"] = df_comparacao["Car_ID"].astype(str)
+         
+             if df_comparacao.empty:
+                 st.write("Nenhuma volta de entrada ou saída de pit encontrada.")
+             else:
+                 fig = px.bar(
+                     df_comparacao,
+                     x="Car_ID",
+                     y="Lap Tm (S)",
+                     color="Tipo",
+                     barmode="group",
+                     text=df_comparacao["Lap Tm (S)"].round(3),
+                     color_discrete_map={"Entrada (IN)": "orange", "Saída (OUT)": "lightblue"},
+                     title="Tempo de volta nas voltas de entrada e saída de pit"
+                 )
+                 fig.update_traces(textposition="outside")
+                 fig.update_layout(
+                     xaxis_title="Carro",
+                     yaxis_title="Tempo de volta (s)",
+                     legend_title="Tipo de volta",
+                     uniformtext_minsize=8,
+                     uniformtext_mode='show'
+                 )
+                 st.plotly_chart(fig, use_container_width=True)
                
                
                elif option == 'BoxPlots':
@@ -486,6 +486,7 @@ if etapa_escolhida != "Selecione uma etapa...":
         st.warning("Por favor, selecione uma corrida.")
 else:
     st.warning("Por favor, selecione uma etapa.")
+
 
 
 
