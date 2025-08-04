@@ -354,8 +354,9 @@ if etapa_escolhida != "Selecione uma etapa...":
                     )
         
                     st.plotly_chart(fig, use_container_width=True)
-            with st.expander("Comparação entre voltas IN e OUT de pit"):
-             
+                 
+           with st.expander("Comparação entre voltas IN e OUT de pit")
+     
            st.subheader("Comparação dos tempos em voltas de entrada (IN) e saída (OUT) de pit")
        
            # Identificação com base nos setores ausentes
@@ -487,5 +488,6 @@ if etapa_escolhida != "Selecione uma etapa...":
         st.warning("Por favor, selecione uma corrida.")
 else:
     st.warning("Por favor, selecione uma etapa.")
+
 
 
