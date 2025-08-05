@@ -402,66 +402,6 @@ if etapa_escolhida != "Selecione uma etapa...":
                     # Exibe as equações abaixo
                     for equacao in equacoes_linhas:
                         st.markdown(f"> {equacao}")
-
-            st.subheader("Tempos das voltas de entrada (IN) e saída (OUT) de pit")
-            
-            # Identificação das voltas IN e OUT com base nos setores ausentes
-            # Converte S1 e S3 para numérico (força erros como strings vazias a virarem NaN)
-            df_pit = sessao_filtrado.copy()
-            df_pit['S1 Tm'] = pd.to_numeric(df_pit['S1 Tm'], errors='coerce')
-            df_pit['S3 Tm'] = pd.to_numeric(df_pit['S3 Tm'], errors='coerce')
-            
-            # Identificação das voltas IN (sem setor 3) e OUT (sem setor 1)
-            df_pit['Pit_IN'] = df_pit['S3 Tm'].isna()
-            df_pit['Pit_OUT'] = df_pit['S1 Tm'].isna()
-            
-            # Filtra
-            df_in = df_pit[df_pit['Pit_IN']].copy()
-            df_in['Tipo'] = 'Entrada (IN)'
-            
-            df_out = df_pit[df_pit['Pit_OUT']].copy()
-            df_out['Tipo'] = 'Saída (OUT)'
-            
-            # Apenas para debug (opcional)
-            st.write("Qtd voltas IN:", len(df_in))
-            st.write("Qtd voltas OUT:", len(df_out))
-
-            abas_pit = st.tabs(["Volta de Entrada (IN)", "Volta de Saída (OUT)"])
-            cores_personalizadas = {
-                "10": "red",
-                "11": "blue",
-                "44": "gray",
-                "88": "yellow"
-            }
-            
-            for i, (df_tipo, nome) in enumerate(zip([df_in, df_out], ["Entrada (IN)", "Saída (OUT)"])):
-                with abas_pit[i]:
-                    if df_tipo.empty:
-                        st.write(f"Nenhuma volta de {nome} encontrada.")
-                    else:
-                        df_tipo = df_tipo.copy()
-                        df_tipo["Car_ID"] = df_tipo["Car_ID"].astype(str)
-                        df_tipo = df_tipo.sort_values("Lap Tm (S)")
-                        
-                        fig = px.bar(
-                            df_tipo,
-                            x="Car_ID",
-                            y="Lap Tm (S)",
-                            text=df_tipo["Lap Tm (S)"].round(3),
-                            color="Car_ID",
-                            color_discrete_map=cores_personalizadas,
-                            title=f"Tempo das voltas de {nome}"
-                        )
-            
-                        fig.update_traces(textposition="outside")
-                        fig.update_layout(
-                            xaxis_title="Carro",
-                            yaxis_title="Tempo de volta (s)",
-                            showlegend=False,
-                            uniformtext_minsize=8,
-                            uniformtext_mode='show'
-                        )
-                        st.plotly_chart(fig, use_container_width=True)        
         
         elif option == 'BoxPlots':
             st.write('Média de todos os carros da montadora')
@@ -541,6 +481,7 @@ if etapa_escolhida != "Selecione uma etapa...":
         st.warning("Por favor, selecione uma corrida.")
 else:
     st.warning("Por favor, selecione uma etapa.")
+
 
 
 
