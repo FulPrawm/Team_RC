@@ -406,16 +406,26 @@ if etapa_escolhida != "Selecione uma etapa...":
             st.subheader("Tempos das voltas de entrada (IN) e saída (OUT) de pit")
             
             # Identificação das voltas IN e OUT com base nos setores ausentes
+            # Converte S1 e S3 para numérico (força erros como strings vazias a virarem NaN)
             df_pit = sessao_filtrado.copy()
+            df_pit['S1 Tm'] = pd.to_numeric(df_pit['S1 Tm'], errors='coerce')
+            df_pit['S3 Tm'] = pd.to_numeric(df_pit['S3 Tm'], errors='coerce')
+            
+            # Identificação das voltas IN (sem setor 3) e OUT (sem setor 1)
             df_pit['Pit_IN'] = df_pit['S3 Tm'].isna()
             df_pit['Pit_OUT'] = df_pit['S1 Tm'].isna()
             
+            # Filtra
             df_in = df_pit[df_pit['Pit_IN']].copy()
             df_in['Tipo'] = 'Entrada (IN)'
             
             df_out = df_pit[df_pit['Pit_OUT']].copy()
             df_out['Tipo'] = 'Saída (OUT)'
             
+            # Apenas para debug (opcional)
+            st.write("Qtd voltas IN:", len(df_in))
+            st.write("Qtd voltas OUT:", len(df_out))
+
             abas_pit = st.tabs(["Volta de Entrada (IN)", "Volta de Saída (OUT)"])
             cores_personalizadas = {
                 "10": "red",
@@ -531,5 +541,6 @@ if etapa_escolhida != "Selecione uma etapa...":
         st.warning("Por favor, selecione uma corrida.")
 else:
     st.warning("Por favor, selecione uma etapa.")
+
 
 
