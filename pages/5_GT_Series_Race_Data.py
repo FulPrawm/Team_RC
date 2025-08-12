@@ -151,7 +151,7 @@ if etapa_escolhida != "Selecione uma etapa...":
                 .groupby(by=["Car_ID"])
                 .agg({
                     "Montadora": "first", # pega o nome da montadora
-                    "Equipe": "first"
+                    "Equipe": "first", # pega o nome da equipe
                     "Lap Tm (S)": "mean",
                     "S1 Tm": "mean",
                     "S2 Tm": "mean",
@@ -510,6 +510,7 @@ if etapa_escolhida != "Selecione uma etapa...":
         st.warning("Por favor, selecione uma corrida.")
 else:
     st.warning("Por favor, selecione uma etapa.")
+
 
 
 
