@@ -67,7 +67,7 @@ if etapa_escolhida != "Selecione uma etapa...":
         sessao['Fast Lap Diff'] = sessao['Lap Tm (S)'] - fastest_lap_global
         
         # Criando 2 grupos para análise, separando o grupo de carros do modelo Corolla e do modelo Cruze
-        carros_mercedes = [8, 3, 76]
+        carros_mercedes = [8, 3, 76, 34]
         carros_lamborhini = [420]
         carros_ferrari = [10]
         carros_porsche = [55]
@@ -500,6 +500,7 @@ if etapa_escolhida != "Selecione uma etapa...":
         st.warning("Por favor, selecione uma corrida.")
 else:
     st.warning("Por favor, selecione uma etapa.")
+
 
 
 
