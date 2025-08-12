@@ -92,7 +92,7 @@ if etapa_escolhida != "Selecione uma etapa...":
                 8: 'RC', 3: 'KTF',
                 76: 'GForce', 420: 'GRID',
                 10: 'GForce', 55: 'Stuttgart Motorsport',
-                85: 'GForce'
+                85: 'GForce', 34: 'RC'
             }
             return equipes_dict.get(x, None)
         
@@ -500,6 +500,7 @@ if etapa_escolhida != "Selecione uma etapa...":
         st.warning("Por favor, selecione uma corrida.")
 else:
     st.warning("Por favor, selecione uma etapa.")
+
 
 
 
