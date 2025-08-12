@@ -148,22 +148,12 @@ if etapa_escolhida != "Selecione uma etapa...":
         if option == "Tabelas":
             tabela1 = (
                 sessao_filtrado[analise_carros]
-                .groupby(by=["Car_ID"])
-                .agg({
-                    "Montadora": "first", # pega o nome da montadora
-                    "Equipe": "first", # pega o nome da equipe
-                    "Lap Tm (S)": "mean",
-                    "S1 Tm": "mean",
-                    "S2 Tm": "mean",
-                    "S3 Tm": "mean",
-                    "SPT": "mean",
-                    "Avg Speed": "mean"
-                })
+                .groupby(by=["Car_ID", "Montadora", "Equipe"])
+                .mean(numeric_only=True)
                 .style.background_gradient(cmap='coolwarm')
                 .format(precision=3)
             )
             
-            st.header("Tabela ordenada pelos carros")
             st.dataframe(tabela1)
         
             # Ordenando pelo tempo de volta das equipes
@@ -510,6 +500,7 @@ if etapa_escolhida != "Selecione uma etapa...":
         st.warning("Por favor, selecione uma corrida.")
 else:
     st.warning("Por favor, selecione uma etapa.")
+
 
 
 
