@@ -173,8 +173,6 @@ if etapa_escolhida != "Selecione uma etapa...":
             tabela3 = sessao_filtrado[analise_montadora].groupby(by=["Montadora"]).mean(numeric_only=True).style.background_gradient(cmap='coolwarm').format(precision=3)
             st.header("Tabela ordenada pelas montadoras")
             st.dataframe(tabela3)
-         
-            st.subheader("Heatmap de Tempos de Volta por Carro")
             
         
         elif option == 'Linhas':
@@ -511,6 +509,7 @@ if etapa_escolhida != "Selecione uma etapa...":
         st.warning("Por favor, selecione uma corrida.")
 else:
     st.warning("Por favor, selecione uma etapa.")
+
 
 
 
