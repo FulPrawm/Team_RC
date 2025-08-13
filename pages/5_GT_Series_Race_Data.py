@@ -156,7 +156,7 @@ if etapa_escolhida != "Select a round...":
             # Ordering by each team
             st.subheader("Table ordered by Team")
             tabela2 = (
-                sessao_filtrado[analise_equipes]
+                sessao_filtrado[analise_equipe]
                 .groupby(by=["Equipe", "Montadora"])
                 .mean(numeric_only=True)
                 .style.background_gradient(cmap='coolwarm')
@@ -451,6 +451,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Por favor, selecione uma corrida.")
 else:
     st.warning("Por favor, selecione uma etapa.")
+
 
 
 
