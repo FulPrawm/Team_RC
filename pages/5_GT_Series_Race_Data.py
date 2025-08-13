@@ -137,8 +137,10 @@ if etapa_escolhida != "Selecione uma etapa...":
             ("Tabelas", "Linhas", "Histogramas", "BoxPlots", "Outros", "All Laps"),
             index=0  # number 0 is to open it blank
         )
-        #Ordering by each car
+     
         if option == "Tabelas":
+            #Ordering by each car
+            st.subheader("Table ordered by Car")
             tabela1 = (
                 sessao_filtrado[analise_carros]
                 .groupby(by=["Car_ID", "Montadora", "Equipe"])
@@ -149,7 +151,8 @@ if etapa_escolhida != "Selecione uma etapa...":
             
             st.dataframe(tabela1)
         
-            # Ordering by each team (Montadora já vem de Equipe)
+            # Ordering by each team
+            st.subheader("Table ordered by Team")
             tabela2 = (
                 sessao_filtrado[analise_carros]
                 .groupby(by=["Equipe", "Montadora"])
@@ -163,7 +166,7 @@ if etapa_escolhida != "Selecione uma etapa...":
 
             #Ordering by each manufacturer
             tabela3 = sessao_filtrado[analise_montadora].groupby(by=["Montadora"]).mean(numeric_only=True).style.background_gradient(cmap='coolwarm').format(precision=3)
-            st.header("Tabela ordenada pelas montadoras")
+            st.subheader("Table ordered by Manufacturer")
             st.dataframe(tabela3)
             
         
@@ -501,6 +504,7 @@ if etapa_escolhida != "Selecione uma etapa...":
         st.warning("Por favor, selecione uma corrida.")
 else:
     st.warning("Por favor, selecione uma etapa.")
+
 
 
 
