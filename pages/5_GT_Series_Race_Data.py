@@ -157,42 +157,45 @@ if etapa_escolhida != "Select a round...":
         )
      
         if option == "Chart":
-            # By car
+            # Table 1 — por carro
             st.subheader("Table ordered by Car")
             tabela1 = (
                 sessao_filtrado[analise_carros]
                 .groupby(by=["Car_ID", "Montadora", "Equipe"])
                 .mean(numeric_only=True)
+                .reset_index()  # <- para que Car_ID volte a ser coluna
                 .style.background_gradient(cmap='coolwarm')
                 .format(precision=3)
                 .applymap(colorir_carro, subset=['Car_ID'])
             )
             st.dataframe(tabela1)
         
-            # By team
+            # Table 2 — por equipe
             st.subheader("Table ordered by Team")
             tabela2 = (
                 sessao_filtrado[analise_carros]
                 .groupby(by=["Equipe", "Montadora"])
                 .mean(numeric_only=True)
+                .reset_index()
                 .style.background_gradient(cmap='coolwarm')
                 .format(precision=3)
                 .applymap(colorir_equipe, subset=['Equipe'])
             )
             st.dataframe(tabela2)
         
-            # By manufacturer
+            # Table 3 — por montadora
             st.subheader("Table ordered by Manufacturer")
             tabela3 = (
                 sessao_filtrado[analise_montadora]
                 .groupby(by=["Montadora"])
                 .mean(numeric_only=True)
+                .reset_index()
                 .style.background_gradient(cmap='coolwarm')
                 .format(precision=3)
                 .applymap(colorir_montadora, subset=['Montadora'])
             )
             st.dataframe(tabela3)
-            
+
         
         elif option == 'Lines':
             #Lap Progression
@@ -475,6 +478,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Por favor, selecione uma corrida.")
 else:
     st.warning("Por favor, selecione uma etapa.")
+
 
 
 
