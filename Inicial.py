@@ -2,48 +2,50 @@ import streamlit as st
 
 # Header image and title
 st.image('header.png', use_column_width=True)
-st.title('🏎️ Instructions')
-st.header('📅 Data from 2025 Rounds')
+st.title('Instructions')
+st.header('Data from 2025 Rounds')
 
-# Key data filtering info
-st.info("📌 All data is filtered to include only laps within 4% of the fastest lap and with at least 50% of the leader's lap count.")
+# Main data filtering information
+st.info(
+    "All data shown is filtered to include only laps within 4% of the fastest lap of the session "
+    "and from drivers who completed at least 50% of the total laps completed by the session leader."
+)
 
-# Introductory explanation
+# Clarifying how 'Race' and 'Practice' pages differ
+st.info(
+    "**Note on 'Race' vs. 'Practice' pages:**\n"
+    "- The visualizations are the same on both pages.\n"
+    "- The difference lies in the data aggregation method:\n"
+    "    - **Race:** lap times and speeds are averaged across valid laps.\n"
+    "    - **Practice:** only the best lap time and highest top speed are used per driver."
+)
+
+# General description of the dashboard
 st.markdown("""
-### 👇 What you’ll find in this dashboard:
-- **Race**: Graphs based on **average lap times** during races.
-- **Practice**: Comparisons based on **fastest laps** and **top speeds**.
-- **Series**: Each series has its own page.
+### Overview
+This dashboard provides performance data from multiple 2025 racing sessions, divided by series and session type.
 
-⚠️ **Important:** You can't view data from one series on another's page.  
-To add **Nascar Brasil**, I’ll need the lap-by-lap CSV file — I’m not doing that by hand 😅
+Each racing series has a dedicated page. Data from one series cannot be analyzed through another series' page.
+
+If you'd like to see data for **Nascar Brasil**, a structured CSV with lap-by-lap data is required.
 """)
 
-# Navigation summary section
-st.subheader("🔍 Explore the Available Data")
+# Summary of the types of session analysis
+st.subheader("Session Analysis Criteria")
 col1, col2 = st.columns(2)
 
 with col1:
-    st.markdown("### 🏁 Race Sessions")
-    st.markdown("- Average lap time graphs")
-    st.markdown("- Driver comparisons")
-    st.markdown("- Real-time gap charts")
+    st.markdown("#### Race Sessions")
+    st.markdown("- Data processed using **average lap time** and **average top speed** per driver.")
+    st.markdown("- Intended to reflect overall race pace and consistency.")
 
 with col2:
-    st.markdown("### 🛠️ Practice & Qualifying")
-    st.markdown("- Fastest laps")
-    st.markdown("- Top speeds")
-    st.markdown("- Stint-based comparisons")
+    st.markdown("#### Practice & Qualifying")
+    st.markdown("- Data processed using each driver's **best lap time** and **highest top speed**.")
+    st.markdown("- Intended to reflect maximum single-lap performance.")
 
-# FAQ / Help section
-with st.expander("❓ How to read the graphs?"):
-    st.write("- Average lap times reflect race pace.")
-    st.write("- Graphs show real gaps based on time, not position.")
-    st.write("- Colors and lines represent different drivers or stints.")
-
-# Season highlights (example metrics)
-st.subheader("📈 2025 Season Highlights")
-col1, col2, col3 = st.columns(3)
-col1.metric("Fastest in Qualifying", "Driver X", "-0.153s")
-col2.metric("Best Race Average", "Driver Y", "1:34.872")
-col3.metric("Top Speed", "Driver Z", "312.4 km/h")
+# Optional section for explaining the charts
+with st.expander("How to interpret the charts"):
+    st.write("- All charts are based on time and speed data.")
+    st.write("- Gaps are displayed in time deltas relative to the session leader.")
+    st.write("- Lines and colors represent individual drivers or data groupings.")
