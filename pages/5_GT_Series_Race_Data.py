@@ -66,29 +66,7 @@ if etapa_escolhida != "Selecione uma etapa...":
         #Creating a new column for the fastest lap difference
         sessao['Fast Lap Diff'] = sessao['Lap Tm (S)'] - fastest_lap_global
         
-        # Criando 2 grupos para análise, separando o grupo de carros do modelo Corolla e do modelo Cruze
-        carros_mercedes = [8, 3, 76, 34]
-        carros_lamborhini = [420]
-        carros_ferrari = [10]
-        carros_porsche = [55]
-        carros_lamborghini_trofeo = [85]
-        # Função que verifica se o carro está presente na lista de carros Toyota, se estiver retorna a string 'Toyota', senão retorna "Chevrolet"
-        def marca(x):
-            if x in carros_mercedes:
-                return 'Mercedes'
-            if x in carros_lamborhini:
-                return 'Lamborhini'
-            if x in carros_ferrari:
-                return 'Ferrari'
-            if x in carros_porsche:
-                return 'Porsche'
-            else:
-                return 'Lamborghini Trofeo'
-             
-        # Cria uma nova coluna com o nome "Montadora" e aplica a função "marca" para o dataframe
-        sessao['Montadora'] = sessao['Car_ID'].apply(marca)
-
-        #Dictionary relating each driver with each team
+        # Dictionary relating each driver with each team
         def equipes(x):
             equipes_dict = {
                 8: 'RC', 3: 'KTF',
@@ -100,8 +78,8 @@ if etapa_escolhida != "Selecione uma etapa...":
         
         # Creating a new column for what team each driver races
         sessao['Equipe'] = sessao['Car_ID'].apply(equipes)
-     
-        # Dictionary relating each team with each manufaturer
+        
+        # Dictionary relating each team with each manufacturer
         equipe_para_montadora = {
             "RC": "Mercedes",
             "KTF": "Mercedes",
@@ -522,6 +500,7 @@ if etapa_escolhida != "Selecione uma etapa...":
         st.warning("Por favor, selecione uma corrida.")
 else:
     st.warning("Por favor, selecione uma etapa.")
+
 
 
 
