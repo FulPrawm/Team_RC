@@ -3,13 +3,11 @@ import streamlit as st
 
 #header
 st.image('header.png')
-st.title('Data Report - Instructions')
-st.header('Dados referentes as etapas de 2025')
-st.write('Por favor selecione a opção desejada no menu ao lado')
-st.write('Todos os dados são filtrados com 4% do menor tempo de volta e mínimo de 50% das voltas do lider')
-st.write('Race - gráficos referentes a cronometragem das corridas por tempo médio/velocidade média')
-st.write('Practice - gráficos referentes a cronometragem dos treinos/qualy por menor tempo/maior velocidade')
-st.write('Também é possível selecionar a etapa e a sessão desejada')
-st.write("Páginas GT Series é APENAS para GT Series")
-st.write("Caso queiram que eu faça um da Nascar, preciso do arquivo CSV deles")
-
+st.title('Instructions')
+st.header('Data from 2025 rounds')
+st.write('Please select the desired option on the menu on the left')
+st.write('All data is filtered with laps inside a 4% gap of the fastest lap of the session and at least 50% of the laps completed for the leader')
+st.write('Race - graphs relative to the timeboard of the races by AVERAGE time/speed')
+st.write('Practice - graphs relative to the timeboard of practices and qualy by FASTEST time/HIGHEST speed')
+st.write("Each Series has their own page, you CAN'T select a Stock Car page and expect GT Series data")
+st.write("If you guys want a Nascar Brasil page, you need to give me their CSV lap-by-lap file, because there's no way Im going to do it by hand")
