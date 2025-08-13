@@ -133,12 +133,12 @@ if etapa_escolhida != "Select a round...":
         
         #Creating a list to select which type of graphs we want to display
         option = st.selectbox(
-            "Selecione o modo de gráfico",
-            ("Tabelas", "Linhas", "Histogramas", "BoxPlots", "Outros", "All Laps"),
+            "Select the type of graph",
+            ("Chart", "Lines", "Histograms", "BoxPlots", "Others", "All Laps"),
             index=0  # number 0 is to open it blank
         )
      
-        if option == "Tabelas":
+        if option == "Chart":
             #Ordering by each car
             st.subheader("Table ordered by Car")
             tabela1 = (
@@ -170,7 +170,7 @@ if etapa_escolhida != "Select a round...":
             st.dataframe(tabela3)
             
         
-        elif option == 'Linhas':
+        elif option == 'Lines':
             #Lap Progression
             graf1 = px.line(sessao, x="Lap", y= "Lap Tm (S)", color="Car_ID", title='Lap Time Progression')
             st.plotly_chart(graf1)
@@ -229,14 +229,14 @@ if etapa_escolhida != "Select a round...":
             graf8 = px.line(sessao, x="Lap", y= "Fast Lap Diff", color="Car_ID", title='Fast Lap Diff')
             st.plotly_chart(graf8)
         
-        elif option =='Histogramas':
+        elif option =='Histograms':
             for var in analise_carros:
                 if var == 'Car_ID':
                     continue #skips the column "Car_ID"
                 fig = px.histogram(sessao_filtrado[var], nbins=25,title=f'Distribuição de {var}')
                 st.plotly_chart(fig)
         
-        elif option == 'Outros':
+        elif option == 'Others':
          
             # Tabs para Gap to Fastest
             tabs = st.tabs(["Gap to Fastest Car - Lap", "Gap to Fastest Car - S1", "Gap to Fastest Car - S2", "Gap to Fastest Car - S3"])
@@ -504,6 +504,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Por favor, selecione uma corrida.")
 else:
     st.warning("Por favor, selecione uma etapa.")
+
 
 
 
