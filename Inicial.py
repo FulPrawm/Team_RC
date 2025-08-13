@@ -1,7 +1,7 @@
 import streamlit as st
 
 # Header image and title
-st.image('header.png', use_column_width=True)
+st.image('header.png', use_container_width=True)
 st.title('Instructions')
 st.header('Data from 2025 Rounds')
 
@@ -49,3 +49,4 @@ with st.expander("How to interpret the charts"):
     st.write("- All charts are based on time and speed data.")
     st.write("- Gaps are displayed in time deltas relative to the session leader.")
     st.write("- Lines and colors represent individual drivers or data groupings.")
+
