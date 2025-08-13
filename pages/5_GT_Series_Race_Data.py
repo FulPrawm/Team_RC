@@ -9,63 +9,49 @@ import altair as alt
 import os
 from sklearn.linear_model import LinearRegression
 import plotly.graph_objects as go
-# Ignorando warnings - por detalhes estéticos
+# Ignoring warnings - for aesthetic purposes
 import warnings
 warnings.filterwarnings('ignore')
 
+
 #header
 st.image('header.png')
-
 #title
 st.title("Session Data Report")
 
-# Caminho base onde ficam as pastas das etapas
+
+# Path to where the round folders are
 PASTA_ETAPAS = "Arquivos GT Race"
-
-# Lista todas as etapas (pastas dentro de "resultados")
+# List of every round (folders inside "resultados")
 etapas_disponiveis = [p for p in os.listdir(PASTA_ETAPAS) if os.path.isdir(os.path.join(PASTA_ETAPAS, p))]
-
 st.header("Round and Session Selector")
 etapas_opcoes = ["Select a round..."] + sorted(etapas_disponiveis)
 etapa_escolhida = st.selectbox("Choose the round:", etapas_opcoes)
-
 if etapa_escolhida != "Select a round...":
     pasta_etapa = os.path.join(PASTA_ETAPAS, etapa_escolhida)
-
     arquivos_xlsx = [f for f in os.listdir(pasta_etapa) if f.endswith(".xlsx")]
     corrida_labels = [os.path.splitext(f)[0] for f in arquivos_xlsx]
     corridas_opcoes = ["Select a race..."] + sorted(corrida_labels)
-
     corrida_label = st.selectbox("Choose a race:", corridas_opcoes)
-
     if corrida_label != "Select a race...":
         corrida_index = corrida_labels.index(corrida_label)
         corrida_arquivo = arquivos_xlsx[corrida_index]
         corrida_escolhida = corrida_arquivo  # manter compatibilidade
-
         caminho_corrida = os.path.join(pasta_etapa, corrida_arquivo)
-
-        # ✅ TUDO abaixo fica dentro desse bloco
+     
+        # ✅ EVERYTHING below stays inside this box
+     
         sessao = pd.read_excel(caminho_corrida)
-
-        # Aqui entra toda a lógica de filtragem, exibição de opções, análise etc:
-        # st.radio(...) ← opção de sessão
-        # filtros, gráficos, tabelas...
-        # EXATAMENTE como estava no seu código anterior
-        
-        
-        # Não limitando o número de linhas que poderão ser visualizadas
+        # Not limiting the number of rows that can be visualized
         pd.set_option('display.max_rows', None)
-        
         #Creating a new column for Last Lap Difference
         sessao['Last Lap Diff'] = sessao.groupby('Car_ID')['Lap Tm (S)'].diff()
-        
         #Calculating the fastest time for each driver
         fastest_lap_global = sessao.groupby('Car_ID')['Lap Tm (S)'].transform('min')
-        
         #Creating a new column for the fastest lap difference
         sessao['Fast Lap Diff'] = sessao['Lap Tm (S)'] - fastest_lap_global
-        
+
+     
         # Dictionary relating each driver with each team
         def equipes(x):
             equipes_dict = {
@@ -75,10 +61,10 @@ if etapa_escolhida != "Select a round...":
                 85: 'GForce', 34: 'RC'
             }
             return equipes_dict.get(x, None)
-        
         # Creating a new column for what team each driver races
         sessao['Equipe'] = sessao['Car_ID'].apply(equipes)
-        
+
+     
         # Dictionary relating each team with each manufacturer
         equipe_para_montadora = {
             "RC": "Mercedes",
@@ -86,131 +72,101 @@ if etapa_escolhida != "Select a round...":
             "GForce": "Ferrari",
             "Stuttgart Motorsport": "Porsche",
             "GRID": "Lamborghini"
-        }
-        
+        } 
         # Creating a new column for what Manufacturer each team races
         sessao['Montadora'] = sessao['Equipe'].map(equipe_para_montadora)
 
+     
         # Dicionários de cores
         cores_carros = {8: 'red', 34: 'yellow', 27: 'gray'}
         cores_equipes = {'RC': 'gray'}
         cores_montadoras = {'Mercedes': 'gray'}
-        
         # Funções de coloração
         def colorir_carro(val):
             if val in cores_carros:
                 return f'background-color: {cores_carros[val]}'
             return ''
-        
         def colorir_equipe(val):
             if val in cores_equipes:
                 return f'background-color: {cores_equipes[val]}'
             return ''
-        
         def colorir_montadora(val):
             if val in cores_montadoras:
                 return f'background-color: {cores_montadoras[val]}'
             return ''
 
+     
         # Creating a list to be used on the table graphs
         analise_equipe = ["Equipe", "Montadora", "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
         analise_carros = ['Car_ID',"Montadora", "Equipe", "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
         analise_montadora = ['Montadora', "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
-        
+
+     
         # Auto filter based on 4% of the fastest lap of the session
         melhor_volta = sessao["Lap Tm (S)"].min()
         tempo_limite = melhor_volta * 1.04
-        
         # Equation for how many laps each driver made
         voltas_por_piloto = sessao.groupby('Car_ID')['Lap'].nunique()
-        
         # Driver with most laps (winner)
         max_voltas = voltas_por_piloto.max()
         min_voltas_necessarias = int(np.floor(max_voltas * 0.5))  # Rounds to lowest
-        
         # List of driver with at least 50% of the laps completed
         pilotos_validos = voltas_por_piloto[voltas_por_piloto >= min_voltas_necessarias].index
-        
         # Aplying filter to only valid drivers
-        sessao_filtrado = sessao[sessao['Car_ID'].isin(pilotos_validos)]
-        
+        sessao_filtrado = sessao[sessao['Car_ID'].isin(pilotos_validos)]  
         # Aplying lap time filter (4% of fastest time)
         sessao_filtrado = sessao_filtrado[sessao_filtrado["Lap Tm (S)"] <= tempo_limite]
-        
+
+     
         # Exhibiting information of the data filters
         st.subheader("Auto filter applied")
         st.write(f"🔍 Best lap of the session: **{melhor_volta:.3f} s**")
         st.write(f"📏 4% filter applied: **{tempo_limite:.3f} s**")
         st.write(f"🧮 Máximum laps completed: **{max_voltas} laps**")
         st.write(f"⚠️ Only drivers with **at least {min_voltas_necessarias} laps completed** will be considered in the analysis.")
-        
+
+     
         # List of columns that SHOULD be numerics
         colunas_temporais = ["Lap Tm (S)", "S1 Tm", "S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
-        
         # Converts these columns to Float, forcing errors as NaN
         for col in colunas_temporais:
             sessao_filtrado[col] = pd.to_numeric(sessao_filtrado[col], errors='coerce')
-        
+
+     
         #Creating a list to select which type of graphs we want to display
         option = st.selectbox(
             "Select the type of graph",
             ("Chart", "Lines", "Histograms", "BoxPlots", "Others", "All Laps"),
             index=0  # number 0 is to open it blank
         )
+
      
         if option == "Chart":
-            # Table 1 — por carro
+            # Ordering by each car
             st.subheader("Table ordered by Car")
-            tabela1_df = (
+            tabela1 = (
                 sessao_filtrado[analise_carros]
                 .groupby(by=["Car_ID", "Montadora", "Equipe"])
                 .mean(numeric_only=True)
-                .reset_index()
-            )
-        
-            colunas_numericas = tabela1_df.select_dtypes(include='number').columns
-            tabela1 = (
-                tabela1_df.style
-                .background_gradient(cmap='coolwarm', subset=colunas_numericas)
-                .applymap(colorir_carro, subset=['Car_ID'])
+                .style.background_gradient(cmap='coolwarm')
                 .format(precision=3)
             )
             st.dataframe(tabela1)
         
-            # Table 2 — por equipe
+            # Ordering by each team
             st.subheader("Table ordered by Team")
-            tabela2_df = (
+            tabela2 = (
                 sessao_filtrado[analise_carros]
                 .groupby(by=["Equipe", "Montadora"])
                 .mean(numeric_only=True)
-                .reset_index()
-            )
-        
-            colunas_numericas2 = tabela2_df.select_dtypes(include='number').columns
-            tabela2 = (
-                tabela2_df.style
-                .background_gradient(cmap='coolwarm', subset=colunas_numericas2)
-                .applymap(colorir_equipe, subset=['Equipe'])
+                .style.background_gradient(cmap='coolwarm')
                 .format(precision=3)
             )
             st.dataframe(tabela2)
-        
-            # Table 3 — por montadora
+
+            # Ordering by each manufacturer
+            tabela3 = sessao_filtrado[analise_montadora].groupby(by=["Montadora"]).mean(numeric_only=True).style.background_gradient(cmap='coolwarm').format(precision=3)
             st.subheader("Table ordered by Manufacturer")
-            tabela3_df = (
-                sessao_filtrado[analise_montadora]
-                .groupby(by=["Montadora"])
-                .mean(numeric_only=True)
-                .reset_index()
-            )
-        
-            colunas_numericas3 = tabela3_df.select_dtypes(include='number').columns
-            tabela3 = (
-                tabela3_df.style
-                .background_gradient(cmap='coolwarm', subset=colunas_numericas3)
-                .applymap(colorir_montadora, subset=['Montadora'])
-                .format(precision=3)
-            )
             st.dataframe(tabela3)
 
         
@@ -495,6 +451,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Por favor, selecione uma corrida.")
 else:
     st.warning("Por favor, selecione uma etapa.")
+
 
 
 
