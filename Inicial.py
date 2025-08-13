@@ -17,7 +17,7 @@ st.info(
     "- The visualizations are the same on both pages.\n"
     "- The difference lies in the data aggregation method:\n"
     "    - **Race:** lap times and speeds are averaged across valid laps.\n"
-    "    - **Practice:** only the best lap time and highest top speed are used per driver."
+    "    - **Practice:** only the best times and highest speeds are used per driver."
 )
 
 # General description of the dashboard
@@ -49,5 +49,6 @@ with st.expander("How to interpret the charts"):
     st.write("- All charts are based on time and speed data.")
     st.write("- Gaps are displayed in time deltas relative to the session leader.")
     st.write("- Lines and colors represent individual drivers or data groupings.")
+
 
 
