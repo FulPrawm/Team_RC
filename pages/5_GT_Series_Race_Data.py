@@ -91,7 +91,25 @@ if etapa_escolhida != "Select a round...":
         # Creating a new column for what Manufacturer each team races
         sessao['Montadora'] = sessao['Equipe'].map(equipe_para_montadora)
 
-     
+        # Style Function
+        def colorir_carro(val):
+            cores = {8: 'red', 34: 'yellow', 27: 'gray'}
+            if val in cores:
+                return f'background-color: {cores[val]}; color: white;'
+            return ''
+        
+        def colorir_equipe(val):
+            cores = {'RC': 'gray'}
+            if val in cores:
+                return f'background-color: {cores[val]}; color: white;'
+            return ''
+        
+        def colorir_montadora(val):
+            cores = {'Mercedes': 'gray'}
+            if val in cores:
+                return f'background-color: {cores[val]}; color: white;'
+            return ''
+
         # Creating a list to be used on the table graphs
         analise_equipe = ["Equipe", "Montadora", "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
         analise_carros = ['Car_ID',"Montadora", "Equipe", "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
@@ -139,7 +157,7 @@ if etapa_escolhida != "Select a round...":
         )
      
         if option == "Chart":
-            #Ordering by each car
+            # By car
             st.subheader("Table ordered by Car")
             tabela1 = (
                 sessao_filtrado[analise_carros]
@@ -147,11 +165,11 @@ if etapa_escolhida != "Select a round...":
                 .mean(numeric_only=True)
                 .style.background_gradient(cmap='coolwarm')
                 .format(precision=3)
+                .applymap(colorir_carro, subset=['Car_ID'])
             )
-            
             st.dataframe(tabela1)
         
-            # Ordering by each team
+            # By team
             st.subheader("Table ordered by Team")
             tabela2 = (
                 sessao_filtrado[analise_carros]
@@ -159,14 +177,20 @@ if etapa_escolhida != "Select a round...":
                 .mean(numeric_only=True)
                 .style.background_gradient(cmap='coolwarm')
                 .format(precision=3)
+                .applymap(colorir_equipe, subset=['Equipe'])
             )
-            
             st.dataframe(tabela2)
-
-
-            #Ordering by each manufacturer
-            tabela3 = sessao_filtrado[analise_montadora].groupby(by=["Montadora"]).mean(numeric_only=True).style.background_gradient(cmap='coolwarm').format(precision=3)
+        
+            # By manufacturer
             st.subheader("Table ordered by Manufacturer")
+            tabela3 = (
+                sessao_filtrado[analise_montadora]
+                .groupby(by=["Montadora"])
+                .mean(numeric_only=True)
+                .style.background_gradient(cmap='coolwarm')
+                .format(precision=3)
+                .applymap(colorir_montadora, subset=['Montadora'])
+            )
             st.dataframe(tabela3)
             
         
@@ -451,6 +475,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Por favor, selecione uma corrida.")
 else:
     st.warning("Por favor, selecione uma etapa.")
+
 
 
 
