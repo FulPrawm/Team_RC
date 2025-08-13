@@ -84,9 +84,11 @@ if etapa_escolhida != "Selecione uma etapa...":
                 return 'Porsche'
             else:
                 return 'Lamborghini Trofeo'
+             
         # Cria uma nova coluna com o nome "Montadora" e aplica a função "marca" para o dataframe
         sessao['Montadora'] = sessao['Car_ID'].apply(marca)
-        
+
+        #Dictionary relating each driver with each team
         def equipes(x):
             equipes_dict = {
                 8: 'RC', 3: 'KTF',
@@ -96,45 +98,58 @@ if etapa_escolhida != "Selecione uma etapa...":
             }
             return equipes_dict.get(x, None)
         
-        # Cria uma nova coluna com o nome "equipe" e aplica a função "equipes"
+        # Creating a new column for what team each driver races
         sessao['Equipe'] = sessao['Car_ID'].apply(equipes)
+     
+        # Dictionary relating each team with each manufaturer
+        equipe_para_montadora = {
+            "RC": "Mercedes",
+            "KTF": "Mercedes",
+            "GForce": "Ferrari",
+            "Stuttgart Motorsport": "Porsche",
+            "GRID": "Lamborghini"
+        }
         
-        # Criando uma lista para ser utilizada na análise entre os carros e as equipes
-        analise_equipe = ["Equipe", "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
+        # Creating a new column for what Manufacturer each team races
+        sessao['Montadora'] = sessao['Equipe'].map(equipe_para_montadora)
+
+     
+        # Creating a list to be used on the table graphs
+        analise_equipe = ["Equipe", "Montadora", "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
         analise_carros = ['Car_ID',"Montadora", "Equipe", "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
         analise_montadora = ['Montadora', "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
         
-        # Filtragem automática baseada em 4% da melhor volta da sessão
+        # Auto filter based on 4% of the fastest lap of the session
         melhor_volta = sessao["Lap Tm (S)"].min()
-        tempo_limite = melhor_volta * 1.07
+        tempo_limite = melhor_volta * 1.04
         
-        # Cálculo de voltas por piloto
+        # Equation for how many laps each driver made
         voltas_por_piloto = sessao.groupby('Car_ID')['Lap'].nunique()
         
-        # Piloto com mais voltas (vencedor)
+        # Driver with most laps (winner)
         max_voltas = voltas_por_piloto.max()
-        min_voltas_necessarias = int(np.floor(max_voltas * 0.5))  # arredonda para baixo
+        min_voltas_necessarias = int(np.floor(max_voltas * 0.5))  # Rounds to lowest
         
-        # Lista de pilotos que completaram ao menos 50% das voltas
+        # List of driver with at least 50% of the laps completed
         pilotos_validos = voltas_por_piloto[voltas_por_piloto >= min_voltas_necessarias].index
         
-        # Aplica filtro de pilotos válidos
+        # Aplying filter to only valid drivers
         sessao_filtrado = sessao[sessao['Car_ID'].isin(pilotos_validos)]
         
-        # Aplica filtro de tempo de volta (dentro de 4% da melhor volta)
+        # Aplying lap time filter (4% of fastest time)
         sessao_filtrado = sessao_filtrado[sessao_filtrado["Lap Tm (S)"] <= tempo_limite]
         
-        # Exibição informativa no app
+        # Exhibiting information of the data filters
         st.subheader("Filtro automático aplicado")
         st.write(f"🔍 Melhor volta da sessão: **{melhor_volta:.3f} s**")
-        st.write(f"📏 Filtro de 7% aplicado: **{tempo_limite:.3f} s**")
+        st.write(f"📏 Filtro de 4% aplicado: **{tempo_limite:.3f} s**")
         st.write(f"🧮 Máximo de voltas completadas: **{max_voltas} voltas**")
         st.write(f"⚠️ Apenas pilotos com **pelo menos {min_voltas_necessarias} voltas completadas** foram considerados na análise.")
         
-        # Lista das colunas que devem ser numéricas
+        # List of columns that SHOULD be numerics
         colunas_temporais = ["Lap Tm (S)", "S1 Tm", "S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
         
-        # Converte todas essas colunas para float, forçando erros como NaN
+        # Converts these columns to Float, forcing errors as NaN
         for col in colunas_temporais:
             sessao_filtrado[col] = pd.to_numeric(sessao_filtrado[col], errors='coerce')
         
@@ -144,7 +159,7 @@ if etapa_escolhida != "Selecione uma etapa...":
             ("Tabelas", "Linhas", "Histogramas", "BoxPlots", "Outros", "All Laps"),
             index=0  # number 0 is to open it blank
         )
-        # Ordenando pela velocidade dos carros
+        #Ordering by each car
         if option == "Tabelas":
             tabela1 = (
                 sessao_filtrado[analise_carros]
@@ -156,11 +171,18 @@ if etapa_escolhida != "Selecione uma etapa...":
             
             st.dataframe(tabela1)
         
-            # Ordenando pelo tempo de volta das equipes
-            tabela2 = sessao_filtrado[analise_equipe].groupby(by=["Equipe"]).mean(numeric_only=True).style.background_gradient(cmap='coolwarm').format(precision=3)
-            st.header("Tabela ordenada pelas equipes")
+            #Ordering by each team
+            tabela2 = (
+                sessao_filtrado[analise_equipes]
+                .groupby(by=["Equipe", "Montadora"])
+                .mean(numeric_only=True)
+                .style.background_gradient(cmap='coolwarm')
+                .format(precision=3)
+            )
+            
             st.dataframe(tabela2)
-        
+
+            #Ordering by each manufacturer
             tabela3 = sessao_filtrado[analise_montadora].groupby(by=["Montadora"]).mean(numeric_only=True).style.background_gradient(cmap='coolwarm').format(precision=3)
             st.header("Tabela ordenada pelas montadoras")
             st.dataframe(tabela3)
@@ -500,6 +522,7 @@ if etapa_escolhida != "Selecione uma etapa...":
         st.warning("Por favor, selecione uma corrida.")
 else:
     st.warning("Por favor, selecione uma etapa.")
+
 
 
 
