@@ -91,23 +91,25 @@ if etapa_escolhida != "Select a round...":
         # Creating a new column for what Manufacturer each team races
         sessao['Montadora'] = sessao['Equipe'].map(equipe_para_montadora)
 
-        # Style Function
+        # Dicionários de cores
+        cores_carros = {8: 'red', 34: 'yellow', 27: 'gray'}
+        cores_equipes = {'RC': 'gray'}
+        cores_montadoras = {'Mercedes': 'gray'}
+        
+        # Funções de coloração
         def colorir_carro(val):
-            cores = {8: 'red', 34: 'yellow', 27: 'gray'}
-            if val in cores:
-                return f'background-color: {cores[val]}; color: white;'
+            if val in cores_carros:
+                return f'background-color: {cores_carros[val]}'
             return ''
         
         def colorir_equipe(val):
-            cores = {'RC': 'gray'}
-            if val in cores:
-                return f'background-color: {cores[val]}; color: white;'
+            if val in cores_equipes:
+                return f'background-color: {cores_equipes[val]}'
             return ''
         
         def colorir_montadora(val):
-            cores = {'Mercedes': 'gray'}
-            if val in cores:
-                return f'background-color: {cores[val]}; color: white;'
+            if val in cores_montadoras:
+                return f'background-color: {cores_montadoras[val]}'
             return ''
 
         # Creating a list to be used on the table graphs
@@ -159,40 +161,55 @@ if etapa_escolhida != "Select a round...":
         if option == "Chart":
             # Table 1 — por carro
             st.subheader("Table ordered by Car")
-            tabela1 = (
+            tabela1_df = (
                 sessao_filtrado[analise_carros]
                 .groupby(by=["Car_ID", "Montadora", "Equipe"])
                 .mean(numeric_only=True)
-                .reset_index()  # <- para que Car_ID volte a ser coluna
-                .style.background_gradient(cmap='coolwarm')
-                .format(precision=3)
+                .reset_index()
+            )
+        
+            colunas_numericas = tabela1_df.select_dtypes(include='number').columns
+            tabela1 = (
+                tabela1_df.style
+                .background_gradient(cmap='coolwarm', subset=colunas_numericas)
                 .applymap(colorir_carro, subset=['Car_ID'])
+                .format(precision=3)
             )
             st.dataframe(tabela1)
         
             # Table 2 — por equipe
             st.subheader("Table ordered by Team")
-            tabela2 = (
+            tabela2_df = (
                 sessao_filtrado[analise_carros]
                 .groupby(by=["Equipe", "Montadora"])
                 .mean(numeric_only=True)
                 .reset_index()
-                .style.background_gradient(cmap='coolwarm')
-                .format(precision=3)
+            )
+        
+            colunas_numericas2 = tabela2_df.select_dtypes(include='number').columns
+            tabela2 = (
+                tabela2_df.style
+                .background_gradient(cmap='coolwarm', subset=colunas_numericas2)
                 .applymap(colorir_equipe, subset=['Equipe'])
+                .format(precision=3)
             )
             st.dataframe(tabela2)
         
             # Table 3 — por montadora
             st.subheader("Table ordered by Manufacturer")
-            tabela3 = (
+            tabela3_df = (
                 sessao_filtrado[analise_montadora]
                 .groupby(by=["Montadora"])
                 .mean(numeric_only=True)
                 .reset_index()
-                .style.background_gradient(cmap='coolwarm')
-                .format(precision=3)
+            )
+        
+            colunas_numericas3 = tabela3_df.select_dtypes(include='number').columns
+            tabela3 = (
+                tabela3_df.style
+                .background_gradient(cmap='coolwarm', subset=colunas_numericas3)
                 .applymap(colorir_montadora, subset=['Montadora'])
+                .format(precision=3)
             )
             st.dataframe(tabela3)
 
@@ -478,6 +495,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Por favor, selecione uma corrida.")
 else:
     st.warning("Por favor, selecione uma etapa.")
+
 
 
 
