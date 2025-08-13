@@ -118,11 +118,11 @@ if etapa_escolhida != "Selecione uma etapa...":
         sessao_filtrado = sessao_filtrado[sessao_filtrado["Lap Tm (S)"] <= tempo_limite]
         
         # Exhibiting information of the data filters
-        st.subheader("Filtro automático aplicado")
-        st.write(f"🔍 Melhor volta da sessão: **{melhor_volta:.3f} s**")
-        st.write(f"📏 Filtro de 4% aplicado: **{tempo_limite:.3f} s**")
-        st.write(f"🧮 Máximo de voltas completadas: **{max_voltas} voltas**")
-        st.write(f"⚠️ Apenas pilotos com **pelo menos {min_voltas_necessarias} voltas completadas** foram considerados na análise.")
+        st.subheader("Auto filter applied")
+        st.write(f"🔍 Best lap of the session: **{melhor_volta:.3f} s**")
+        st.write(f"📏 4% filter applied: **{tempo_limite:.3f} s**")
+        st.write(f"🧮 Máximum laps completed: **{max_voltas} laps**")
+        st.write(f"⚠️ Only drivers with **at least {min_voltas_necessarias} laps completed** will be considered in the analysis.")
         
         # List of columns that SHOULD be numerics
         colunas_temporais = ["Lap Tm (S)", "S1 Tm", "S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
@@ -504,6 +504,7 @@ if etapa_escolhida != "Selecione uma etapa...":
         st.warning("Por favor, selecione uma corrida.")
 else:
     st.warning("Por favor, selecione uma etapa.")
+
 
 
 
