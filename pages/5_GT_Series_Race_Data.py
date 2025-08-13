@@ -151,7 +151,7 @@ if etapa_escolhida != "Selecione uma etapa...":
         
             # Ordering by each team (Montadora já vem de Equipe)
             tabela2 = (
-                sessao_filtrado[analise_equipes]
+                sessao_filtrado[analise_equipe]
                 .groupby(by=["Equipe"])
                 .mean(numeric_only=True)
                 .reset_index()  # para manter Equipe como coluna normal na visualização
@@ -503,6 +503,7 @@ if etapa_escolhida != "Selecione uma etapa...":
         st.warning("Por favor, selecione uma corrida.")
 else:
     st.warning("Por favor, selecione uma etapa.")
+
 
 
 
