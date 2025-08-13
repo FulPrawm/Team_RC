@@ -284,10 +284,9 @@ if etapa_escolhida != "Select a round...":
                     chart = (bars + labels).properties(title=tab_name)
         
                     st.altair_chart(chart, use_container_width=True)
-                    st.write(f"Baseado na média de cada carro para **{coluna}**")
         
             # Gráfico 3: Diferença percentual por volta com tendência
-            st.header("Diferença percentual para a melhor volta dos pilotos da equipe")
+            st.header("Percentual difference to the best lap for each driver from this team")
         
             carros_desejados = [8, 27, 34]
             nomes_carros = {
@@ -309,7 +308,7 @@ if etapa_escolhida != "Select a round...":
                     df = sessao_filtrado[sessao_filtrado['Car_ID'] == carro].copy()
         
                     if df.empty:
-                        st.write("Nenhuma volta disponível para este carro após o filtro.")
+                        st.write("No laps avaiable for this car after the filter.")
                         continue
         
                     melhor_volta = df['Lap Tm (S)'].min()
@@ -325,13 +324,13 @@ if etapa_escolhida != "Select a round...":
                         df, x="Lap", y="Diff %",
                         text=df['Diff %'].map(lambda x: f"{x:.2f}%"),
                         color_discrete_sequence=[cores_carros[carro]],
-                        title=f"{nomes_carros[carro]} - Diferença % por volta"
+                        title=f"{nomes_carros[carro]} - Diff % by lap"
                     )
         
                     fig.update_traces(textposition='outside')
         
                     fig.add_vline(x=volta_mais_rapida, line_dash="dash", line_color="white",
-                                  annotation_text="Melhor Volta", annotation_position="top")
+                                  annotation_text="Best lap", annotation_position="top")
         
                     # Linhas de tendência por bloco
                     for bloco_id in df['Bloco'].unique():
@@ -355,65 +354,13 @@ if etapa_escolhida != "Select a round...":
                         ))
         
                     fig.update_layout(
-                        yaxis_title="Diferença para melhor volta (%)",
-                        xaxis_title="Volta",
+                        yaxis_title="Difference to best lap (%)",
+                        xaxis_title="Lap",
                         uniformtext_minsize=8,
                         uniformtext_mode='show'
                     )
         
                     st.plotly_chart(fig, use_container_width=True)
-       
-            st.subheader("Tempos das voltas de entrada (IN) e saída (OUT) de pit")
-            
-            # Identificação das voltas IN e OUT com base nos setores ausentes
-            df_pit = sessao_filtrado.copy()
-            df_pit['Pit_IN'] = df_pit['S3 Tm'].isna()
-            df_pit['Pit_OUT'] = df_pit['S1 Tm'].isna()
-            
-            df_in = df_pit[df_pit['Pit_IN']].copy()
-            df_in['Tipo'] = 'Entrada (IN)'
-            
-            df_out = df_pit[df_pit['Pit_OUT']].copy()
-            df_out['Tipo'] = 'Saída (OUT)'
-            
-            abas_pit = st.tabs(["Volta de Entrada (IN)", "Volta de Saída (OUT)"])
-            cores_personalizadas = {
-                "10": "red",
-                "11": "blue",
-                "44": "gray",
-                "88": "yellow"
-            }
-            
-            for i, (df_tipo, nome) in enumerate(zip([df_in, df_out], ["Entrada (IN)", "Saída (OUT)"])):
-                with abas_pit[i]:
-                    if df_tipo.empty:
-                        st.write(f"Nenhuma volta de {nome} encontrada.")
-                    else:
-                        df_tipo = df_tipo.copy()
-                        df_tipo["Car_ID"] = df_tipo["Car_ID"].astype(str)
-                        df_tipo = df_tipo.sort_values("Lap Tm (S)")
-                        
-                        fig = px.bar(
-                            df_tipo,
-                            x="Car_ID",
-                            y="Lap Tm (S)",
-                            text=df_tipo["Lap Tm (S)"].round(3),
-                            color="Car_ID",
-                            color_discrete_map=cores_personalizadas,
-                            title=f"Tempo das voltas de {nome}"
-                        )
-            
-                        fig.update_traces(textposition="outside")
-                        fig.update_layout(
-                            xaxis_title="Carro",
-                            yaxis_title="Tempo de volta (s)",
-                            showlegend=False,
-                            uniformtext_minsize=8,
-                            uniformtext_mode='show'
-                        )
-                        st.plotly_chart(fig, use_container_width=True)
-
-              
               
         elif option == 'BoxPlots':
             st.write('Média de todos os carros da montadora')
@@ -504,6 +451,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Por favor, selecione uma corrida.")
 else:
     st.warning("Por favor, selecione uma etapa.")
+
 
 
 
