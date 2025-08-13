@@ -25,20 +25,20 @@ PASTA_ETAPAS = "Arquivos GT Race"
 # Lista todas as etapas (pastas dentro de "resultados")
 etapas_disponiveis = [p for p in os.listdir(PASTA_ETAPAS) if os.path.isdir(os.path.join(PASTA_ETAPAS, p))]
 
-st.header("Seletor de Etapa e Sessão")
-etapas_opcoes = ["Selecione uma etapa..."] + sorted(etapas_disponiveis)
-etapa_escolhida = st.selectbox("Escolha a etapa:", etapas_opcoes)
+st.header("Round and Session Selector")
+etapas_opcoes = ["Select a round..."] + sorted(etapas_disponiveis)
+etapa_escolhida = st.selectbox("Choose the round:", etapas_opcoes)
 
-if etapa_escolhida != "Selecione uma etapa...":
+if etapa_escolhida != "Select a round...":
     pasta_etapa = os.path.join(PASTA_ETAPAS, etapa_escolhida)
 
     arquivos_xlsx = [f for f in os.listdir(pasta_etapa) if f.endswith(".xlsx")]
     corrida_labels = [os.path.splitext(f)[0] for f in arquivos_xlsx]
-    corridas_opcoes = ["Selecione uma corrida..."] + sorted(corrida_labels)
+    corridas_opcoes = ["Select a race..."] + sorted(corrida_labels)
 
-    corrida_label = st.selectbox("Escolha a corrida:", corridas_opcoes)
+    corrida_label = st.selectbox("Choose a race:", corridas_opcoes)
 
-    if corrida_label != "Selecione uma corrida...":
+    if corrida_label != "Select a race...":
         corrida_index = corrida_labels.index(corrida_label)
         corrida_arquivo = arquivos_xlsx[corrida_index]
         corrida_escolhida = corrida_arquivo  # manter compatibilidade
@@ -504,6 +504,7 @@ if etapa_escolhida != "Selecione uma etapa...":
         st.warning("Por favor, selecione uma corrida.")
 else:
     st.warning("Por favor, selecione uma etapa.")
+
 
 
 
