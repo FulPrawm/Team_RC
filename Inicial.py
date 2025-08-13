@@ -36,19 +36,20 @@ col1, col2 = st.columns(2)
 
 with col1:
     st.markdown("#### Race Sessions")
-    st.markdown("- Data processed using **average lap time** and **average top speed** per driver.")
+    st.markdown("- Data processed using **average time** and **average speed** per driver/team/manufacturer.")
     st.markdown("- Intended to reflect overall race pace and consistency.")
 
 with col2:
     st.markdown("#### Practice & Qualifying")
-    st.markdown("- Data processed using each driver's **best lap time** and **highest top speed**.")
-    st.markdown("- Intended to reflect maximum single-lap performance.")
+    st.markdown("- Data processed using each driver/team/manufacturer's **best time** and **highest speed**.")
+    st.markdown("- Intended to reflect maximum single-lap/sector performance.")
 
 # Optional section for explaining the charts
 with st.expander("How to interpret the charts"):
-    st.write("- All charts are based on time and speed data.")
-    st.write("- Gaps are displayed in time deltas relative to the session leader.")
-    st.write("- Lines and colors represent individual drivers or data groupings.")
+    st.write("- All charts are based on the data provided by the category timeboard provider (Chronon for Stock Car and Cronoelo for GT Series).")
+    st.write("- Gaps are displayed in time deltas relative to the race.")
+    st.write("- Lines, colors, boxes and dots represent individual drivers or data groupings.")
+
 
 
 
