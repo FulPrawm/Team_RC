@@ -191,16 +191,16 @@ if etapa_escolhida != "Select a round...":
 
         if option == "Charts":
             # By car
-            chart1 = sessao_filtrado.groupby(["Car_ID", "Team", "Manufacturer"]).agg({
+            chart1 = sessao_filtrado.groupby(["Driver", "Team", "Manufacturer"]).agg({
                 "Lap Tm (S)": "min",
                 "S1 Tm": "min",
                 "S2 Tm": "min",
                 "S3 Tm": "min",
                 "SPT": "max",
                 "Avg Speed": "max"
-            }).style.background_gradient(cmap='coolwarm').format(precision=3)
+            }).style.background_gradient(cmap='coolwarm').format(precision=3).apply(highlight_driver, subset=['Driver'])
             st.subheader("Table by Car")
-            st.dataframe(chart1)
+            st.dataframe(chart1, hide_index=True, column_config={"": None})
             # By team
             chart2 = sessao_filtrado.groupby(["Team", "Manufacturer"]).agg({
                 "Lap Tm (S)": "min",
@@ -338,6 +338,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
