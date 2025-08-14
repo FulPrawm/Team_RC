@@ -137,16 +137,16 @@ if etapa_escolhida != "Select a round...":
         colors_team = {
             "RC": "gray"
         }
-        colors_montadora = {
+        colors_manufacturer = {
             "Mitsubishi": "red"
         }
         #Style funcions
         def highlight_driver(s):
-            return [f"color: {cores_driver.get(v, 'black')}" for v in s]
+            return [f"color: {colors_driver.get(v, 'black')}" for v in s]
         def highlight_team(s):
-            return [f"color: {cores_team.get(v, 'black')}" for v in s]
+            return [f"color: {colors_team.get(v, 'black')}" for v in s]
         def highlight_montadora(s):
-            return [f"color: {cores_montadora.get(v, 'black')}" for v in s]
+            return [f"color: {colors_manufacturer.get(v, 'black')}" for v in s]
 
      
         # Creating a list to be used on the table graphs
@@ -498,6 +498,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
