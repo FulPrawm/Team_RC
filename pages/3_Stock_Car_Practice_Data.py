@@ -80,11 +80,11 @@ if etapa_escolhida != "Select a round...":
                 4: 'Crown Racing', 81: 'Crown Racing',
                 85: 'Cavaleiro Sports', 90: 'Cavaleiro Sports',
                 5: 'FT Cavaleiro', 111: 'FT Cavaleiro',
-                0: 'Scuderia Bandeiras', 85: 'Scuderia Bandeiras',
+                51: 'Scuderia Bandeiras', 73: 'Scuderia Bandeiras',
                 444: 'Scuderia Bandeiras Sports', 33: 'Scuderia Bandeiras Sports',
                 121: 'Car Racing KTF', 101: 'Car Racing KTF',
                 7: 'FT Gazoo Racing', 9: 'FT Gazoo Racing',
-                120: 'Scuderia Chiarelli', 0: 'Scuderia Chiarelli',
+                0: 'Scuderia Chiarelli', 95: 'Scuderia Chiarelli',
                 6: 'A. Mattheis Motorsport'
             }
             return Teams_dict.get(x, None)
@@ -338,6 +338,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
