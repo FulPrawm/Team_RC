@@ -201,6 +201,7 @@ if etapa_escolhida != "Select a round...":
                 sessao_filtrado[analise_carros]
                 .groupby(by=['Driver', "Team", "Manufacturer"])
                 .mean(numeric_only=True)
+                .reset_index()  # 🔑 devolve Driver/Team/Manufacturer como colunas
                 .style.background_gradient(cmap='coolwarm')
                 .format(precision=3)
                 .apply(highlight_driver, subset=['Driver'])
@@ -213,14 +214,23 @@ if etapa_escolhida != "Select a round...":
                 sessao_filtrado[analise_Team]
                 .groupby(by=["Team", "Manufacturer"])
                 .mean(numeric_only=True)
+                .reset_index()  # 🔑
                 .style.background_gradient(cmap='coolwarm')
                 .format(precision=3)
-                .apply(highlight_driver, subset=["Team"])
+                .apply(highlight_team, subset=["Team"])
             )
             st.dataframe(tabela2)
 
             # Ordering by each manufacturer
-            tabela3 = sessao_filtrado[analise_Manufacturer].groupby(by=["Manufacturer"]).mean(numeric_only=True).style.background_gradient(cmap='coolwarm').format(precision=3).apply(highlight_driver, subset=["Manufacturer"])
+            tabela3 = (
+                sessao_filtrado[analise_Manufacturer]
+                .groupby(by=["Manufacturer"])
+                .mean(numeric_only=True)
+                .reset_index()  # 🔑
+                .style.background_gradient(cmap='coolwarm')
+                .format(precision=3)
+                .apply(highlight_montadora, subset=["Manufacturer"])
+            )
             st.subheader("Table ordered by Manufacturer")
             st.dataframe(tabela3)
 
@@ -498,6 +508,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
