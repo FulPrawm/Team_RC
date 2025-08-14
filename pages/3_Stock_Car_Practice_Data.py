@@ -152,7 +152,7 @@ if etapa_escolhida != "Select a round...":
                 f"background-color: {colors_team[v][0]}; color: {colors_team[v][1]}"
                 if v in colors_team else "" for v in s
             ]
-        def highlight_montadora(s):
+        def highlight_manufacturer(s):
             return [
                 f"background-color: {colors_manufacturer[v][0]}; color: {colors_manufacturer[v][1]}"
                 if v in colors_manufacturer else "" for v in s
@@ -210,27 +210,40 @@ if etapa_escolhida != "Select a round...":
             st.subheader("Table by Car")
             st.dataframe(chart1, hide_index=True, column_config={"": None})
             # By team
-            chart2 = sessao_filtrado.groupby(["Team", "Manufacturer"]).agg({
-                "Lap Tm (S)": "min",
-                "S1 Tm": "min",
-                "S2 Tm": "min",
-                "S3 Tm": "min",
-                "SPT": "max",
-                "Avg Speed": "max"
-            }).style.background_gradient(cmap='coolwarm').format(precision=3)
+            chart2 = (sessao_filtrado.groupby(["Team", "Manufacturer"])
+             .agg({
+              "Lap Tm (S)": "min",
+              "S1 Tm": "min",
+              "S2 Tm": "min",
+              "S3 Tm": "min",
+              "SPT": "max",
+              "Avg Speed": "max"
+             })
+             .reset_index()
+             .style.background_gradient(cmap='coolwarm')
+             .format(precision=3)
+             .apply(highlight_team, subset=['Team'])
+             .apply(highlight_manufacturer, subset=['Manufacturer'])
+            )
             st.subheader("Table by Team")
-            st.dataframe(chart2) 
+            st.dataframe(chart2, hide_index=True, column_config={"": None}) 
             # By manufacturer
-            chart3 = sessao_filtrado.groupby(["Manufacturer"]).agg({
-                "Lap Tm (S)": "min",
-                "S1 Tm": "min",
-                "S2 Tm": "min",
-                "S3 Tm": "min",
-                "SPT": "max",
-                "Avg Speed": "max"
-            }).style.background_gradient(cmap='coolwarm').format(precision=3)
+            chart3 = (sessao_filtrado.groupby(["Manufacturer"])
+             .agg({
+              "Lap Tm (S)": "min",
+              "S1 Tm": "min",
+              "S2 Tm": "min",
+              "S3 Tm": "min",
+              "SPT": "max",
+              "Avg Speed": "max"
+             })
+             .reset_index()
+             .style.background_gradient(cmap='coolwarm')
+             .format(precision=3)
+             .apply(highlight_manufacturer, subset=['Manufacturer'])
+            )
             st.subheader("Table by Manufacturer")
-            st.dataframe(chart3)
+            st.dataframe(chart3, hide_index=True, column_config={"": None})
 
      
         elif option == 'Lines':
@@ -346,6 +359,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
