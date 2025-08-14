@@ -90,7 +90,21 @@ if etapa_escolhida != "Select a round...":
             return Teams_dict.get(x, None)
         # Creating a new column called "Team" and applying the function "Teams"
         sessao['Team'] = sessao['Car_ID'].apply(Teams)
-        
+
+        # Dictionary relating each team with each manufacturer
+        team_to_manufacturer = {
+         "Eurofarma RC": "Mitsubishi", "Blau Motorsport": "Mitsubishi",
+         "Car Racing Sterling": "Toyota", "Ipiranga Racing": "Toyota",
+         "Amattheis Vogel": "Chevrolet", "RCM Motorsport": "Mitsubishi",
+         "TMG Racing": "Chevrolet", "Crown Racing": "Toyota",
+         "Cavaleiro Sports": "Chevrolet", "FT Cavaleiro": "Toyota",
+         "Scuderia Bandeiras": "Chevrolet", "Scuderia Bandeiras Sports": "Mitsubishi",
+         "Car Racing KTF": "Mitsubishi", "FT Gazoo Racing": "Toyota",
+         "Scuderia Chiarelli": "Chevrolet", "A. Mattheis Motorsport": "Chevrolet"
+        } 
+        # Creating a new column for what Manufacturer each team races
+        sessao['Manufacturer'] = sessao['Team'].map(team_to_manufacturer)
+     
 
         # Creating lists to be used in the analysis
         analise_Team = ["Team", "Manufacturer", "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
@@ -270,6 +284,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
