@@ -158,12 +158,13 @@ if etapa_escolhida != "Select a round...":
                 subset=['Car_ID']
             )
             st.dataframe(tabela1)
-            # 🏎️ Tabela 2 - por equipe
+            # Ordering by each team
             st.subheader("Table ordered by Team")
             tabela2 = (
-                sessao_filtrado[analise_equipe]
+                sessao_filtrado[analise_carros]
                 .groupby(by=["Equipe", "Montadora"])
                 .mean(numeric_only=True)
+                .reset_index()  # 🔹 devolve Equipe e Montadora como colunas
                 .style.background_gradient(cmap='coolwarm')
                 .format(precision=3)
             )
@@ -472,6 +473,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Por favor, selecione uma corrida.")
 else:
     st.warning("Por favor, selecione uma etapa.")
+
 
 
 
