@@ -138,7 +138,7 @@ if etapa_escolhida != "Select a round...":
 
         if option == "Charts":
             #By car
-            tabela1 = sessao_filtrado.groupby("Car_ID", "Team", "Manufacturer").agg({
+            chart1 = sessao_filtrado.groupby("Car_ID", "Team", "Manufacturer").agg({
             "Lap Tm (S)": "min",
             "S1 Tm": "min",
             "S2 Tm": "min",
@@ -147,9 +147,9 @@ if etapa_escolhida != "Select a round...":
             "Avg Speed": "max"
             }).style.background_gradient(cmap='coolwarm').format(precision=3)
             st.subheader("Best time/speed by Car")
-            st.dataframe(tabela1)
+            st.dataframe(chart1)
             #By team
-            tabela2 = sessao_filtrado.groupby("Team", "Manufacturer).agg({
+            chart2 = sessao_filtrado.groupby("Team", "Manufacturer").agg({
             "Lap Tm (S)": "min",
             "S1 Tm": "min",
             "S2 Tm": "min",
@@ -158,9 +158,9 @@ if etapa_escolhida != "Select a round...":
             "Avg Speed": "max"
             }).style.background_gradient(cmap='coolwarm').format(precision=3)
             st.subheader("Best time/speed by Team")
-            st.dataframe(tabela2)
+            st.dataframe(chart2)
             #By Manufacturer
-            tabela3 = sessao_filtrado.groupby("Manufacturer").agg({
+            chart3 = sessao_filtrado.groupby("Manufacturer").agg({
             "Lap Tm (S)": "min",
             "S1 Tm": "min",
             "S2 Tm": "min",
@@ -169,8 +169,9 @@ if etapa_escolhida != "Select a round...":
             "Avg Speed": "max"
             }).style.background_gradient(cmap='coolwarm').format(precision=3)
             st.subheader("Best time/speed by Manufacturer")
-            st.dataframe(tabela3)
-        
+            st.dataframe(chart3)
+
+     
         elif option == 'Lines':
             #Lap Time Raising Average
             sessao_filtrado['Ranking'] = sessao_filtrado.groupby('Car_ID')['Lap Tm (S)'].rank(ascending=True) # Creates a column ranking the cars
@@ -284,6 +285,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
