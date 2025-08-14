@@ -127,29 +127,36 @@ if etapa_escolhida != "Select a round...":
         sessao['Driver'] = sessao['Car_ID'].map(drivers_dict)
 
 
-        #Personalized colors
+        # Personalized colors with text contrast
         colors_driver = {
-            "Ricardo Zonta": "red",
-            "Gaetano Di Mauro": "blue",
-            "Bruno Baptista": "gray",
-            "Felipe Fraga": "yellow"
+            "Ricardo Zonta": ("red", "white"),
+            "Gaetano Di Mauro": ("blue", "black"),   # azul claro → texto preto
+            "Bruno Baptista": ("gray", "white"),
+            "Felipe Fraga": ("yellow", "black")      # fundo amarelo → texto preto
         }
         colors_team = {
-         "RCM Motorsport": "gray",
-         "Eurofarma RC": "Yellow"   
+            "Eurofarma RC": ("yellow", "black"),     # amarelo → preto
+            "RC": ("gray", "white")
         }
         colors_manufacturer = {
-            "Mitsubishi": "red"
+            "Mitsubishi": ("red", "white")
         }
         # Style functions
         def highlight_driver(s):
-            return [f"background-color: {colors_driver.get(v, '')}; color: black" for v in s]
-        
+            return [
+                f"background-color: {colors_driver[v][0]}; color: {colors_driver[v][1]}"
+                if v in colors_driver else "" for v in s
+            ]
         def highlight_team(s):
-            return [f"background-color: {colors_team.get(v, '')}; color: black" for v in s]
-        
+            return [
+                f"background-color: {colors_team[v][0]}; color: {colors_team[v][1]}"
+                if v in colors_team else "" for v in s
+            ]
         def highlight_montadora(s):
-            return [f"background-color: {colors_manufacturer.get(v, '')}; color: black" for v in s]
+            return [
+                f"background-color: {colors_manufacturer[v][0]}; color: {colors_manufacturer[v][1]}"
+                if v in colors_manufacturer else "" for v in s
+            ]
 
 
         # Creating a list to be used on the table graphs
@@ -514,6 +521,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
