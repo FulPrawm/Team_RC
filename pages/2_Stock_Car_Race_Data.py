@@ -65,11 +65,11 @@ if etapa_escolhida != "Select a round...":
                 4: 'Crown Racing', 81: 'Crown Racing',
                 85: 'Cavaleiro Sports', 90: 'Cavaleiro Sports',
                 5: 'FT Cavaleiro', 111: 'FT Cavaleiro',
-                0: 'Scuderia Bandeiras', 85: 'Scuderia Bandeiras',
+                73: 'Scuderia Bandeiras', 51: 'Scuderia Bandeiras',
                 444: 'Scuderia Bandeiras Sports', 33: 'Scuderia Bandeiras Sports',
                 121: 'Car Racing KTF', 101: 'Car Racing KTF',
                 7: 'FT Gazoo Racing', 9: 'FT Gazoo Racing',
-                120: 'Scuderia Chiarelli', 0: 'Scuderia Chiarelli',
+                95: 'Scuderia Chiarelli', 0: 'Scuderia Chiarelli',
                 6: 'A. Mattheis Motorsport'
                     }
             return Teams_dict.get(x, None)
@@ -90,6 +90,7 @@ if etapa_escolhida != "Select a round...":
         # Creating a new column called "Manufacturer" and apllying the fucition "brand"
         sessao['Manufacturer'] = sessao['Car_ID'].apply(brand)
 
+  
         # Dictionary relating each team with each manufacturer
         Team_para_Manufacturer = {
          "Eurofarma RC": "Mitsubishi", "Blau Motorsport": "Mitsubishi",
@@ -103,6 +104,49 @@ if etapa_escolhida != "Select a round...":
         } 
         # Creating a new column for what Manufacturer each team races
         sessao['Manufacturer'] = sessao['Team'].map(Team_para_Manufacturer)
+
+        #Last Dictionary relating each car to their drivers
+        drivers_dict = {
+         18: 'Allam Khodair', 29: 'Daniel Serra',
+         38: 'Zezinho Muggiati', 301: 'Rafael Reis',
+         21: 'Thiago Camilo', 30: 'Cesar Ramos',
+         12: 'Lucas Foresti', 83: 'Gabriel Casagrande',
+         10: 'Ricardo Zonta', 44: 'Bruno Baptista',
+         8: 'Rafael Suzuki', 19: 'Felipe Massa',
+         11: 'Gaetano Di Mauro', 88: 'Felipe Fraga',
+         4: 'Julio Campos', 81: 'Arthur Leist',
+         85: 'Guilherme Salas', 90: 'Ricardo Mauricio',
+         5: 'Denis Navarro', 111: 'Rubens Barrichello',
+         73: 'Enzo Elias', 51: 'Átila Abreu',
+         444: 'Vicente Orige', 33: 'Nelsinho Piquet',
+         121: 'Felipe Baptista', 101: 'Gianluca Petecof',
+         7: 'JP Oliveira', 9: 'Arthur Gama',
+         95: 'Lucas Kohl', 0: 'Cacá Bueno',
+         6: 'A. Mattheis Motorsport'
+        }
+        sessao['Driver'] = sessao['Car_ID'].map(drivers_dict)
+
+
+        #Personalized colors
+        colors_driver = {
+            "Ricardo Zonta": "red",
+            "Gaetano Di Mauro": "blue",
+            "Bruno Baptista": "gray",
+            "Felipe Fraga": "yellow"
+        }
+        colors_team = {
+            "RC": "gray"
+        }
+        colors_montadora = {
+            "Mitsubishi": "red"
+        }
+        #Style funcions
+        def highlight_driver(s):
+            return [f"color: {cores_driver.get(v, 'black')}" for v in s]
+        def highlight_team(s):
+            return [f"color: {cores_team.get(v, 'black')}" for v in s]
+        def highlight_montadora(s):
+            return [f"color: {cores_montadora.get(v, 'black')}" for v in s]
 
      
         # Creating a list to be used on the table graphs
@@ -155,10 +199,11 @@ if etapa_escolhida != "Select a round...":
             st.subheader("Table ordered by Car")
             tabela1 = (
                 sessao_filtrado[analise_carros]
-                .groupby(by=["Car_ID", "Manufacturer", "Team"])
+                .groupby(by=["Driver", "Manufacturer", "Team"])
                 .mean(numeric_only=True)
                 .style.background_gradient(cmap='coolwarm')
                 .format(precision=3)
+                .apply(highlight_driver, subset=["Driver"])
             )
             st.dataframe(tabela1)
         
@@ -170,11 +215,12 @@ if etapa_escolhida != "Select a round...":
                 .mean(numeric_only=True)
                 .style.background_gradient(cmap='coolwarm')
                 .format(precision=3)
+                .apply(highlight_driver, subset=["Team"])
             )
             st.dataframe(tabela2)
 
             # Ordering by each manufacturer
-            tabela3 = sessao_filtrado[analise_Manufacturer].groupby(by=["Manufacturer"]).mean(numeric_only=True).style.background_gradient(cmap='coolwarm').format(precision=3)
+            tabela3 = sessao_filtrado[analise_Manufacturer].groupby(by=["Manufacturer"]).mean(numeric_only=True).style.background_gradient(cmap='coolwarm').format(precision=3).apply(highlight_driver, subset=["Manufacturer"])
             st.subheader("Table ordered by Manufacturer")
             st.dataframe(tabela3)
 
@@ -452,6 +498,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
