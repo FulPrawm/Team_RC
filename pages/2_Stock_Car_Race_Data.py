@@ -215,6 +215,8 @@ if etapa_escolhida != "Select a round...":
                 .style.background_gradient(cmap='coolwarm')
                 .format(precision=3)
                 .apply(highlight_driver, subset=['Driver'])
+                .apply(highlight_driver, subset=['Team'])
+                .apply(highlight_driver, subset=['Manufacturer'])
             )
             st.dataframe(tabela1, hide_index=True, column_config={"": None})
         
@@ -519,6 +521,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
