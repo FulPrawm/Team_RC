@@ -243,7 +243,7 @@ if etapa_escolhida != "Select a round...":
                 .apply(highlight_montadora, subset=["Manufacturer"])
             )
             st.subheader("Table ordered by Manufacturer")
-            st.dataframe(tabela3, hide_index=True, column_config={"B": None})
+            st.dataframe(tabela3, hide_index=True, column_config={"": None})
 
         
         elif option == 'Lines':
@@ -519,6 +519,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
