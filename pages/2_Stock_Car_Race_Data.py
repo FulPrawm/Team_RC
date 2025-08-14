@@ -136,7 +136,7 @@ if etapa_escolhida != "Select a round...":
         }
         colors_team = {
             "Eurofarma RC": ("yellow", "black"),     # amarelo → preto
-            "RC": ("gray", "white")
+            "RCM Motorsport": ("gray", "white")
         }
         colors_manufacturer = {
             "Mitsubishi": ("red", "white")
@@ -521,6 +521,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
