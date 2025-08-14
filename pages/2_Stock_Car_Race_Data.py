@@ -211,14 +211,12 @@ if etapa_escolhida != "Select a round...":
                 sessao_filtrado[analise_carros]
                 .groupby(by=['Driver', "Team", "Manufacturer"])
                 .mean(numeric_only=True)
-                .reset_index()
+                .reset_index()   # <-- transforma índice em colunas normais
                 .style.background_gradient(cmap='coolwarm')
                 .format(precision=3)
                 .apply(highlight_driver, subset=['Driver'])
-                .hide(axis="index")   # 🚀 remove a coluna do índice
             )
-            st.markdown(tabela1.to_html(), unsafe_allow_html=True)
-            st.dataframe(tabela1)
+            st.dataframe(tabela1, hide_index=True, column_config={"": None})
         
             # Ordering by each team
             st.subheader("Table ordered by Team")
@@ -521,6 +519,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
