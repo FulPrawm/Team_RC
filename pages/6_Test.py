@@ -132,7 +132,7 @@ if etapa_escolhida != "Select a round...":
             "SPT": "max",
             "Avg Speed": "max"
             }).style.background_gradient(cmap='coolwarm').format(precision=3)
-            st.header("Melhor tempo/velocidade por carro")
+            st.header("Best time/speed by Car")
             st.dataframe(tabela1)
             #By team
             tabela2 = sessao_filtrado.groupby("Team").agg({
@@ -143,7 +143,7 @@ if etapa_escolhida != "Select a round...":
             "SPT": "max",
             "Avg Speed": "max"
             }).style.background_gradient(cmap='coolwarm').format(precision=3)
-            st.header("Melhor tempo/velocidade por Team")
+            st.header("Best time/speed by Team")
             st.dataframe(tabela2)
             #By Manufacturer
             tabela3 = sessao_filtrado.groupby("Manufacturer").agg({
@@ -154,7 +154,7 @@ if etapa_escolhida != "Select a round...":
             "SPT": "max",
             "Avg Speed": "max"
             }).style.background_gradient(cmap='coolwarm').format(precision=3)
-            st.header("Melhor tempo/velocidade por Manufacturer")
+            st.header("Best time/speed by Manufacturer")
             st.dataframe(tabela3)
         
         elif option == 'Lines':
@@ -244,7 +244,7 @@ if etapa_escolhida != "Select a round...":
                              x=sessao_filtrado[var], 
                              points='all', 
                              color='Manufacturer',
-                             title=f'Distribuição de {var}')  # Title inside graph
+                             title=f'{var} distribuction')  # Title inside graph
                 st.plotly_chart(fig)
         
         
@@ -270,3 +270,4 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
