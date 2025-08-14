@@ -93,8 +93,8 @@ if etapa_escolhida != "Select a round...":
         
 
         # Creating lists to be used in the analysis
-        analise_Team = ["Team", "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
-        analise_carros = ['Car_ID', "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
+        analise_Team = ["Team", "Manufacturer", "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
+        analise_carros = ['Car_ID', "Team", "Manufacturer", "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
         analise_Manufacturer = ['Manufacturer', "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
         
 
@@ -124,7 +124,7 @@ if etapa_escolhida != "Select a round...":
 
         if option == "Charts":
             #By car
-            tabela1 = sessao_filtrado.groupby("Car_ID").agg({
+            tabela1 = sessao_filtrado.groupby("Car_ID", "Team", "Manufacturer").agg({
             "Lap Tm (S)": "min",
             "S1 Tm": "min",
             "S2 Tm": "min",
@@ -135,7 +135,7 @@ if etapa_escolhida != "Select a round...":
             st.subheader("Best time/speed by Car")
             st.dataframe(tabela1)
             #By team
-            tabela2 = sessao_filtrado.groupby("Team").agg({
+            tabela2 = sessao_filtrado.groupby("Team", "Manufacturer).agg({
             "Lap Tm (S)": "min",
             "S1 Tm": "min",
             "S2 Tm": "min",
@@ -270,5 +270,6 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
