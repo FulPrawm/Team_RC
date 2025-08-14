@@ -152,7 +152,7 @@ if etapa_escolhida != "Select a round...":
                 f"background-color: {colors_team[v][0]}; color: {colors_team[v][1]}"
                 if v in colors_team else "" for v in s
             ]
-        def highlight_montadora(s):
+        def highlight_manufacturer(s):
             return [
                 f"background-color: {colors_manufacturer[v][0]}; color: {colors_manufacturer[v][1]}"
                 if v in colors_manufacturer else "" for v in s
@@ -215,8 +215,8 @@ if etapa_escolhida != "Select a round...":
                 .style.background_gradient(cmap='coolwarm')
                 .format(precision=3)
                 .apply(highlight_driver, subset=['Driver'])
-                .apply(highlight_driver, subset=['Team'])
-                .apply(highlight_driver, subset=['Manufacturer'])
+                .apply(highlight_team, subset=['Team'])
+                .apply(highlight_manufacturer, subset=['Manufacturer'])
             )
             st.dataframe(tabela1, hide_index=True, column_config={"": None})
         
@@ -230,7 +230,7 @@ if etapa_escolhida != "Select a round...":
                 .style.background_gradient(cmap='coolwarm')
                 .format(precision=3)
                 .apply(highlight_team, subset=["Team"])
-                .apply(highlight_montadora, subset=["Manufacturer"])
+                .apply(highlight_manufacturer, subset=["Manufacturer"])
             )
             st.dataframe(tabela2, hide_index=True, column_config={"B": None})
 
@@ -242,7 +242,7 @@ if etapa_escolhida != "Select a round...":
                 .reset_index()  # 🔑
                 .style.background_gradient(cmap='coolwarm')
                 .format(precision=3)
-                .apply(highlight_montadora, subset=["Manufacturer"])
+                .apply(highlight_manufacturer, subset=["Manufacturer"])
             )
             st.subheader("Table ordered by Manufacturer")
             st.dataframe(tabela3, hide_index=True, column_config={"": None})
@@ -521,6 +521,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
