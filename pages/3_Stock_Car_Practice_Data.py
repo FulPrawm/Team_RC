@@ -105,7 +105,60 @@ if etapa_escolhida != "Select a round...":
         # Creating a new column for what Manufacturer each team races
         sessao['Manufacturer'] = sessao['Team'].map(team_to_manufacturer)
      
+        #Last Dictionary relating each car to their drivers
+        drivers_dict = {
+         18: 'Allam Khodair', 29: 'Daniel Serra',
+         38: 'Zezinho Muggiati', 301: 'Rafael Reis',
+         21: 'Thiago Camilo', 30: 'Cesar Ramos',
+         12: 'Lucas Foresti', 83: 'Gabriel Casagrande',
+         10: 'Ricardo Zonta', 44: 'Bruno Baptista',
+         8: 'Rafael Suzuki', 19: 'Felipe Massa',
+         11: 'Gaetano Di Mauro', 88: 'Felipe Fraga',
+         4: 'Julio Campos', 81: 'Arthur Leist',
+         85: 'Guilherme Salas', 90: 'Ricardo Mauricio',
+         5: 'Denis Navarro', 111: 'Rubens Barrichello',
+         73: 'Enzo Elias', 51: 'Átila Abreu',
+         444: 'Vicente Orige', 33: 'Nelsinho Piquet',
+         121: 'Felipe Baptista', 101: 'Gianluca Petecof',
+         7: 'JP Oliveira', 9: 'Arthur Gama',
+         95: 'Lucas Kohl', 0: 'Cacá Bueno',
+         6: 'A. Mattheis Motorsport'
+        }
+        sessao['Driver'] = sessao['Car_ID'].map(drivers_dict)
 
+
+        # Personalized colors with text contrast
+        colors_driver = {
+            "Ricardo Zonta": ("red", "white"),
+            "Gaetano Di Mauro": ("lightblue", "black"),   # azul claro → texto preto
+            "Bruno Baptista": ("gray", "white"),
+            "Felipe Fraga": ("yellow", "black")      # fundo amarelo → texto preto
+        }
+        colors_team = {
+            "Eurofarma RC": ("yellow", "black"),     # amarelo → preto
+            "RC": ("gray", "white")
+        }
+        colors_manufacturer = {
+            "Mitsubishi": ("red", "white")
+        }
+        # Style functions
+        def highlight_driver(s):
+            return [
+                f"background-color: {colors_driver[v][0]}; color: {colors_driver[v][1]}"
+                if v in colors_driver else "" for v in s
+            ]
+        def highlight_team(s):
+            return [
+                f"background-color: {colors_team[v][0]}; color: {colors_team[v][1]}"
+                if v in colors_team else "" for v in s
+            ]
+        def highlight_montadora(s):
+            return [
+                f"background-color: {colors_manufacturer[v][0]}; color: {colors_manufacturer[v][1]}"
+                if v in colors_manufacturer else "" for v in s
+            ]
+     
+       
         # Creating lists to be used in the analysis
         analise_Team = ["Team", "Manufacturer", "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
         analise_carros = ['Car_ID', "Team", "Manufacturer", "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
@@ -285,6 +338,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
