@@ -199,11 +199,11 @@ if etapa_escolhida != "Select a round...":
             st.subheader("Table ordered by Car")
             tabela1 = (
                 sessao_filtrado[analise_carros]
-                .groupby(by=["Driver", "Manufacturer", "Team"])
+                .groupby(by=['Driver', "Manufacturer", "Team"])
                 .mean(numeric_only=True)
                 .style.background_gradient(cmap='coolwarm')
                 .format(precision=3)
-                .apply(highlight_driver, subset=["Driver"])
+                .apply(highlight_driver, subset=['Driver'])
             )
             st.dataframe(tabela1)
         
@@ -498,6 +498,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
