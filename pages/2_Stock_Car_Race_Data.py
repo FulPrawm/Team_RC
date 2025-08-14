@@ -135,7 +135,8 @@ if etapa_escolhida != "Select a round...":
             "Felipe Fraga": "yellow"
         }
         colors_team = {
-            "RC": "gray"
+         "RCM Motorsport": "lightgray",
+         "Eurofarma RC": "Yellow"   
         }
         colors_manufacturer = {
             "Mitsubishi": "red"
@@ -207,6 +208,8 @@ if etapa_escolhida != "Select a round...":
                 .style.background_gradient(cmap='coolwarm')
                 .format(precision=3)
                 .apply(highlight_driver, subset=['Driver'])
+                .apply(highlight_team, subset=["Team"])
+                .apply(highlight_montadora, subset=["Manufacturer"])
             )
             st.dataframe(tabela1)
         
@@ -220,6 +223,7 @@ if etapa_escolhida != "Select a round...":
                 .style.background_gradient(cmap='coolwarm')
                 .format(precision=3)
                 .apply(highlight_team, subset=["Team"])
+                .apply(highlight_montadora, subset=["Manufacturer"])
             )
             st.dataframe(tabela2)
 
@@ -510,6 +514,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
