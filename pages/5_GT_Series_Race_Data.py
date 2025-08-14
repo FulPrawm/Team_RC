@@ -142,7 +142,7 @@ if etapa_escolhida != "Select a round...":
 
      
         if option == "Chart":
-            # Ordering by each car
+            # 🚗 Tabela 1 - por carro
             st.subheader("Table ordered by Car")
             tabela1 = (
                 sessao_filtrado[analise_carros]
@@ -151,9 +151,15 @@ if etapa_escolhida != "Select a round...":
                 .style.background_gradient(cmap='coolwarm')
                 .format(precision=3)
             )
+        
+            # aplica cor apenas no Car_ID
+            tabela1 = tabela1.applymap(
+                lambda val: f'background-color: {cores_carros[val]}' if val in cores_carros else '',
+                subset=['Car_ID']
+            )
             st.dataframe(tabela1)
         
-            # Ordering by each team
+            # 🏎️ Tabela 2 - por equipe
             st.subheader("Table ordered by Team")
             tabela2 = (
                 sessao_filtrado[analise_equipe]
@@ -162,11 +168,29 @@ if etapa_escolhida != "Select a round...":
                 .style.background_gradient(cmap='coolwarm')
                 .format(precision=3)
             )
+        
+            # aplica cor apenas na coluna "Equipe"
+            tabela2 = tabela2.applymap(
+                lambda val: f'background-color: {cores_equipes[val]}' if val in cores_equipes else '',
+                subset=['Equipe']
+            )
             st.dataframe(tabela2)
-
-            # Ordering by each manufacturer
-            tabela3 = sessao_filtrado[analise_montadora].groupby(by=["Montadora"]).mean(numeric_only=True).style.background_gradient(cmap='coolwarm').format(precision=3)
+        
+            # 🏭 Tabela 3 - por montadora
             st.subheader("Table ordered by Manufacturer")
+            tabela3 = (
+                sessao_filtrado[analise_montadora]
+                .groupby(by=["Montadora"])
+                .mean(numeric_only=True)
+                .style.background_gradient(cmap='coolwarm')
+                .format(precision=3)
+            )
+        
+            # aplica cor apenas na coluna "Montadora"
+            tabela3 = tabela3.applymap(
+                lambda val: f'background-color: {cores_montadoras[val]}' if val in cores_montadoras else '',
+                subset=['Montadora']
+            )
             st.dataframe(tabela3)
 
         
@@ -451,6 +475,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Por favor, selecione uma corrida.")
 else:
     st.warning("Por favor, selecione uma etapa.")
+
 
 
 
