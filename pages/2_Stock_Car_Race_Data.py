@@ -217,6 +217,7 @@ if etapa_escolhida != "Select a round...":
                 .apply(highlight_driver, subset=['Driver'])
                 .hide(axis="index")   # 🚀 remove a coluna do índice
             )
+            st.markdown(tabela1.to_html(), unsafe_allow_html=True)
             st.dataframe(tabela1)
         
             # Ordering by each team
@@ -520,6 +521,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
