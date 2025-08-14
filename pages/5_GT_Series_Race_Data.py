@@ -448,9 +448,10 @@ if etapa_escolhida != "Select a round...":
 
 
     else:
-        st.warning("Por favor, selecione uma corrida.")
+        st.warning("Please, select a race.")
 else:
-    st.warning("Por favor, selecione uma etapa.")
+    st.warning("Please, select a round.")
+
 
 
 
