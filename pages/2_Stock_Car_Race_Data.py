@@ -130,7 +130,7 @@ if etapa_escolhida != "Select a round...":
         # Personalized colors with text contrast
         colors_driver = {
             "Ricardo Zonta": ("red", "white"),
-            "Gaetano Di Mauro": ("blue", "black"),   # azul claro → texto preto
+            "Gaetano Di Mauro": ("lightblue", "black"),   # azul claro → texto preto
             "Bruno Baptista": ("gray", "white"),
             "Felipe Fraga": ("yellow", "black")      # fundo amarelo → texto preto
         }
@@ -521,6 +521,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
