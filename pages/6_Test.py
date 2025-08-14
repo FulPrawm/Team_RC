@@ -146,6 +146,8 @@ if etapa_escolhida != "Select a round...":
                 "SPT": "max",
                 "Avg Speed": "max"
             }).style.background_gradient(cmap='coolwarm').format(precision=3)
+            st.subheader("Table by Car")
+            st.dataframe(chart1)
             # By team
             chart2 = sessao_filtrado.groupby(["Team", "Manufacturer"]).agg({
                 "Lap Tm (S)": "min",
@@ -155,16 +157,18 @@ if etapa_escolhida != "Select a round...":
                 "SPT": "max",
                 "Avg Speed": "max"
             }).style.background_gradient(cmap='coolwarm').format(precision=3)
-            #By Manufacturer
-            chart3 = sessao_filtrado.groupby("Manufacturer").agg({
-            "Lap Tm (S)": "min",
-            "S1 Tm": "min",
-            "S2 Tm": "min",
-            "S3 Tm": "min",
-            "SPT": "max",
-            "Avg Speed": "max"
+            st.subheader("Table by Team")
+            st.dataframe(chart2) 
+            # By manufacturer
+            chart3 = sessao_filtrado.groupby(["Manufacturer"]).agg({
+                "Lap Tm (S)": "min",
+                "S1 Tm": "min",
+                "S2 Tm": "min",
+                "S3 Tm": "min",
+                "SPT": "max",
+                "Avg Speed": "max"
             }).style.background_gradient(cmap='coolwarm').format(precision=3)
-            st.subheader("Best time/speed by Manufacturer")
+            st.subheader("Table by Manufacturer")
             st.dataframe(chart3)
 
      
@@ -281,6 +285,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
