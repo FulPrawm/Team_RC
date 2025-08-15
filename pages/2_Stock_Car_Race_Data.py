@@ -360,23 +360,22 @@ if etapa_escolhida != "Select a round...":
         
             # Dicionário de cores dos seus carros
             cores_personalizadas = {
-                10: "red",
-                11: "blue",
-                44: "gray",
-                88: "yellow"
+                "Ricardo Zonta": "red",
+                "Gaetano Di Mauro": "blue",
+                "Bruno Baptista": "gray",
+                "Felipe Fraga": "yellow"
             }
         
             for i, (tab_name, coluna) in enumerate(colunas_setores.items()):
                 with tabs[i]:
-                    media_por_car_id = sessao_filtrado.groupby('Car_ID')[coluna].mean().reset_index()
+                    media_por_car_id = sessao_filtrado.groupby('Driver')[coluna].mean().reset_index()
                     min_valor = media_por_car_id[coluna].min()
                     media_por_car_id['Diff'] = media_por_car_id[coluna] - min_valor
                     media_por_car_id = media_por_car_id.sort_values(by='Diff')
-                    media_por_car_id['Car_ID_str'] = media_por_car_id['Car_ID'].astype(str)
-                    media_por_car_id['Color'] = media_por_car_id['Car_ID'].map(cores_personalizadas).fillna('white')
+                    media_por_car_id['Color'] = media_por_car_id['Driver'].map(cores_personalizadas).fillna('white')
         
                     bars = alt.Chart(media_por_car_id).mark_bar().encode(
-                        x=alt.X('Car_ID_str:N', sort=media_por_car_id['Diff'].tolist()),
+                        x=alt.X('Driver:N', sort=media_por_car_id['Diff'].tolist()),
                         y=alt.Y('Diff', title=f'Diff to Best {coluna} (s)'),
                         color=alt.Color('Color:N', scale=None)
                     )
@@ -387,7 +386,7 @@ if etapa_escolhida != "Select a round...":
                         dy=-2,
                         color='white'
                     ).encode(
-                        x=alt.X('Car_ID_str:N', sort=media_por_car_id['Diff'].tolist()),
+                        x=alt.X('Driver:N', sort=media_por_car_id['Diff'].tolist()),
                         y='Diff',
                         text=alt.Text('Diff', format='.2f')
                     )
@@ -541,6 +540,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
