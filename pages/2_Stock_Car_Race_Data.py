@@ -250,68 +250,68 @@ if etapa_escolhida != "Select a round...":
         
         elif option == 'Lines':
             #Lap Progression
-            graf1 = px.line(sessao, x="Lap", y= "Lap Tm (S)", color="Car_ID", title='Lap Time Progression')
+            graf1 = px.line(sessao, x="Lap", y= "Lap Tm (S)", color="Driver", title='Lap Time Progression')
             st.plotly_chart(graf1)
         
             #S1 Progression
-            graf9 = px.line(sessao, x="Lap", y= "S1 Tm", color="Car_ID", title='S1 Time Progression')
+            graf9 = px.line(sessao, x="Lap", y= "S1 Tm", color="Driver", title='S1 Time Progression')
             st.plotly_chart(graf9)
         
             #S2 Progression
-            graf10 = px.line(sessao, x="Lap", y= "S2 Tm", color="Car_ID", title='S2 Time Progression')
+            graf10 = px.line(sessao, x="Lap", y= "S2 Tm", color="Driver", title='S2 Time Progression')
             st.plotly_chart(graf10)
         
             #S3 Progression
-            graf11 = px.line(sessao, x="Lap", y= "S3 Tm", color="Car_ID", title='S3 Time Progression')
+            graf11 = px.line(sessao, x="Lap", y= "S3 Tm", color="Driver", title='S3 Time Progression')
             st.plotly_chart(graf11)
         
             #SPT Progression
-            graf12 = px.line(sessao, x="Lap", y= "SPT", color="Car_ID", title='SPT Progression')
+            graf12 = px.line(sessao, x="Lap", y= "SPT", color="Driver", title='SPT Progression')
             st.plotly_chart(graf12)
         
             #Lap Time Raising Average
-            sessao_filtrado['Ranking'] = sessao_filtrado.groupby('Car_ID')['Lap Tm (S)'].rank(ascending=True) # Criando uma coluna de ranking por carro
-            sessao_filtrado = sessao_filtrado.sort_values(by=['Car_ID', 'Ranking']) # Ordenando os dados por carro e ranking
-            graf2 = px.line(sessao_filtrado, x='Ranking', y='Lap Tm (S)', color='Car_ID', title='Lap Time Raising Average') # Criando o gráfico de linha
+            sessao_filtrado['Ranking'] = sessao_filtrado.groupby('Driver')['Lap Tm (S)'].rank(ascending=True) # Criando uma coluna de ranking por carro
+            sessao_filtrado = sessao_filtrado.sort_values(by=['Driver', 'Ranking']) # Ordenando os dados por carro e ranking
+            graf2 = px.line(sessao_filtrado, x='Ranking', y='Lap Tm (S)', color='Driver', title='Lap Time Raising Average') # Criando o gráfico de linha
             st.plotly_chart(graf2)
         
             #S1 Raising Average
-            sessao_filtrado['Ranking'] = sessao_filtrado.groupby('Car_ID')['S1 Tm'].rank(ascending=True)
-            sessao_filtrado = sessao_filtrado.sort_values(by=['Car_ID', 'Ranking'])
-            graf3 = px.line(sessao_filtrado, x='Ranking', y='S1 Tm', color='Car_ID', title='S1 Raising Average')
+            sessao_filtrado['Ranking'] = sessao_filtrado.groupby('Driver')['S1 Tm'].rank(ascending=True)
+            sessao_filtrado = sessao_filtrado.sort_values(by=['Driver', 'Ranking'])
+            graf3 = px.line(sessao_filtrado, x='Ranking', y='S1 Tm', color='Driver', title='S1 Raising Average')
             st.plotly_chart(graf3)
         
             #S2 Raising Average
-            sessao_filtrado['Ranking'] = sessao_filtrado.groupby('Car_ID')['S2 Tm'].rank(ascending=True)
-            sessao_filtrado = sessao_filtrado.sort_values(by=['Car_ID', 'Ranking'])
-            graf4 = px.line(sessao_filtrado, x='Ranking', y='S2 Tm', color='Car_ID', title='S2 Raising Average')
+            sessao_filtrado['Ranking'] = sessao_filtrado.groupby('Driver')['S2 Tm'].rank(ascending=True)
+            sessao_filtrado = sessao_filtrado.sort_values(by=['Driver', 'Ranking'])
+            graf4 = px.line(sessao_filtrado, x='Ranking', y='S2 Tm', color='Driver', title='S2 Raising Average')
             st.plotly_chart(graf4)
         
             #S3 Raising Average
-            sessao_filtrado['Ranking'] = sessao_filtrado.groupby('Car_ID')['S3 Tm'].rank(ascending=True)
-            sessao_filtrado = sessao_filtrado.sort_values(by=['Car_ID', 'Ranking'])
-            graf5 = px.line(sessao_filtrado, x='Ranking', y='S3 Tm', color='Car_ID', title='S3 Raising Average')
+            sessao_filtrado['Ranking'] = sessao_filtrado.groupby('Driver')['S3 Tm'].rank(ascending=True)
+            sessao_filtrado = sessao_filtrado.sort_values(by=['Driver', 'Ranking'])
+            graf5 = px.line(sessao_filtrado, x='Ranking', y='S3 Tm', color='Driver', title='S3 Raising Average')
             st.plotly_chart(graf5)
         
             #SPT Raising Average
-            sessao_filtrado['Ranking'] = sessao_filtrado.groupby('Car_ID')['SPT'].rank(ascending=False)
-            sessao_filtrado = sessao_filtrado.sort_values(by=['Car_ID', 'Ranking'])
-            graf6 = px.line(sessao_filtrado, x='Ranking', y='SPT', color='Car_ID', title='SPT Raising Average')
+            sessao_filtrado['Ranking'] = sessao_filtrado.groupby('Driver')['SPT'].rank(ascending=False)
+            sessao_filtrado = sessao_filtrado.sort_values(by=['Driver', 'Ranking'])
+            graf6 = px.line(sessao_filtrado, x='Ranking', y='SPT', color='Driver', title='SPT Raising Average')
             st.plotly_chart(graf6)
         
             #Last Lap Diff Graph
-            graf7 = px.line(sessao, x="Lap", y= "Last Lap Diff", color="Car_ID", title='Last Lap Diff')
+            graf7 = px.line(sessao, x="Lap", y= "Last Lap Diff", color="Driver", title='Last Lap Diff')
             st.plotly_chart(graf7)
         
             #Fast Lap Diff Graph
-            graf8 = px.line(sessao, x="Lap", y= "Fast Lap Diff", color="Car_ID", title='Fast Lap Diff')
+            graf8 = px.line(sessao, x="Lap", y= "Fast Lap Diff", color="Driver", title='Fast Lap Diff')
             st.plotly_chart(graf8)
         
         elif option =='Histograms':
             for var in analise_carros:
-                if var == 'Car_ID':
-                    continue #skips the column "Car_ID"
-                fig = px.histogram(sessao_filtrado[var], nbins=25,title=f'Distribuição de {var}')
+                if var == 'Car_ID', 'Driver', 'Team', 'Manufacturer':
+                    continue #skips these columns
+                fig = px.histogram(sessao_filtrado[var], nbins=25,title=f'{var} distribution')
                 st.plotly_chart(fig)
         
         elif option == 'Others':
@@ -521,6 +521,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
