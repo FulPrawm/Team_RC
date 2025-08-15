@@ -332,11 +332,11 @@ if etapa_escolhida != "Select a round...":
             fig.update_traces(marker_size=10)
         
             # Linhas de corte no meio dos dados
-            fig.add_vline(x=media_avg_speed, line_dash="dash", line_color="gray", annotation_text="Average 'Avg Speed'", 
-                          annotation_position="bottom left", annotation_font_color="gray")
+            fig.add_vline(x=media_avg_speed, line_dash="dash", line_color="white", annotation_text="Average 'Avg Speed'", 
+                          annotation_position="bottom left", annotation_font_color="white")
         
-            fig.add_hline(y=media_spt, line_dash="dash", line_color="gray", annotation_text="Average 'SPT'",
-                          annotation_position="top right", annotation_font_color="gray")
+            fig.add_hline(y=media_spt, line_dash="dash", line_color="white", annotation_text="Average 'SPT'",
+                          annotation_position="top right", annotation_font_color="white")
         
             # Texto descritivo sobre os quadrantes
             st.markdown("""
@@ -541,6 +541,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
