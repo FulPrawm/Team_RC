@@ -24,7 +24,7 @@ st.title("Session Data Report")
 PASTA_ETAPAS = "Arquivos"
 # List of every round (folders inside "resultados")
 etapas_disponiveis = [p for p in os.listdir(PASTA_ETAPAS) if os.path.isdir(os.path.join(PASTA_ETAPAS, p))]
-st.header("Round and Session Selector")
+st.subheader("Round and Session Selector")
 etapas_opcoes = ["Select a round..."] + sorted(etapas_disponiveis)
 etapa_escolhida = st.selectbox("Choose the round:", etapas_opcoes)
 if etapa_escolhida != "Select a round...":
@@ -122,7 +122,7 @@ if etapa_escolhida != "Select a round...":
          121: 'Felipe Baptista', 101: 'Gianluca Petecof',
          7: 'JP Oliveira', 9: 'Arthur Gama',
          95: 'Lucas Kohl', 0: 'Cacá Bueno',
-         6: 'A. Mattheis Motorsport'
+         6: 'Hélio Castroneves'
         }
         sessao['Driver'] = sessao['Car_ID'].map(drivers_dict)
 
@@ -185,7 +185,7 @@ if etapa_escolhida != "Select a round...":
         st.subheader("Auto filter applied")
         st.write(f"🔍 Best lap of the session: **{melhor_volta:.3f} s**")
         st.write(f"📏 4% filter applied: **{tempo_limite:.3f} s**")
-        st.write(f"🧮 Máximum laps completed: **{max_voltas} laps**")
+        st.write(f"🧮 Maximum laps completed: **{max_voltas} laps**")
         st.write(f"⚠️ Only drivers with **at least {min_voltas_necessarias} laps completed** will be considered in the analysis.")
 
      
@@ -521,6 +521,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
