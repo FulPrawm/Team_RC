@@ -444,7 +444,6 @@ if etapa_escolhida != "Select a round...":
                     st.plotly_chart(fig, use_container_width=True)
               
         elif option == 'BoxPlots':
-            st.write('Média de todos os carros da Manufacturer')
             for var in analise_Manufacturer:
                 if var == 'Manufacturer':
                     continue
@@ -452,26 +451,18 @@ if etapa_escolhida != "Select a round...":
                              x=sessao_filtrado[var], 
                              points='all', 
                              color='Manufacturer',
-                             title=f'Distribuição de {var}')  # Título dentro do gráfico
+                             title=f'{var}' distribution)
                 st.plotly_chart(fig)
 
-                 # Bloco 2 — por Car_ID (como rótulo) em tabs
-            tabs_box = st.tabs(["Volta", "S1", "S2", "S3", "SPT"])
+                 # Block 2 — por Car_ID (como rótulo) em tabs
+            tabs_box = st.tabs(["Lap", "S1", "S2", "S3", "SPT"])
             colunas_boxplot = {
-                "Volta": "Lap Tm (S)",
+                "Lap": "Lap Tm (S)",
                 "S1": "S1 Tm",
                 "S2": "S2 Tm",
                 "S3": "S3 Tm",
                 "SPT": "SPT"
             }
-        
-            cores_carros = {
-              10: 'red',
-              11: 'blue',
-              44: 'gray',
-              88: 'yellow'
-            }
-        
             for i, (tab_nome, coluna) in enumerate(colunas_boxplot.items()):
                 with tabs_box[i]:
                     df_plot = sessao_filtrado.copy()
@@ -487,7 +478,6 @@ if etapa_escolhida != "Select a round...":
                         points="all",
                         color="Car_Label",
                         category_orders={"Car_Label": carros_unicos},
-                        color_discrete_map={**cores_carros}  # outras cores default serão automáticas
                     )
         
                     fig.update_layout(
@@ -521,6 +511,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
