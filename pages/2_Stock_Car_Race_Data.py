@@ -315,8 +315,40 @@ if etapa_escolhida != "Select a round...":
                 st.plotly_chart(fig)
         
         elif option == 'Others':
-         
-            # Tabs para Gap to Fastest
+            st.subheader("Car Efficiency")
+
+            # General filter
+            sessao_eff = sessao_filtrado.copy()
+        
+            # Defining the average to cut the quadrants
+            media_avg_speed = sessao_eff["Avg Speed"].mean()
+            media_spt = sessao_eff["SPT"].mean()
+        
+            # Graph
+            fig = px.scatter(sessao_eff, x='Avg Speed', y='SPT', color='Team', symbol='Team',
+                             title="Aerodynamic Efficiency - Avg Speed vs SPT",
+                             hover_data=['Car_ID'])
+        
+            fig.update_traces(marker_size=10)
+        
+            # Linhas de corte no meio dos dados
+            fig.add_vline(x=media_avg_speed, line_dash="dash", line_color="gray", annotation_text="Average 'Avg Speed'", 
+                          annotation_position="bottom left", annotation_font_color="gray")
+        
+            fig.add_hline(y=media_spt, line_dash="dash", line_color="gray", annotation_text="Average 'SPT'",
+                          annotation_position="top right", annotation_font_color="gray")
+        
+            # Texto descritivo sobre os quadrantes
+            st.markdown("""
+            - **↗ Upper Right Quadrant**: High overall efficiency (straight + turn)
+            - **↖ Upper Left Quadrant**: Low downforce (good straight, bad cornering)
+            - **↘ Lower Right Quadrant**: High downforce (good cornering, bad straight)
+            - **↙ Lower Left Quadrant**: Low efficiency (neither)
+            """)
+        
+            st.plotly_chart(fig, use_container_width=True)
+ 
+            # Tabs to Gap to Fastest
             tabs = st.tabs(["Gap to Fastest Car - Lap", "Gap to Fastest Car - S1", "Gap to Fastest Car - S2", "Gap to Fastest Car - S3"])
         
             colunas_setores = {
@@ -509,6 +541,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
