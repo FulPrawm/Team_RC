@@ -122,7 +122,7 @@ if etapa_escolhida != "Select a round...":
          121: 'Felipe Baptista', 101: 'Gianluca Petecof',
          7: 'JP Oliveira', 9: 'Arthur Gama',
          95: 'Lucas Kohl', 0: 'Cacá Bueno',
-         6: 'A. Mattheis Motorsport'
+         6: 'Hélio Castroneves'
         }
         sessao['Driver'] = sessao['Car_ID'].map(drivers_dict)
 
@@ -359,6 +359,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
