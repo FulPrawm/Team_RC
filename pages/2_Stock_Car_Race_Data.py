@@ -466,27 +466,26 @@ if etapa_escolhida != "Select a round...":
             for i, (tab_nome, coluna) in enumerate(colunas_boxplot.items()):
                 with tabs_box[i]:
                     df_plot = sessao_filtrado.copy()
-                    df_plot["Car_ID"] = df_plot["Car_ID"].astype(str)
-                    df_plot["Car_Label"] = "Carro " + df_plot["Car_ID"]
-        
-                    carros_unicos = sorted(df_plot["Car_Label"].unique())
-        
+                    
+                    # Pega lista de drivers em ordem alfabética
+                    drivers_unicos = sorted(df_plot["Driver"].unique())
+            
                     fig = px.box(
                         df_plot,
-                        x="Car_Label",
+                        x="Driver",
                         y=coluna,
                         points="all",
-                        color="Car_Label",
-                        category_orders={"Car_Label": carros_unicos},
+                        color="Driver",
+                        category_orders={"Driver": drivers_unicos},
                     )
-        
+            
                     fig.update_layout(
-                        xaxis_title="Carro",
+                        xaxis_title="Piloto",
                         yaxis_title=coluna,
                         title=f"Boxplot - {coluna}",
                         showlegend=False
                     )
-        
+            
                     st.plotly_chart(fig, use_container_width=True)
         
         elif option == 'All Laps':
@@ -511,6 +510,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
