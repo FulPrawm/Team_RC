@@ -309,7 +309,7 @@ if etapa_escolhida != "Select a round...":
         
         elif option =='Histograms':
             for var in analise_carros:
-                if var == ['Car_ID', 'Driver', 'Team', 'Manufacturer']:
+                if var in ['Car_ID', 'Driver', 'Team', 'Manufacturer']:
                     continue #skips these columns
                 fig = px.histogram(sessao_filtrado[var], nbins=25,title=f'{var} distribution')
                 st.plotly_chart(fig)
@@ -521,6 +521,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
