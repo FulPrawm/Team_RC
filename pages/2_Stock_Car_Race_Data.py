@@ -452,6 +452,7 @@ if etapa_escolhida != "Select a round...":
                              points='all', 
                              color='Manufacturer',
                              title=f('{var}' distribution)
+                            )
                 st.plotly_chart(fig)
 
                  # Block 2 — por Car_ID (como rótulo) em tabs
@@ -511,6 +512,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
