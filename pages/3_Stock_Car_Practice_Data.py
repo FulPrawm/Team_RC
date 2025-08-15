@@ -26,7 +26,7 @@ st.title("Fastest Time Session Data Report")
 PASTA_ETAPAS = "Arquivos Treinos & Qualy"
 # Lists every round (folders inside "resultados")
 etapas_disponiveis = [p for p in os.listdir(PASTA_ETAPAS) if os.path.isdir(os.path.join(PASTA_ETAPAS, p))]
-st.header("Round and Session Selector")
+st.subheader("Round and Session Selector")
 etapas_opcoes = ["Select a round..."] + sorted(etapas_disponiveis)
 etapa_escolhida = st.selectbox("Choose the round:", etapas_opcoes)
 if etapa_escolhida != "Select a round...":
@@ -248,29 +248,29 @@ if etapa_escolhida != "Select a round...":
      
         elif option == 'Lines':
             #Lap Time Raising Average
-            sessao_filtrado['Ranking'] = sessao_filtrado.groupby('Car_ID')['Lap Tm (S)'].rank(ascending=True) # Creates a column ranking the cars
-            sessao_filtrado = sessao_filtrado.sort_values(by=['Car_ID', 'Ranking']) # Ordering the data by the ranking
-            graf2 = px.line(sessao_filtrado, x='Ranking', y='Lap Tm (S)', color='Car_ID', title='Lap Time Raising Average')
+            sessao_filtrado['Ranking'] = sessao_filtrado.groupby('Driver')['Lap Tm (S)'].rank(ascending=True) # Creates a column ranking the cars
+            sessao_filtrado = sessao_filtrado.sort_values(by=['Driver', 'Ranking']) # Ordering the data by the ranking
+            graf2 = px.line(sessao_filtrado, x='Ranking', y='Lap Tm (S)', color='Driver', title='Lap Time Raising Average')
             st.plotly_chart(graf2)
             #S1 Raising Average
-            sessao_filtrado['Ranking'] = sessao_filtrado.groupby('Car_ID')['S1 Tm'].rank(ascending=True)
-            sessao_filtrado = sessao_filtrado.sort_values(by=['Car_ID', 'Ranking'])
-            graf3 = px.line(sessao_filtrado, x='Ranking', y='S1 Tm', color='Car_ID', title='S1 Raising Average')
+            sessao_filtrado['Ranking'] = sessao_filtrado.groupby('Driver')['S1 Tm'].rank(ascending=True)
+            sessao_filtrado = sessao_filtrado.sort_values(by=['Driver', 'Ranking'])
+            graf3 = px.line(sessao_filtrado, x='Ranking', y='S1 Tm', color='Driver', title='S1 Raising Average')
             st.plotly_chart(graf3)
             #S2 Raising Average
-            sessao_filtrado['Ranking'] = sessao_filtrado.groupby('Car_ID')['S2 Tm'].rank(ascending=True)
-            sessao_filtrado = sessao_filtrado.sort_values(by=['Car_ID', 'Ranking'])
-            graf4 = px.line(sessao_filtrado, x='Ranking', y='S2 Tm', color='Car_ID', title='S2 Raising Average')
+            sessao_filtrado['Ranking'] = sessao_filtrado.groupby('Driver')['S2 Tm'].rank(ascending=True)
+            sessao_filtrado = sessao_filtrado.sort_values(by=['Driver', 'Ranking'])
+            graf4 = px.line(sessao_filtrado, x='Ranking', y='S2 Tm', color='Driver', title='S2 Raising Average')
             st.plotly_chart(graf4)
             #S3 Raising Average
-            sessao_filtrado['Ranking'] = sessao_filtrado.groupby('Car_ID')['S3 Tm'].rank(ascending=True)
-            sessao_filtrado = sessao_filtrado.sort_values(by=['Car_ID', 'Ranking'])
-            graf5 = px.line(sessao_filtrado, x='Ranking', y='S3 Tm', color='Car_ID', title='S3 Raising Average')
+            sessao_filtrado['Ranking'] = sessao_filtrado.groupby('Driver')['S3 Tm'].rank(ascending=True)
+            sessao_filtrado = sessao_filtrado.sort_values(by=['Driver', 'Ranking'])
+            graf5 = px.line(sessao_filtrado, x='Ranking', y='S3 Tm', color='Driver', title='S3 Raising Average')
             st.plotly_chart(graf5)
             #SPT Raising Average
-            sessao_filtrado['Ranking'] = sessao_filtrado.groupby('Car_ID')['SPT'].rank(ascending=False)
-            sessao_filtrado = sessao_filtrado.sort_values(by=['Car_ID', 'Ranking'])
-            graf6 = px.line(sessao_filtrado, x='Ranking', y='SPT', color='Car_ID', title='SPT Raising Average')
+            sessao_filtrado['Ranking'] = sessao_filtrado.groupby('Driver')['SPT'].rank(ascending=False)
+            sessao_filtrado = sessao_filtrado.sort_values(by=['Driver', 'Ranking'])
+            graf6 = px.line(sessao_filtrado, x='Ranking', y='SPT', color='Driver', title='SPT Raising Average')
             st.plotly_chart(graf6)
         
 
@@ -333,7 +333,7 @@ if etapa_escolhida != "Select a round...":
                              x=sessao_filtrado[var], 
                              points='all', 
                              color='Manufacturer',
-                             title=f'{var} distribuction')  # Title inside graph
+                             title=f'{var} distribution')  # Title inside graph
                 st.plotly_chart(fig)
         
         
@@ -359,6 +359,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
