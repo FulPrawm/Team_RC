@@ -480,7 +480,6 @@ if etapa_escolhida != "Select a round...":
                     )
             
                     fig.update_layout(
-                        xaxis_title="Piloto",
                         yaxis_title=coluna,
                         title=f"Boxplot - {coluna}",
                         showlegend=False
@@ -510,6 +509,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
