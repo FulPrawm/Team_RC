@@ -294,10 +294,10 @@ if etapa_escolhida != "Select a round...":
             
             # Dicionário de cores — agora por Driver
             cores_personalizadas = {
-                "Piloto A": "red",
-                "Piloto B": "blue",
-                "Piloto C": "gray",
-                "Piloto D": "yellow"
+                "Ricardo Zonta": "red",
+                "Gaetano Di Mauro": "blue",
+                "Bruno Baptista": "gray",
+                "Felipe Fraga": "yellow"
             }
             
             for i, (tab_name, coluna) in enumerate(colunas_setores.items()):
@@ -373,6 +373,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
