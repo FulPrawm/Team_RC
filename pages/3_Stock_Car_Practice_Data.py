@@ -275,53 +275,67 @@ if etapa_escolhida != "Select a round...":
         
 
         elif option == 'Others':
-          st.header("Gap to Fastest")
-          # Tabs
-          tabs = st.tabs(["Gap to Fastest Car - Lap", "Gap to Fastest Car - S1", "Gap to Fastest Car - S2", "Gap to Fastest Car - S3"])
-          colunas_setores = {
-            "Gap to Fastest Car - Lap": "Lap Tm (S)",
-            "Gap to Fastest Car - S1": "S1 Tm",
-            "Gap to Fastest Car - S2": "S2 Tm",
-            "Gap to Fastest Car - S3": "S3 Tm"
-          }
-        
-          #Color dictionary
-          cores_personalizadas = {
-              10: 'red',
-              11: 'blue',
-              44: 'gray',
-              88: 'yellow'
-          }
-        
-          for i, (tab_name, coluna) in enumerate(colunas_setores.items()):
-            with tabs[i]:
-                melhor_por_car_id = sessao_filtrado.groupby('Car_ID')[coluna].min().reset_index()
-                min_valor = melhor_por_car_id[coluna].min()
-                melhor_por_car_id['Diff'] = melhor_por_car_id[coluna] - min_valor
-                melhor_por_car_id = melhor_por_car_id.sort_values(by='Diff')
-                melhor_por_car_id['Car_ID_str'] = melhor_por_car_id['Car_ID'].astype(str)
-                melhor_por_car_id['Color'] = melhor_por_car_id['Car_ID'].map(cores_personalizadas).fillna('white')
-
-                bars = alt.Chart(melhor_por_car_id).mark_bar().encode(
-                        x=alt.X('Car_ID_str:N', sort=melhor_por_car_id['Diff'].tolist()),
-                        y=alt.Y('Diff', title=f'Diff to Best {coluna} (s)'),
-                        color=alt.Color('Color:N', scale=None)
-                )
-        
-                labels = alt.Chart(melhor_por_car_id).mark_text(
-                        align='center',
-                        baseline='bottom',
+            st.subheader("Gap to Fastest")
+            
+            # Tabs
+            tabs = st.tabs([
+                "Gap to Fastest Car - Lap",
+                "Gap to Fastest Car - S1",
+                "Gap to Fastest Car - S2",
+                "Gap to Fastest Car - S3"
+            ])
+            
+            colunas_setores = {
+                "Gap to Fastest Car - Lap": "Lap Tm (S)",
+                "Gap to Fastest Car - S1": "S1 Tm",
+                "Gap to Fastest Car - S2": "S2 Tm",
+                "Gap to Fastest Car - S3": "S3 Tm"
+            }
+            
+            # Dicionário de cores — agora por Driver
+            cores_personalizadas = {
+                "Piloto A": "red",
+                "Piloto B": "blue",
+                "Piloto C": "gray",
+                "Piloto D": "yellow"
+            }
+            
+            for i, (tab_name, coluna) in enumerate(colunas_setores.items()):
+                with tabs[i]:
+                    # Melhor tempo por piloto
+                    melhor_por_driver = sessao_filtrado.groupby("Driver")[coluna].min().reset_index()
+                    min_valor = melhor_por_driver[coluna].min()
+                    melhor_por_driver["Diff"] = melhor_por_driver[coluna] - min_valor
+                    
+                    # Ordena pelo gap
+                    melhor_por_driver = melhor_por_driver.sort_values(by="Diff")
+                    
+                    # Adiciona cores personalizadas (ou branco se não definido)
+                    melhor_por_driver["Color"] = melhor_por_driver["Driver"].map(cores_personalizadas).fillna("white")
+            
+                    # Barras
+                    bars = alt.Chart(melhor_por_driver).mark_bar().encode(
+                        x=alt.X("Driver:N", sort=melhor_por_driver["Diff"].tolist()),
+                        y=alt.Y("Diff", title=f"Diff to Best {coluna} (s)"),
+                        color=alt.Color("Color:N", scale=None)
+                    )
+            
+                    # Labels acima das barras
+                    labels = alt.Chart(melhor_por_driver).mark_text(
+                        align="center",
+                        baseline="bottom",
                         dy=-2,
-                        color='white'
-                ).encode(
-                        x=alt.X('Car_ID_str:N', sort=melhor_por_car_id['Diff'].tolist()),
-                        y='Diff',
-                        text=alt.Text('Diff', format='.2f')
-                )
-        
-                chart = (bars + labels).properties(title=tab_name)
-        
-                st.altair_chart(chart, use_container_width=True)
+                        color="white"
+                    ).encode(
+                        x=alt.X("Driver:N", sort=melhor_por_driver["Diff"].tolist()),
+                        y="Diff",
+                        text=alt.Text("Diff", format=".2f")
+                    )
+            
+                    chart = (bars + labels).properties(title=tab_name)
+            
+                    st.altair_chart(chart, use_container_width=True)
+
         
 
         elif option == 'BoxPlots':
@@ -359,6 +373,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
