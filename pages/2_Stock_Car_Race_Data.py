@@ -44,12 +44,25 @@ if etapa_escolhida != "Select a round...":
         sessao = pd.read_excel(caminho_corrida)
         # Not limiting the number of rows that can be visualized
         pd.set_option('display.max_rows', None)
+
+     
         #Creating a new column for Last Lap Difference
         sessao['Last Lap Diff'] = sessao.groupby('Car_ID')['Lap Tm (S)'].diff()
         #Calculating the fastest time for each driver
         fastest_lap_global = sessao.groupby('Car_ID')['Lap Tm (S)'].transform('min')
         #Creating a new column for the fastest lap difference
         sessao['Fast Lap Diff'] = sessao['Lap Tm (S)'] - fastest_lap_global
+
+     
+        #Creating another new column to calculate Gap to Leader
+        sessao["Cumulative Time"] = sessao.groupby("Car_ID")["Lap Tm (S)"].cumsum()
+        
+        # 2. Find the winner (lowest cumulative time on the last lap of each driver)
+        last_laps = sessao.groupby("Car_ID").tail(1)  # get the last lap of each driver
+        winner_time = last_laps["Cumulative Time"].min()
+        winner_id = last_laps.loc[last_laps["Cumulative Time"].idxmin(), "Car_ID"]
+        # 3. Calculate gap to winner
+        sessao["Gap to Winner"] = sessao["Cumulative Time"] - winner_time
 
      
         # Dictionary relating each driver with each team
@@ -306,7 +319,22 @@ if etapa_escolhida != "Select a round...":
             #Fast Lap Diff Graph
             graf8 = px.line(sessao, x="Lap", y= "Fast Lap Diff", color="Driver", title='Fast Lap Diff')
             st.plotly_chart(graf8)
-        
+
+            #Gap to Leader Graph
+            st.subheader("Gap to Winner")
+            fig, ax = plt.subplots(figsize=(10, 6))
+            for car_id, car_data in sessao.groupby("Driver"):
+                ax.plot(car_data["Lap"], car_data["Gap to Winner"], label=f"{Driver}")
+            ax.axhline(0, color="black", linewidth=1, linestyle="--")  # winner reference line
+            ax.set_xlabel("Lap")
+            ax.set_ylabel("Gap to Winner (s)")
+            ax.legend()
+            ax.grid(True)
+            st.pyplot(fig)
+            # Show table with results
+            st.dataframe(sessao[["Driver", "Lap", "Lap Tm (S)", "Cumulative Time", "Gap to Winner"]])
+
+     
         elif option =='Histograms':
             for var in analise_carros:
                 if var in ['Car_ID', 'Driver', 'Team', 'Manufacturer']:
@@ -540,6 +568,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
