@@ -33,9 +33,9 @@ if etapa_escolhida != "Select a round...":
     pasta_etapa = os.path.join(PASTA_ETAPAS, etapa_escolhida)
     arquivos_xlsx = [f for f in os.listdir(pasta_etapa) if f.endswith(".xlsx")]
     corrida_labels = [os.path.splitext(f)[0] for f in arquivos_xlsx]
-    corridas_opcoes = ["Select a race..."] + sorted(corrida_labels)
-    corrida_label = st.selectbox("Choose a race:", corridas_opcoes)
-    if corrida_label != "Select a race...":
+    corridas_opcoes = ["Select a session..."] + sorted(corrida_labels)
+    corrida_label = st.selectbox("Choose a session:", corridas_opcoes)
+    if corrida_label != "Select a session...":
         corrida_index = corrida_labels.index(corrida_label)
         corrida_arquivo = arquivos_xlsx[corrida_index]
         corrida_escolhida = corrida_arquivo  # maintaining compabibility
@@ -373,6 +373,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
