@@ -370,9 +370,10 @@ if etapa_escolhida != "Select a round...":
 
 
     else:
-        st.warning("Please, select a race.")
+        st.warning("Please, select a session.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
