@@ -324,7 +324,7 @@ if etapa_escolhida != "Select a round...":
             st.subheader("Gap to Winner")
             fig, ax = plt.subplots(figsize=(10, 6))
             for car_id, car_data in sessao.groupby("Driver"):
-                ax.plot(car_data["Lap"], car_data["Gap to Winner"], label=f"{Driver}")
+                ax.plot(car_data["Lap"], car_data["Gap to Winner"])
             ax.axhline(0, color="black", linewidth=1, linestyle="--")  # winner reference line
             ax.set_xlabel("Lap")
             ax.set_ylabel("Gap to Winner (s)")
@@ -568,6 +568,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
