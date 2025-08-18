@@ -55,7 +55,6 @@ if etapa_escolhida != "Select a round...":
 
      
         #Creating another new column to calculate Gap to Leader
-        if "Crossing Time" in sessao.columns:
             # Convert to seconds
             sessao["Crossing Seconds"] = pd.to_timedelta(sessao["Crossing Time"]).dt.total_seconds()
         
@@ -569,6 +568,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
