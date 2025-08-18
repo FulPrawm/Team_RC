@@ -55,20 +55,25 @@ if etapa_escolhida != "Select a round...":
 
      
         #Creating another new column to calculate Gap to Leader
-        # 1. Calculate cumulative time per driver
-        sessao["Cumulative Time"] = sessao.groupby("Car_ID")["Lap Tm (S)"].cumsum()
-        # 2. Find the winner (driver who completed max laps and has lowest cumulative time)
-        laps_per_driver = sessao.groupby("Car_ID")["Lap"].max()
-        max_laps = laps_per_driver.max()
-        full_race_drivers = sessao[sessao["Car_ID"].isin(laps_per_driver[laps_per_driver == max_laps].index)]
-        last_laps = full_race_drivers.groupby("Car_ID").tail(1)
-        winner_time = last_laps["Cumulative Time"].min()
-        winner_id = last_laps.loc[last_laps["Cumulative Time"].idxmin(), "Car_ID"]
-        # 3. Build a reference: winner cumulative time by lap (series indexed by Lap)
-        winner_laps_series = sessao[sessao["Car_ID"] == winner_id].set_index("Lap")["Cumulative Time"]
-        # 4. Map winner cumulative time for each row's lap, then compute gap (same-lap reference)
-        sessao["Winner Cumulative at Lap"] = sessao["Lap"].map(winner_laps_series)   # NaN if winner has no that lap (unlikely)
-        sessao["Gap to Winner"] = sessao["Cumulative Time"] - sessao["Winner Cumulative at Lap"]
+        if "Crossing Time" in sessao.columns:
+            # Convert to seconds
+            sessao["Crossing Seconds"] = pd.to_timedelta(sessao["Crossing Time"]).dt.total_seconds()
+        
+            # Calculate cumulative crossing
+            sessao["Cumulative Crossing"] = sessao.groupby("Car_ID")["Crossing Seconds"].cummax()
+        
+            # Find winner (max laps, then lowest crossing time)
+            laps_per_car = sessao.groupby("Car_ID")["Lap"].max()
+            max_laps = laps_per_car.max()
+            candidates = laps_per_car[laps_per_car == max_laps].index
+            winner = sessao[sessao["Car_ID"].isin(candidates)].groupby("Car_ID")["Cumulative Crossing"].max().idxmin()
+        
+            # Calculate gap to winner
+            winner_times = sessao[sessao["Car_ID"] == winner][["Lap", "Cumulative Crossing"]].rename(
+                columns={"Cumulative Crossing": "Winner Crossing"}
+            )
+            sessao = sessao.merge(winner_times, on="Lap", how="left")
+            sessao["Gap to Winner"] = sessao["Cumulative Crossing"] - sessao["Winner Crossing"]
 
      
         # Dictionary relating each driver with each team
@@ -327,24 +332,8 @@ if etapa_escolhida != "Select a round...":
             st.plotly_chart(graf8)
 
             #Gap to Leader Graph
-            graf_gap = px.line(
-                sessao,
-                x="Lap",
-                y="Gap to Winner",
-                color="Driver",
-                title="Gap to Winner"
-            )
-            # 7. Highlight the winner trace (if mapping exists)
-            winner_driver = driver_dict.get(winner_id) if "driver_dict" in globals() else str(winner_id)
-            for trace in graf_gap.data:
-                if trace.name == winner_driver:
-                    trace.update(line=dict(width=3))     # thicker winner line
-                else:
-                    trace.update(opacity=0.85)           # slight transparency for others
-            # 8. Show in Streamlit
-            st.plotly_chart(graf_gap, use_container_width=True)
-            # 9. (Optional) show the table for inspection
-            st.dataframe(sessao[["Car_ID", "Driver", "Lap", "Lap Tm (S)", "Cumulative Time", "Winner Cumulative at Lap", "Gap to Winner"]])
+            graf = px.line(sessao, x="Lap", y="Gap to Winner", color="Driver", title="Gap to Winner")
+            st.plotly_chart(graf)
 
      
         elif option =='Histograms':
@@ -580,6 +569,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
