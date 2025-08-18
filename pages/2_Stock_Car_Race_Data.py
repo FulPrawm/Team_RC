@@ -56,9 +56,16 @@ if etapa_escolhida != "Select a round...":
      
         #Creating another new column to calculate Gap to Leader
         sessao["Cumulative Time"] = sessao.groupby("Car_ID")["Lap Tm (S)"].cumsum()
-        
-        # 2. Find the winner (lowest cumulative time on the last lap of each driver)
-        last_laps = sessao.groupby("Car_ID").tail(1)  # get the last lap of each driver
+        # 2. Find the winner
+        # Step 2.1: Get total laps per driver
+        laps_per_driver = sessao.groupby("Car_ID")["Lap"].max()
+        # Step 2.2: Get the maximum number of laps in the race
+        max_laps = laps_per_driver.max()
+        # Step 2.3: Filter only drivers who completed the maximum number of laps
+        full_race_drivers = sessao[sessao["Car_ID"].isin(laps_per_driver[laps_per_driver == max_laps].index)]
+        # Step 2.4: Get the last lap of these drivers
+        last_laps = full_race_drivers.groupby("Car_ID").tail(1)
+        # Step 2.5: Winner is the driver with the lowest cumulative time among them
         winner_time = last_laps["Cumulative Time"].min()
         winner_id = last_laps.loc[last_laps["Cumulative Time"].idxmin(), "Car_ID"]
         # 3. Calculate gap to winner
@@ -322,17 +329,14 @@ if etapa_escolhida != "Select a round...":
 
             #Gap to Leader Graph
             st.subheader("Gap to Winner")
-            fig, ax = plt.subplots(figsize=(10, 6))
-            for car_id, car_data in sessao.groupby("Driver"):
-                ax.plot(car_data["Lap"], car_data["Gap to Winner"])
-            ax.axhline(0, color="black", linewidth=1, linestyle="--")  # winner reference line
-            ax.set_xlabel("Lap")
-            ax.set_ylabel("Gap to Winner (s)")
-            ax.legend()
-            ax.grid(True)
-            st.pyplot(fig)
-            # Show table with results
-            st.dataframe(sessao[["Driver", "Lap", "Lap Tm (S)", "Cumulative Time", "Gap to Winner"]])
+            graf_gap = px.line(
+                sessao, 
+                x="Lap", 
+                y="Gap to Winner", 
+                color="Driver", 
+                title="Gap to Winner"
+            )
+            st.plotly_chart(graf_gap)
 
      
         elif option =='Histograms':
@@ -568,6 +572,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
