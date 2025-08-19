@@ -382,13 +382,13 @@ if etapa_escolhida != "Select a round...":
             st.plotly_chart(fig, use_container_width=True)
  
             # Tabs to Gap to Fastest
-            tabs = st.tabs(["Gap to Fastest Car - Lap", "Gap to Fastest Car - S1", "Gap to Fastest Car - S2", "Gap to Fastest Car - S3"])
+            tabs = st.tabs(["Gap to Fastest Car in AVG - Lap", "Gap to Fastest Car in AVG - S1", "Gap to Fastest Car in AVG - S2", "Gap to Fastest Car in AVG - S3"])
         
             colunas_setores = {
-                "Gap to Fastest Car - Lap": "Lap Tm (S)",
-                "Gap to Fastest Car - S1": "S1 Tm",
-                "Gap to Fastest Car - S2": "S2 Tm",
-                "Gap to Fastest Car - S3": "S3 Tm"
+                "Gap to Fastest Car in AVG - Lap": "Lap Tm (S)",
+                "Gap to Fastest Car in AVG - S1": "S1 Tm",
+                "Gap to Fastest Car in AVG - S2": "S2 Tm",
+                "Gap to Fastest Car in AVG - S3": "S3 Tm"
             }
         
             # Dicionário de cores dos seus carros
@@ -428,7 +428,7 @@ if etapa_escolhida != "Select a round...":
         
                     st.altair_chart(chart, use_container_width=True)
         
-            # Gráfico 3: Diferença percentual por volta com tendência
+            # Percentual difference with tendency
             st.header("Percentual difference to the best lap for each driver from this team")
         
             carros_desejados = [10, 11, 44, 88]
@@ -573,6 +573,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
