@@ -554,7 +554,12 @@ if etapa_escolhida != "Select a round...":
         elif option == 'All Laps':
             alllaps10 = sessao[sessao['Car_ID'] == 10]
             st.write("Ricardo Zonta")
-            st.dataframe(alllaps10)
+            styled_df = alllaps10.style.background_gradient(
+                cmap="RdYlGn_r",  # o "_r" inverte para ficar verde = baixo, vermelho = alto
+                subset=alllaps10.select_dtypes(include="number").columns,
+                axis=0
+            )
+            st.dataframe(styled_df10)
         
             alllaps11 = sessao[sessao['Car_ID'] == 11]
             st.write("Gaetano Di Mauro")
@@ -573,6 +578,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
