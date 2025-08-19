@@ -332,7 +332,7 @@ if etapa_escolhida != "Select a round...":
             st.plotly_chart(graf8)
 
             #Gap to Leader Graph
-            if "Crossing TIme" in sessao.columns:
+            if "Gap to Winner" in sessao.columns:
                 graf = px.line(sessao, x="Lap", y="Gap to Winner", color="Driver", title="Gap to Winner")
                 st.plotly_chart(graf)
             else:
@@ -573,6 +573,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
