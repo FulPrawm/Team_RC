@@ -1,5 +1,10 @@
 import streamlit as st
 from datetime import datetime, timedelta
+from streamlit_autorefresh import st_autorefresh
+
+# Atualização automática a cada 1 segundo
+st_autorefresh(interval=1000, limit=None)
+
 
 st.set_page_config(page_title="Painel Sessões", layout="wide")
 
