@@ -11,4 +11,5 @@ statsmodels
 scipy==1.11.4
 scikit-learn
 datetime
+st_autorefresh
 
