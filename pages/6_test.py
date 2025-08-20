@@ -43,6 +43,31 @@ st.markdown(
     f"<p style='text-align:center;'>{agora.strftime('%d/%m/%Y')}</p>",
     unsafe_allow_html=True
 )
+st.markdown("""
+    <style>
+    /* Aumenta o relógio */
+    .clock {
+        font-size: 70px !important;
+        font-weight: bold;
+        text-align: center;
+    }
+    /* Aumenta a data */
+    .date {
+        font-size: 30px !important;
+        text-align: center;
+    }
+    /* Aumenta os títulos */
+    h2, h3 {
+        font-size: 36px !important;
+    }
+    /* Blocos mais destacados */
+    .stAlert {
+        font-size: 22px !important;
+        padding: 20px;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
 
 # ------------------------
 # Descobrir Sessão Atual e Próxima
