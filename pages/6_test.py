@@ -32,12 +32,7 @@ for s in sessoes:
 # ------------------------
 # Atualização automática
 # ------------------------
-st_autorefresh = st.experimental_rerun  # apenas para deixar claro
-st.experimental_set_query_params()  
-st_autorefresh = st.experimental_rerun
-
-# Atualiza a cada segundo
-st_autorefresh = st.autorefresh(interval=1000, limit=None)
+st_autorefresh = st.autorefresh(interval=1000, limit=None)  # atualiza a cada 1 segundo
 
 # ------------------------
 # Layout
