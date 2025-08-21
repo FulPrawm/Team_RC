@@ -1,140 +1,117 @@
 import streamlit as st
+from streamlit_autorefresh import st_autorefresh
 from datetime import datetime, timedelta
-import pytz
-import time
 
-# ==============================
-# CONFIGURAÇÕES
-# ==============================
-st.set_page_config(layout="wide", page_title="Race Timer")
+# ------------------------
+# Configuração
+# ------------------------
+st.set_page_config(page_title="Painel de Sessões", layout="centered")
 
-# Definir timezone UTC-3 (São Paulo)
-tz = pytz.timezone("America/Sao_Paulo")
+# Atualização automática (1 segundo)
+st_autorefresh(interval=1000, limit=None)
 
-# ==============================
-# ESTILOS CUSTOMIZADOS
-# ==============================
-st.markdown("""
-    <style>
-    /* Fundo geral */
-    body {
-        background-color: #0e1117;
-    }
-    /* Relógio */
-    .clock {
-        font-size: 80px !important;
-        font-weight: bold;
-        text-align: center;
-        margin-bottom: -10px;
-    }
-    /* Data */
-    .date {
-        font-size: 28px !important;
-        text-align: center;
-        margin-bottom: 30px;
-    }
-    /* Títulos */
-    h2, h3 {
-        font-size: 40px !important;
-    }
-    /* Blocos */
-    .stAlert {
-        font-size: 24px !important;
-        padding: 25px;
-        border-radius: 15px;
-    }
-    </style>
-""", unsafe_allow_html=True)
-
-# ==============================
-# FUNÇÕES AUXILIARES
-# ==============================
-def format_timedelta(td):
-    """Formata timedelta para HH:MM:SS"""
-    total_seconds = int(td.total_seconds())
-    if total_seconds < 0:
-        return "00:00:00"
-    hours, remainder = divmod(total_seconds, 3600)
-    minutes, seconds = divmod(remainder, 60)
-    return f"{hours:01}:{minutes:02}:{seconds:02}"
-
-# ==============================
-# SESSÕES
-# ==============================
-# Exemplo de cronograma
+# ------------------------
+# Definição das sessões
+# ------------------------
 sessoes = [
-    {
-        "nome": "Treino Livre",
-        "inicio": tz.localize(datetime(2025, 8, 20, 19, 55, 0)),
-        "fim": tz.localize(datetime(2025, 8, 20, 20, 5, 0))
-    },
-    {
-        "nome": "Qualificação",
-        "inicio": tz.localize(datetime(2025, 8, 20, 20, 10, 0)),
-        "fim": tz.localize(datetime(2025, 8, 20, 20, 25, 0))
-    },
-    {
-        "nome": "Corrida",
-        "inicio": tz.localize(datetime(2025, 8, 20, 20, 40, 0)),
-        "fim": tz.localize(datetime(2025, 8, 20, 21, 40, 0))
-    }
+    {"nome": "Sessão 1", "inicio": "16:30", "duracao": 15},
+    {"nome": "Sessão 2", "inicio": "16:45", "duracao": 5},
+    {"nome": "Sessão 3", "inicio": "16:50", "duracao": 5},
+    {"nome": "Sessão 4", "inicio": "16:55", "duracao": 10},
 ]
 
-# ==============================
-# LOOP PRINCIPAL
-# ==============================
-placeholder = st.empty()
+# Ajustar datas para hoje
+hoje = datetime.now().date()
+for s in sessoes:
+    inicio_dt = datetime.strptime(s["inicio"], "%H:%M").replace(year=hoje.year, month=hoje.month, day=hoje.day)
+    s["inicio_dt"] = inicio_dt
+    s["fim_dt"] = inicio_dt + timedelta(minutes=s["duracao"])
 
-while True:
-    with placeholder.container():
-        agora = datetime.now(tz)
+# ------------------------
+# Layout
+# ------------------------
+st.markdown("<h1 style='text-align:center;'>Painel de Sessões</h1>", unsafe_allow_html=True)
 
-        # Relógio no topo
-        st.markdown(f"<div class='clock'>{agora.strftime('%H:%M:%S')}</div>", unsafe_allow_html=True)
-        st.markdown(f"<div class='date'>{agora.strftime('%d/%m/%Y')}</div>", unsafe_allow_html=True)
+# Relógio e Data
+agora = datetime.now()
+st.markdown(
+    f"""
+    <div style='text-align:center; font-size:40px; font-weight:bold;'>
+        {agora.strftime('%H:%M:%S')}
+    </div>
+    <div style='text-align:center; font-size:20px;'>
+        {agora.strftime('%d/%m/%Y')}
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
-        # Identificar sessão atual e próxima
-        sessao_atual = None
-        proxima_sessao = None
+# Descobrir sessão atual e próxima
+sessao_atual = None
+sessao_prox = None
+for i, s in enumerate(sessoes):
+    if s["inicio_dt"] <= agora < s["fim_dt"]:
+        sessao_atual = s
+        if i + 1 < len(sessoes):
+            sessao_prox = sessoes[i + 1]
+        break
+    if agora < s["inicio_dt"]:
+        sessao_prox = s
+        break
 
-        for i, s in enumerate(sessoes):
-            if s["inicio"] <= agora <= s["fim"]:
-                sessao_atual = s
-                if i + 1 < len(sessoes):
-                    proxima_sessao = sessoes[i + 1]
-                break
-            elif agora < s["inicio"]:
-                proxima_sessao = s
-                break
+# ---------------- Sessão Atual ----------------
+if sessao_atual:
+    decorrido = agora - sessao_atual["inicio_dt"]
+    restante = sessao_atual["fim_dt"] - agora
+    st.markdown(
+        f"""
+        <div style='background:#2e7d32; color:white; padding:20px; border-radius:15px; margin-top:20px;'>
+            <h2>Sessão Atual: {sessao_atual['nome']}</h2>
+            <p><b>Início:</b> {sessao_atual['inicio_dt'].strftime('%H:%M')} &nbsp;&nbsp; 
+               <b>Fim:</b> {sessao_atual['fim_dt'].strftime('%H:%M')}</p>
+            <p><b>Tempo Decorrido:</b> {str(decorrido).split('.')[0]} &nbsp;&nbsp;
+               <b>Tempo Restante:</b> {str(restante).split('.')[0]}</p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+else:
+    st.markdown(
+        f"""
+        <div style='background:#2e7d32; color:white; padding:20px; border-radius:15px; margin-top:20px;'>
+            <h2>Sessão Atual: -</h2>
+            <p><b>Início:</b> - &nbsp;&nbsp; <b>Fim:</b> -</p>
+            <p><b>Tempo Decorrido:</b> - &nbsp;&nbsp; <b>Tempo Restante:</b> -</p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
-        # Sessão atual
-        if sessao_atual:
-            st.subheader("Sessão Atual:")
-            tempo_decorrido = agora - sessao_atual["inicio"]
-            tempo_restante = sessao_atual["fim"] - agora
-            st.success(
-                f"**{sessao_atual['nome']}**  \n"
-                f"Início: {sessao_atual['inicio'].strftime('%H:%M:%S')} | Fim: {sessao_atual['fim'].strftime('%H:%M:%S')}  \n"
-                f"Tempo Decorrido: {format_timedelta(tempo_decorrido)} | Tempo Restante: {format_timedelta(tempo_restante)}"
-            )
-        else:
-            st.subheader("Sessão Atual:")
-            st.warning("Nenhuma sessão em andamento no momento.")
-
-        # Próxima sessão
-        if proxima_sessao:
-            st.subheader("Próxima Sessão:")
-            duracao = proxima_sessao["fim"] - proxima_sessao["inicio"]
-            regressivo = proxima_sessao["inicio"] - agora
-            st.info(
-                f"**{proxima_sessao['nome']}**  \n"
-                f"Início: {proxima_sessao['inicio'].strftime('%H:%M:%S')}  \n"
-                f"Duração: {format_timedelta(duracao)}  \n"
-                f"Regressivo: {format_timedelta(regressivo)}"
-            )
-        else:
-            st.subheader("Próxima Sessão:")
-            st.warning("Não há mais sessões programadas.")
-
-    time.sleep(1)
+# ---------------- Próxima Sessão ----------------
+if sessao_prox:
+    regressivo = sessao_prox["inicio_dt"] - agora
+    st.markdown(
+        f"""
+        <div style='background:#424242; color:white; padding:20px; border-radius:15px; margin-top:20px;'>
+            <h2>Próxima Sessão: {sessao_prox['nome']}</h2>
+            <p><b>Início:</b> {sessao_prox['inicio_dt'].strftime('%H:%M')}</p>
+            <p><b>Duração:</b> {sessao_prox['duracao']:02d} min</p>
+            <p><b>Regressivo:</b> <span style='font-size:30px; color:#00e676;'>
+            {str(regressivo).split('.')[0]}</span></p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+else:
+    st.markdown(
+        f"""
+        <div style='background:#424242; color:white; padding:20px; border-radius:15px; margin-top:20px;'>
+            <h2>Próxima Sessão: -</h2>
+            <p><b>Início:</b> -</p>
+            <p><b>Duração:</b> -</p>
+            <p><b>Regressivo:</b> -</p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
