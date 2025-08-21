@@ -275,7 +275,7 @@ if etapa_escolhida != "Select a round...":
         elif option == 'Lines':
 
             #Creating tabs for Progression
-            tabs = st.tabs(["Lap Time", "Sector 1", "Sector 2", "Sector 3", "Speed Trap"]])
+            tabs = st.tabs(["Lap Time", "Sector 1", "Sector 2", "Sector 3", "Speed Trap"])
 
             #Lap Progression
             with tabs[0]:
@@ -596,6 +596,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
