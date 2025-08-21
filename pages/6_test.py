@@ -19,8 +19,7 @@ sessoes = [
     {"nome": "Qualy - Grupo 1", "inicio": "11:00", "duracao": 20},
     {"nome": "Qualy - Grupo 2", "inicio": "11:25", "duracao": 20},
     {"nome": "Corrida 1", "inicio": "14:00", "duracao": 45},
-    {"nome": "Corrida 2", "inicio": "10:00", "duracao": 45},
-],
+    {"nome": "Corrida 2", "inicio": "10:00", "duracao": 45}
 ]
 
 # Ajustar datas para hoje
