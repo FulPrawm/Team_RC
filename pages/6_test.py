@@ -14,10 +14,13 @@ st_autorefresh(interval=1000, limit=None)
 # Definição das sessões
 # ------------------------
 sessoes = [
-    {"nome": "Sessão 1", "inicio": "16:30", "duracao": 15},
-    {"nome": "Sessão 2", "inicio": "16:45", "duracao": 5},
-    {"nome": "Sessão 3", "inicio": "16:50", "duracao": 5},
-    {"nome": "Sessão 4", "inicio": "16:55", "duracao": 10},
+    {"nome": "TL1 - Grupo 1", "inicio": "09:00", "duracao": 30},
+    {"nome": "TL1 - Grupo 2", "inicio": "09:35", "duracao": 30},
+    {"nome": "Qualy - Grupo 1", "inicio": "11:00", "duracao": 20},
+    {"nome": "Qualy - Grupo 2", "inicio": "11:25", "duracao": 20},
+    {"nome": "Corrida 1", "inicio": "14:00", "duracao": 45},
+    {"nome": "Corrida 2", "inicio": "10:00", "duracao": 45},
+],
 ]
 
 # Ajustar datas para hoje
