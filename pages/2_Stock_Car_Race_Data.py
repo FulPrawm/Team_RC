@@ -273,27 +273,36 @@ if etapa_escolhida != "Select a round...":
 
         
         elif option == 'Lines':
+
+            #Creating tabs for Progression
+            tabs = st.tabs(["Lap Time", "Sector 1", "Sector 2", "Sector 3", "Speed Trap"]])
+
             #Lap Progression
-            graf1 = px.line(sessao, x="Lap", y= "Lap Tm (S)", color="Driver", title='Lap Time Progression')
-            st.plotly_chart(graf1)
+            with tabs[0]:
+                graf1 = px.line(sessao, x="Lap", y= "Lap Tm (S)", color="Driver", title='Lap Time Progression')
+                st.plotly_chart(graf1)
         
             #S1 Progression
-            graf9 = px.line(sessao, x="Lap", y= "S1 Tm", color="Driver", title='S1 Time Progression')
-            st.plotly_chart(graf9)
+            with tabs[1]:
+                graf9 = px.line(sessao, x="Lap", y= "S1 Tm", color="Driver", title='S1 Time Progression')
+                st.plotly_chart(graf9)
         
             #S2 Progression
-            graf10 = px.line(sessao, x="Lap", y= "S2 Tm", color="Driver", title='S2 Time Progression')
-            st.plotly_chart(graf10)
+            with tabs[2]:
+                graf10 = px.line(sessao, x="Lap", y= "S2 Tm", color="Driver", title='S2 Time Progression')
+                st.plotly_chart(graf10)
         
             #S3 Progression
-            graf11 = px.line(sessao, x="Lap", y= "S3 Tm", color="Driver", title='S3 Time Progression')
-            st.plotly_chart(graf11)
+            with tabs[3]:
+                graf11 = px.line(sessao, x="Lap", y= "S3 Tm", color="Driver", title='S3 Time Progression')
+                st.plotly_chart(graf11)
         
             #SPT Progression
-            graf12 = px.line(sessao, x="Lap", y= "SPT", color="Driver", title='SPT Progression')
-            st.plotly_chart(graf12)
+            with tabs[4]:
+                graf12 = px.line(sessao, x="Lap", y= "SPT", color="Driver", title='SPT Progression')
+                st.plotly_chart(graf12)
         
-            # Create tabs
+            # Create tabs for Raising Average
             tabs = st.tabs(["Lap Time", "Sector 1", "Sector 2", "Sector 3", "Speed Trap"])
             
             # --- Lap Time Raising Average ---
@@ -587,6 +596,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
