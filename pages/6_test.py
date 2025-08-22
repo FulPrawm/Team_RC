@@ -16,8 +16,8 @@ st_autorefresh(interval=1000, limit=None)
 sessoes = [
     {"nome": "TL1 - Grupo 1", "inicio": "09:00", "duracao": 30},
     {"nome": "TL1 - Grupo 2", "inicio": "09:35", "duracao": 30},
-    {"nome": "Qualy - Grupo 1", "inicio": "11:00", "duracao": 20},
-    {"nome": "Qualy - Grupo 2", "inicio": "11:25", "duracao": 20},
+    {"nome": "Qualy - Grupo 1", "inicio": "15:25", "duracao": 20},
+    {"nome": "Qualy - Grupo 2", "inicio": "15:55", "duracao": 20},
     {"nome": "Corrida 1", "inicio": "14:00", "duracao": 45},
     {"nome": "Corrida 2", "inicio": "10:00", "duracao": 45}
 ]
