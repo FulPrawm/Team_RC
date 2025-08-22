@@ -1,79 +1,77 @@
 import streamlit as st
 from streamlit_autorefresh import st_autorefresh
 from datetime import datetime, timedelta
-import pytz
 
 # ------------------------
-# Configuração
+# Configuration
 # ------------------------
-st.set_page_config(page_title="Painel de Sessões", layout="centered")
+st.set_page_config(page_title="Session Panel", layout="centered")
 
-# Atualização automática (1 segundo)
+# Auto-refresh every 1 second
 st_autorefresh(interval=1000, limit=None)
 
 # ------------------------
-# Definição das sessões
+# Session schedule
 # ------------------------
-sessoes = [
-    {"nome": "Qualy - Grupo 1", "inicio": "15:35", "duracao": 20},
-    {"nome": "Qualy - Grupo 2", "inicio": "16:05", "duracao": 20}
+sessions = [
+    {"name": "Free Practice 1", "start": "2025-08-22 15:00", "duration": 40},  # Friday
+    {"name": "Free Practice 2", "start": "2025-08-22 18:00", "duration": 40},  # Friday
+    {"name": "Qualifying - Group 1", "start": "2025-08-23 15:35", "duration": 20}, # Saturday
+    {"name": "Qualifying - Group 2", "start": "2025-08-23 16:05", "duration": 20}, # Saturday
+    {"name": "Race 1", "start": "2025-08-23 18:00", "duration": 50},               # Saturday
+    {"name": "Race 2", "start": "2025-08-24 13:00", "duration": 50},               # Sunday
 ]
 
-# Timezone UTC-3 (São Paulo)
-tz = pytz.timezone("America/Sao_Paulo")
-
-# Ajustar datas para hoje
-hoje = datetime.now(tz).date()
-for s in sessoes:
-    h, m = map(int, s["inicio"].split(":"))
-    inicio_dt = tz.localize(datetime(hoje.year, hoje.month, hoje.day, h, m))
-    s["inicio_dt"] = inicio_dt
-    s["fim_dt"] = inicio_dt + timedelta(minutes=s["duracao"])
+# Convert start times into datetime objects
+for s in sessions:
+    start_dt = datetime.strptime(s["start"], "%Y-%m-%d %H:%M")
+    s["start_dt"] = start_dt
+    s["end_dt"] = start_dt + timedelta(minutes=s["duration"])
 
 # ------------------------
 # Layout
 # ------------------------
-st.markdown("<h1 style='text-align:center;'>Painel de Sessões</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align:center;'>Session Panel</h1>", unsafe_allow_html=True)
 
-# Relógio e Data
-agora = datetime.now(tz)
+# Current time and date
+now = datetime.now()
 st.markdown(
     f"""
     <div style='text-align:center; font-size:40px; font-weight:bold;'>
-        {agora.strftime('%H:%M:%S')}
+        {now.strftime('%H:%M:%S')}
     </div>
     <div style='text-align:center; font-size:20px;'>
-        {agora.strftime('%d/%m/%Y')}
+        {now.strftime('%d/%m/%Y')}
     </div>
     """,
     unsafe_allow_html=True
 )
 
-# Descobrir sessão atual e próxima
-sessao_atual = None
-sessao_prox = None
-for i, s in enumerate(sessoes):
-    if s["inicio_dt"] <= agora < s["fim_dt"]:
-        sessao_atual = s
-        if i + 1 < len(sessoes):
-            sessao_prox = sessoes[i + 1]
+# Detect current and next session
+current_session = None
+next_session = None
+for i, s in enumerate(sessions):
+    if s["start_dt"] <= now < s["end_dt"]:
+        current_session = s
+        if i + 1 < len(sessions):
+            next_session = sessions[i + 1]
         break
-    if agora < s["inicio_dt"]:
-        sessao_prox = s
+    if now < s["start_dt"]:
+        next_session = s
         break
 
-# ---------------- Sessão Atual ----------------
-if sessao_atual:
-    decorrido = agora - sessao_atual["inicio_dt"]
-    restante = sessao_atual["fim_dt"] - agora
+# ---------------- Current Session ----------------
+if current_session:
+    elapsed = now - current_session["start_dt"]
+    remaining = current_session["end_dt"] - now
     st.markdown(
         f"""
         <div style='background:#2e7d32; color:white; padding:20px; border-radius:15px; margin-top:20px;'>
-            <h2>Sessão Atual: {sessao_atual['nome']}</h2>
-            <p><b>Início:</b> {sessao_atual['inicio_dt'].strftime('%H:%M')} &nbsp;&nbsp; 
-               <b>Fim:</b> {sessao_atual['fim_dt'].strftime('%H:%M')}</p>
-            <p><b>Tempo Decorrido:</b> {str(decorrido).split('.')[0]} &nbsp;&nbsp;
-               <b>Tempo Restante:</b> {str(restante).split('.')[0]}</p>
+            <h2>Current Session: {current_session['name']}</h2>
+            <p><b>Start:</b> {current_session['start_dt'].strftime('%d/%m %H:%M')} &nbsp;&nbsp; 
+               <b>End:</b> {current_session['end_dt'].strftime('%d/%m %H:%M')}</p>
+            <p><b>Elapsed Time:</b> {str(elapsed).split('.')[0]} &nbsp;&nbsp;
+               <b>Remaining Time:</b> {str(remaining).split('.')[0]}</p>
         </div>
         """,
         unsafe_allow_html=True
@@ -82,25 +80,25 @@ else:
     st.markdown(
         f"""
         <div style='background:#2e7d32; color:white; padding:20px; border-radius:15px; margin-top:20px;'>
-            <h2>Sessão Atual: -</h2>
-            <p><b>Início:</b> - &nbsp;&nbsp; <b>Fim:</b> -</p>
-            <p><b>Tempo Decorrido:</b> - &nbsp;&nbsp; <b>Tempo Restante:</b> -</p>
+            <h2>Current Session: -</h2>
+            <p><b>Start:</b> - &nbsp;&nbsp; <b>End:</b> -</p>
+            <p><b>Elapsed Time:</b> - &nbsp;&nbsp; <b>Remaining Time:</b> -</p>
         </div>
         """,
         unsafe_allow_html=True
     )
 
-# ---------------- Próxima Sessão ----------------
-if sessao_prox:
-    regressivo = sessao_prox["inicio_dt"] - agora
+# ---------------- Next Session ----------------
+if next_session:
+    countdown = next_session["start_dt"] - now
     st.markdown(
         f"""
         <div style='background:#424242; color:white; padding:20px; border-radius:15px; margin-top:20px;'>
-            <h2>Próxima Sessão: {sessao_prox['nome']}</h2>
-            <p><b>Início:</b> {sessao_prox['inicio_dt'].strftime('%H:%M')}</p>
-            <p><b>Duração:</b> {sessao_prox['duracao']:02d} min</p>
-            <p><b>Regressivo:</b> <span style='font-size:30px; color:#00e676;'>
-            {str(regressivo).split('.')[0]}</span></p>
+            <h2>Next Session: {next_session['name']}</h2>
+            <p><b>Start:</b> {next_session['start_dt'].strftime('%d/%m %H:%M')}</p>
+            <p><b>Duration:</b> {next_session['duration']:02d} min</p>
+            <p><b>Countdown:</b> <span style='font-size:30px; color:#00e676;'>
+            {str(countdown).split('.')[0]}</span></p>
         </div>
         """,
         unsafe_allow_html=True
@@ -109,10 +107,10 @@ else:
     st.markdown(
         f"""
         <div style='background:#424242; color:white; padding:20px; border-radius:15px; margin-top:20px;'>
-            <h2>Próxima Sessão: -</h2>
-            <p><b>Início:</b> -</p>
-            <p><b>Duração:</b> -</p>
-            <p><b>Regressivo:</b> -</p>
+            <h2>Next Session: -</h2>
+            <p><b>Start:</b> -</p>
+            <p><b>Duration:</b> -</p>
+            <p><b>Countdown:</b> -</p>
         </div>
         """,
         unsafe_allow_html=True
