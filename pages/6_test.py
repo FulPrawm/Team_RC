@@ -1,6 +1,7 @@
 import streamlit as st
 from streamlit_autorefresh import st_autorefresh
 from datetime import datetime, timedelta
+import pytz
 
 # ------------------------
 # Configuração
@@ -18,10 +19,14 @@ sessoes = [
     {"nome": "Qualy - Grupo 2", "inicio": "16:05", "duracao": 20}
 ]
 
+# Timezone UTC-3 (São Paulo)
+tz = pytz.timezone("America/Sao_Paulo")
+
 # Ajustar datas para hoje
-hoje = datetime.now().date()
+hoje = datetime.now(tz).date()
 for s in sessoes:
-    inicio_dt = datetime.strptime(s["inicio"], "%H:%M").replace(year=hoje.year, month=hoje.month, day=hoje.day)
+    h, m = map(int, s["inicio"].split(":"))
+    inicio_dt = tz.localize(datetime(hoje.year, hoje.month, hoje.day, h, m))
     s["inicio_dt"] = inicio_dt
     s["fim_dt"] = inicio_dt + timedelta(minutes=s["duracao"])
 
@@ -31,7 +36,7 @@ for s in sessoes:
 st.markdown("<h1 style='text-align:center;'>Painel de Sessões</h1>", unsafe_allow_html=True)
 
 # Relógio e Data
-agora = datetime.now()
+agora = datetime.now(tz)
 st.markdown(
     f"""
     <div style='text-align:center; font-size:40px; font-weight:bold;'>
@@ -112,4 +117,3 @@ else:
         """,
         unsafe_allow_html=True
     )
-
