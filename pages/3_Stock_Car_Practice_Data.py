@@ -352,30 +352,10 @@ if etapa_escolhida != "Select a round...":
         
         
         elif option == 'All Laps':
-
-            # Filter data
+         
             alllaps10 = sessao[sessao['Car_ID'] == 10]
-            
             st.write("Ricardo Zonta")
-            
-            # Columns to apply the heatmap
-            cols_to_color = ['Lap Tm (S)', 'S1 Tm', 'S2 Tm', 'S3 Tm', 'SPT', 'Avg Speed']
-            
-            # Function to limit the colormap up to 10% above the fastest lap
-            def limited_gradient(s):
-                min_val = s.min()
-                max_val = min_val * 1.1  # 10% above the minimum
-                # Normalize values between 0-1
-                norm = (s - min_val) / (max_val - min_val)
-                norm[norm > 1] = 1  # anything above 10% uses max colormap
-                return [f"background-color: rgba(255,0,0,{v})" for v in norm]  # red proportional
-            
-            # Apply the function to each desired column
-            styled_df = alllaps10.style.apply(
-                lambda s: limited_gradient(s) if s.name in cols_to_color else ['']*len(s), axis=0
-            )
-            
-            st.dataframe(styled_df)
+            st.dataframe(alllaps10)
         
             alllaps11 = sessao[sessao['Car_ID'] == 11]
             st.write("Gaetano Di Mauro")
@@ -394,6 +374,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a session.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
