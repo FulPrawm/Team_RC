@@ -352,19 +352,20 @@ if etapa_escolhida != "Select a round...":
         
         
         elif option == 'All Laps':
-
-            # Filtrando os dados
+            # Filter the data
             alllaps10 = sessao[sessao['Car_ID'] == 10]
-            
             st.write("Ricardo Zonta")
-            
-            # Aplicando heatmap (por exemplo na coluna "Lap Tm (S)")
-            st.dataframe(
-                alllaps10.style.background_gradient(
-                    cmap='RdYlGn_r', # colormap (pode trocar por 'viridis', 'coolwarm', etc.)
-                    subset=['Lap Tm (S)','S1 Tm', 'S2 Tm', 'S3 Tm', 'SPT'] # nome da coluna que você quer aplicar
-                )
+            # Find the fastest lap time
+            fastest_lap = alllaps10['Lap Tm (S)'].min()
+            # Apply heatmap only up to +10% of the fastest lap
+            styled = alllaps10.T.style.background_gradient(
+                cmap="RdYlGn_r",
+                subset=["Lap Tm (S)"],
+                vmin=fastest_lap,
+                vmax=fastest_lap * 1.1
             )
+            # Display transposed table
+            st.dataframe(styled)
         
             alllaps11 = sessao[sessao['Car_ID'] == 11]
             st.write("Gaetano Di Mauro")
@@ -383,6 +384,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a session.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
