@@ -354,22 +354,23 @@ if etapa_escolhida != "Select a round...":
         elif option == 'All Laps':
 
             # Filter the data
-            alllaps10 = sessao[sessao['Car_ID'] == 10]
+            alllaps10 = sessao[sessao['Car_ID'] == 10].copy()
             
             st.write("Ricardo Zonta")
             
-            # Transpose first
-            alllaps10_T = alllaps10.T
+            # Use lap number (or similar) as index to make laps horizontal
+            if "Lap Number" in alllaps10.columns:
+                alllaps10 = alllaps10.set_index("Lap Number")
             
             # Columns to apply the heatmap
             cols = ["Lap Tm (S)", "S1 Tm", "S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
             
-            # Start with the transposed dataframe
-            styled = alllaps10_T.style
+            # Start styling
+            styled = alllaps10.style
             
             # Apply heatmap to each column individually with its own 10% cutoff
             for c in cols:
-                if c in alllaps10.columns:  # check original column names
+                if c in alllaps10.columns:
                     fastest = alllaps10[c].min()
                     styled = styled.background_gradient(
                         cmap="RdYlGn_r",
@@ -398,6 +399,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a session.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
