@@ -354,7 +354,7 @@ if etapa_escolhida != "Select a round...":
         elif option == 'All Laps':
 
             # Filter data
-            alllaps10 = session[session['Car_ID'] == 10]
+            alllaps10 = sessao[sessao['Car_ID'] == 10]
             
             st.write("Ricardo Zonta")
             
@@ -394,6 +394,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a session.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
