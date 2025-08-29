@@ -362,7 +362,7 @@ if etapa_escolhida != "Select a round...":
             st.dataframe(
                 alllaps10.style.background_gradient(
                     cmap='RdYlGn_r', # colormap (pode trocar por 'viridis', 'coolwarm', etc.)
-                    subset=['Lap Tm (S)'] # nome da coluna que você quer aplicar
+                    subset=['Lap Tm (S)','S1 Tm', 'S2 Tm', 'S3 Tm', 'SPT'] # nome da coluna que você quer aplicar
                 )
             )
         
@@ -383,6 +383,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a session.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
