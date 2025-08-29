@@ -357,7 +357,7 @@ if etapa_escolhida != "Select a round...":
             fig = px.imshow(
                 [alllaps10['Lap Tm (S)']], 
                 labels=dict(x="Lap", y="Driver", color="Lap Time (s)"),
-                x=alllaps10['Lap Number'],  # ou a coluna com o número da volta
+                x=alllaps10['Lap'],  # ou a coluna com o número da volta
                 y=["Ricardo Zonta"]
             )
             
@@ -380,6 +380,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a session.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
