@@ -352,9 +352,15 @@ if etapa_escolhida != "Select a round...":
         
         
         elif option == 'All Laps':
-            alllaps10 = sessao[sessao['Car_ID'] == 10]
-            st.write("Ricardo Zonta")
-            st.dataframe(alllaps10)
+            # Criar heatmap simples dos tempos de volta
+            fig = px.imshow(
+                [alllaps10['Lap Tm (S)']], 
+                labels=dict(x="Lap Number", y="Driver", color="Lap Time (s)"),
+                x=alllaps10['Lap Number'],  # ou a coluna com o número da volta
+                y=["Ricardo Zonta"]
+            )
+            
+            st.plotly_chart(fig, use_container_width=True)
         
             alllaps11 = sessao[sessao['Car_ID'] == 11]
             st.write("Gaetano Di Mauro")
@@ -373,6 +379,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a session.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
