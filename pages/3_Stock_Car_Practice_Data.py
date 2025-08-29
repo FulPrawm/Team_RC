@@ -353,34 +353,29 @@ if etapa_escolhida != "Select a round...":
         
         elif option == 'All Laps':
 
-            # Filter the data
-            alllaps10 = sessao[sessao['Car_ID'] == 10].copy()
+            # Filter data
+            alllaps10 = session[session['Car_ID'] == 10]
             
             st.write("Ricardo Zonta")
             
-            # Use lap number (or similar) as index to make laps horizontal
-            if "Lap Number" in alllaps10.columns:
-                alllaps10 = alllaps10.set_index("Lap Number")
-            
             # Columns to apply the heatmap
-            cols = ["Lap Tm (S)", "S1 Tm", "S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
+            cols_to_color = ['Lap Tm (S)', 'S1 Tm', 'S2 Tm', 'S3 Tm', 'SPT', 'Avg Speed']
             
-            # Start styling
-            styled = alllaps10.style
+            # Function to limit the colormap up to 10% above the fastest lap
+            def limited_gradient(s):
+                min_val = s.min()
+                max_val = min_val * 1.1  # 10% above the minimum
+                # Normalize values between 0-1
+                norm = (s - min_val) / (max_val - min_val)
+                norm[norm > 1] = 1  # anything above 10% uses max colormap
+                return [f"background-color: rgba(255,0,0,{v})" for v in norm]  # red proportional
             
-            # Apply heatmap to each column individually with its own 10% cutoff
-            for c in cols:
-                if c in alllaps10.columns:
-                    fastest = alllaps10[c].min()
-                    styled = styled.background_gradient(
-                        cmap="RdYlGn_r",
-                        subset=[c],
-                        vmin=fastest,
-                        vmax=fastest * 1.1
-                    )
+            # Apply the function to each desired column
+            styled_df = alllaps10.style.apply(
+                lambda s: limited_gradient(s) if s.name in cols_to_color else ['']*len(s), axis=0
+            )
             
-            # Show styled dataframe
-            st.dataframe(styled)
+            st.dataframe(styled_df)
         
             alllaps11 = sessao[sessao['Car_ID'] == 11]
             st.write("Gaetano Di Mauro")
@@ -399,6 +394,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a session.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
