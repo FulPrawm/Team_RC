@@ -352,6 +352,7 @@ if etapa_escolhida != "Select a round...":
         
         
         elif option == 'All Laps':
+            alllaps10 = sessao[sessao['Car_ID'] == 10]
             # Criar heatmap simples dos tempos de volta
             fig = px.imshow(
                 [alllaps10['Lap Tm (S)']], 
@@ -379,6 +380,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a session.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
