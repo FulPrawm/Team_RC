@@ -50,6 +50,25 @@ with st.expander("How to interpret the charts"):
     st.write("- Gaps are displayed in time deltas relative to the race.")
     st.write("- Lines, colors, boxes and dots represent individual drivers or data groupings.")
 
+# New section for the "Watch" page
+st.subheader("Watch Page")
+st.info(
+    "The **Watch** page provides real-time information on the weekend sessions, including:\n"
+    "- **Current Day & Time:** shows the current date and time.\n"
+    "- **Session Schedule:** start and end times for each session.\n"
+    "- **Elapsed Time & Time Remaining:** tracks how long a session has been running and how much time is left.\n"
+    "- **Next Session Info:** displays the upcoming session, its duration, and countdown until it begins.\n"
+)
+
+st.markdown("""
+### Overview
+The Watch page helps you stay updated with the weekend racing schedule. It allows you to quickly know:
+- Which session is currently running.
+- How long it has been running.
+- When the next session will start.
+- The total duration of each session.
+- Countdown timers for upcoming sessions.
+""")
 
 
 
