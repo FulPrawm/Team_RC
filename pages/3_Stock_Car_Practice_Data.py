@@ -353,33 +353,33 @@ if etapa_escolhida != "Select a round...":
         
         elif option == 'All Laps':
 
-           # Filter the data
-           alllaps10 = sessao[sessao['Car_ID'] == 10]
-           
-           st.write("Ricardo Zonta")
-           
-           # Transpose first
-           alllaps10_T = alllaps10.T
-           
-           # Columns to apply the heatmap
-           cols = ["Lap Tm (S)", "S1 Tm", "S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
-           
-           # Start with the transposed dataframe
-           styled = alllaps10_T.style
-           
-           # Apply heatmap to each column individually with its own 10% cutoff
-           for c in cols:
-               if c in alllaps10.columns:  # check original column names
-                   fastest = alllaps10[c].min()
-                   styled = styled.background_gradient(
-                       cmap="RdYlGn_r",
-                       subset=[c],
-                       vmin=fastest,
-                       vmax=fastest * 1.1
-                   )
-           
-           # Show styled dataframe
-           st.dataframe(styled)
+            # Filter the data
+            alllaps10 = sessao[sessao['Car_ID'] == 10]
+            
+            st.write("Ricardo Zonta")
+            
+            # Transpose first
+            alllaps10_T = alllaps10.T
+            
+            # Columns to apply the heatmap
+            cols = ["Lap Tm (S)", "S1 Tm", "S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
+            
+            # Start with the transposed dataframe
+            styled = alllaps10_T.style
+            
+            # Apply heatmap to each column individually with its own 10% cutoff
+            for c in cols:
+                if c in alllaps10.columns:  # check original column names
+                    fastest = alllaps10[c].min()
+                    styled = styled.background_gradient(
+                        cmap="RdYlGn_r",
+                        subset=[c],
+                        vmin=fastest,
+                        vmax=fastest * 1.1
+                    )
+            
+            # Show styled dataframe
+            st.dataframe(styled)
         
             alllaps11 = sessao[sessao['Car_ID'] == 11]
             st.write("Gaetano Di Mauro")
@@ -398,6 +398,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a session.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
