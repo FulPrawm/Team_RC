@@ -14,12 +14,15 @@ st_autorefresh(interval=1000, limit=None)
 # Session schedule
 # ------------------------
 sessions = [
-    {"name": "Free Practice 1", "start": "2025-08-22 15:00", "duration": 40},  # Friday
-    {"name": "Free Practice 2", "start": "2025-08-22 18:00", "duration": 40},  # Friday
-    {"name": "Qualifying - Group 1", "start": "2025-08-23 15:35", "duration": 20}, # Saturday
-    {"name": "Qualifying - Group 2", "start": "2025-08-23 16:05", "duration": 20}, # Saturday
-    {"name": "Race 1", "start": "2025-08-23 18:00", "duration": 50},               # Saturday
-    {"name": "Race 2", "start": "2025-08-24 13:00", "duration": 50},               # Sunday
+    {"name": "SD", "start": "2025-09-05 09:00", "duration": 35},               # Friday
+    {"name": "FP1", "start": "2025-09-05 11:20", "duration": 65},              # Friday
+    {"name": "FP2", "start": "2025-09-05 15:25", "duration": 65},              # Friday
+    {"name": "Q1 - Group 1", "start": "2025-09-06 15:35", "duration": 8},     # Saturday
+    {"name": "Q1 - Group 2", "start": "2025-09-06 16:05", "duration": 8},     # Saturday
+    {"name": "Q2", "start": "2025-09-06 16:05", "duration": 8},               # Saturday
+    {"name": "Q3", "start": "2025-09-06 16:05", "duration": 8},               # Saturday
+    {"name": "Race 1", "start": "2025-09-06 14:33", "duration": 30},           # Saturday
+    {"name": "Race 2", "start": "2025-09-07 14:10", "duration": 50},           # Sunday
 ]
 
 # Convert start times into datetime objects
