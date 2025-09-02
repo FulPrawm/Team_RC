@@ -6,32 +6,31 @@ from zoneinfo import ZoneInfo  # stdlib (Python 3.9+)
 # ------------------------
 # Configuration
 # ------------------------
-st.set_page_config(page_title="Session Panel", layout="centered")
+st.set_page_config(page_title="Painel de Sessões", layout="centered")
 st_autorefresh(interval=1000, limit=None)  # auto-refresh every 1s
 
 # ------------------------
 # Timezone (UTC-3)
 # ------------------------
-tz = ZoneInfo("America/Sao_Paulo")  # use "America/Sao_Paulo" for UTC-3 (handles DST)
+tz = ZoneInfo("America/Sao_Paulo")
 
 # ------------------------
-# Session schedule (keep same format)
+# Session schedule
 # ------------------------
 sessions = [
-    {"name": "SD", "start": "2025-09-05 09:00", "duration": 35},
+    {"name": "Treino Livre 1", "start": "2025-09-05 09:00", "duration": 35},
     {"name": "FP1", "start": "2025-09-05 11:20", "duration": 65},
     {"name": "FP2", "start": "2025-09-05 15:25", "duration": 65},
-    {"name": "Q1 - Group 1", "start": "2025-09-06 15:35", "duration": 8},
-    {"name": "Q1 - Group 2", "start": "2025-09-06 16:05", "duration": 8},
-    {"name": "Q2", "start": "2025-09-06 16:05", "duration": 8},
-    {"name": "Q3", "start": "2025-09-06 16:05", "duration": 8},
-    {"name": "Race 1", "start": "2025-09-06 14:33", "duration": 30},
-    {"name": "Race 2", "start": "2025-09-07 14:10", "duration": 50},
+    {"name": "Q1 - Grupo 1", "start": "2025-09-06 15:35", "duration": 8},
+    {"name": "Q1 - Grupo 2", "start": "2025-09-06 16:05", "duration": 8},
+    {"name": "Q2", "start": "2025-09-06 16:20", "duration": 8},
+    {"name": "Q3", "start": "2025-09-06 16:35", "duration": 8},
+    {"name": "Corrida 1", "start": "2025-09-06 18:00", "duration": 30},
+    {"name": "Corrida 2", "start": "2025-09-07 14:10", "duration": 50},
 ]
 
-# Convert start times into timezone-aware datetime objects (UTC-3)
+# Convert start times into timezone-aware datetime objects
 for s in sessions:
-    # parse naive datetime then attach tzinfo (no time shift)
     naive = datetime.strptime(s["start"], "%Y-%m-%d %H:%M")
     start_dt = naive.replace(tzinfo=tz)
     s["start_dt"] = start_dt
@@ -40,14 +39,14 @@ for s in sessions:
 # ------------------------
 # Layout
 # ------------------------
-st.markdown("<h1 style='text-align:center;'>Session Panel</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align:center;'>Painel de Sessões</h1>", unsafe_allow_html=True)
 
-# Current time and date (server time converted to UTC-3)
+# Current time and date (in UTC-3)
 now = datetime.now(tz)
 st.markdown(
     f"""
     <div style='text-align:center; font-size:40px; font-weight:bold;'>
-        {now.strftime('%H:%M:%S')} ({now.tzname()})
+        {now.strftime('%H:%M:%S')}
     </div>
     <div style='text-align:center; font-size:20px;'>
         {now.strftime('%d/%m/%Y')}
@@ -69,18 +68,18 @@ for i, s in enumerate(sessions):
         next_session = s
         break
 
-# ---------------- Current Session ----------------
+# ---------------- Sessão Atual ----------------
 if current_session:
     elapsed = now - current_session["start_dt"]
     remaining = current_session["end_dt"] - now
     st.markdown(
         f"""
         <div style='background:#2e7d32; color:white; padding:20px; border-radius:15px; margin-top:20px;'>
-            <h2>Current Session: {current_session['name']}</h2>
-            <p><b>Start:</b> {current_session['start_dt'].strftime('%d/%m %H:%M %Z')} &nbsp;&nbsp; 
-               <b>End:</b> {current_session['end_dt'].strftime('%d/%m %H:%M %Z')}</p>
-            <p><b>Elapsed Time:</b> {str(elapsed).split('.')[0]} &nbsp;&nbsp;
-               <b>Remaining Time:</b> {str(remaining).split('.')[0]}</p>
+            <h2>Sessão Atual: {current_session['name']}</h2>
+            <p><b>Início:</b> {current_session['start_dt'].strftime('%d/%m %H:%M')} &nbsp;&nbsp; 
+               <b>Fim:</b> {current_session['end_dt'].strftime('%d/%m %H:%M')}</p>
+            <p><b>Tempo Decorrido:</b> {str(elapsed).split('.')[0]} &nbsp;&nbsp;
+               <b>Tempo Restante:</b> {str(remaining).split('.')[0]}</p>
         </div>
         """,
         unsafe_allow_html=True
@@ -89,24 +88,24 @@ else:
     st.markdown(
         f"""
         <div style='background:#2e7d32; color:white; padding:20px; border-radius:15px; margin-top:20px;'>
-            <h2>Current Session: -</h2>
-            <p><b>Start:</b> - &nbsp;&nbsp; <b>End:</b> -</p>
-            <p><b>Elapsed Time:</b> - &nbsp;&nbsp; <b>Remaining Time:</b> -</p>
+            <h2>Sessão Atual: -</h2>
+            <p><b>Início:</b> - &nbsp;&nbsp; <b>Fim:</b> -</p>
+            <p><b>Tempo Decorrido:</b> - &nbsp;&nbsp; <b>Tempo Restante:</b> -</p>
         </div>
         """,
         unsafe_allow_html=True
     )
 
-# ---------------- Next Session ----------------
+# ---------------- Próxima Sessão ----------------
 if next_session:
     countdown = next_session["start_dt"] - now
     st.markdown(
         f"""
         <div style='background:#424242; color:white; padding:20px; border-radius:15px; margin-top:20px;'>
-            <h2>Next Session: {next_session['name']}</h2>
-            <p><b>Start:</b> {next_session['start_dt'].strftime('%d/%m %H:%M %Z')}</p>
-            <p><b>Duration:</b> {next_session['duration']:02d} min</p>
-            <p><b>Countdown:</b> <span style='font-size:30px; color:#00e676;'>
+            <h2>Próxima Sessão: {next_session['name']}</h2>
+            <p><b>Início:</b> {next_session['start_dt'].strftime('%d/%m %H:%M')}</p>
+            <p><b>Duração:</b> {next_session['duration']:02d} min</p>
+            <p><b>Contagem Regressiva:</b> <span style='font-size:30px; color:#00e676;'>
             {str(countdown).split('.')[0]}</span></p>
         </div>
         """,
@@ -116,11 +115,12 @@ else:
     st.markdown(
         f"""
         <div style='background:#424242; color:white; padding:20px; border-radius:15px; margin-top:20px;'>
-            <h2>Next Session: -</h2>
-            <p><b>Start:</b> -</p>
-            <p><b>Duration:</b> -</p>
-            <p><b>Countdown:</b> -</p>
+            <h2>Próxima Sessão: -</h2>
+            <p><b>Início:</b> -</p>
+            <p><b>Duração:</b> -</p>
+            <p><b>Contagem Regressiva:</b> -</p>
         </div>
         """,
         unsafe_allow_html=True
     )
+
