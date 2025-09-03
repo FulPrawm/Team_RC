@@ -18,15 +18,27 @@ tz = ZoneInfo("America/Sao_Paulo")
 # Session schedule
 # ------------------------
 sessions = [
-    {"name": "Treino Livre 1", "start": "2025-09-05 09:00", "duration": 35},
-    {"name": "FP1", "start": "2025-09-05 11:20", "duration": 65},
-    {"name": "FP2", "start": "2025-09-05 15:25", "duration": 65},
-    {"name": "Q1 - Grupo 1", "start": "2025-09-06 15:35", "duration": 8},
-    {"name": "Q1 - Grupo 2", "start": "2025-09-06 16:05", "duration": 8},
-    {"name": "Q2", "start": "2025-09-06 16:20", "duration": 8},
-    {"name": "Q3", "start": "2025-09-06 16:35", "duration": 8},
-    {"name": "Corrida 1", "start": "2025-09-06 18:00", "duration": 30},
-    {"name": "Corrida 2", "start": "2025-09-07 14:10", "duration": 50},
+    {"name": "Retirada de Pneus Parque Fechado - Shakedown e 1º. Treino", "start": "2025-09-05 08:00", "duration": 20},
+    {"name": "SD", "start": "2025-09-05 09:00", "duration": 35},
+    {"name": "TL1", "start": "2025-09-05 11:20", "duration": 65},
+    {"name": "Devolução Pneus Parque Fechado - Shakedown e 1º. Treino", "start": "2025-09-05 12:25", "duration": 30},
+    {"name": "Retirada de Pneus Parque Fechado - 2º. Treino", "start": "2025-09-05 14:25", "duration": 20},
+    {"name": "TL2", "start": "2025-09-05 15:25", "duration": 65},
+    {"name": "Devolução Pneus Parque Fechado - 2º. Treino", "start": "2025-09-05 16:30", "duration": 30},
+    {"name": "Briefing CBA", "start": "2025-09-05 18:00", "duration": 30},
+    {"name": "Retirada de Pneus Parque Fechado - Classificatório", "start": "2025-09-06 09:10", "duration": 20},
+    {"name": "Qualy", "start": "2025-09-06 10:10", "duration": 50},
+    {"name": "Retirada de Pneus Parque Fechado - 1a. Corrida", "start": "2025-09-06 12:40", "duration": 20},
+    {"name": "Box Aberto", "start": "2025-09-06 13:40", "duration": 10},
+    {"name": "Box Fechado - Todos os carros para Box", "start": "2025-09-06 13:50", "duration": 5},
+    {"name": "Formação Imediata do Grid", "start": "2025-09-06 13:57", "duration": 3},
+    {"name": "Corrida 1", "start": "2025-09-06 14:33", "duration": 32},
+    {"name": "Shakedown - Grupo Único", "start": "2025-09-07 08:00", "duration": 20},
+    {"name": "Retirada de Pneus Parque Fechado - 2a. Corrida", "start": "2025-09-07 12:00", "duration": 20},
+    {"name": "Box Aberto", "start": "2025-09-07 13:00", "duration": 10},
+    {"name": "Box Fechado - Todos os carros para Box", "start": "2025-09-07 13:10", "duration": 5},
+    {"name": "Formação Imediata do Grid", "start": "2025-09-07 13:17", "duration": 3},
+    {"name": "Corrida 2", "start": "2025-09-07 14:10", "duration": 52},
 ]
 
 # Convert start times into timezone-aware datetime objects
