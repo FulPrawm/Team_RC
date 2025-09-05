@@ -165,12 +165,12 @@ if etapa_escolhida != "Select a round...":
         analise_Manufacturer = ['Manufacturer', "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
         
 
-        # Automatic filter based 4% of the Best lap in the session
+        # Automatic filter based 10% of the Best lap in the session
         melhor_volta = sessao["Lap Tm (S)"].min()
-        tempo_limite = melhor_volta * 1.04
+        tempo_limite = melhor_volta * 1.10
         st.subheader("Auto filter applied")
         st.write(f"Best lap in the session: **{melhor_volta:.3f} s**")
-        st.write(f"4% filter applied: **{tempo_limite:.3f} s**")
+        st.write(f"10% filter applied: **{tempo_limite:.3f} s**")
         sessao_filtrado = sessao[sessao["Lap Tm (S)"] <= tempo_limite]
         
 
@@ -374,6 +374,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a session.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
