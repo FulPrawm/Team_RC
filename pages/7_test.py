@@ -7,15 +7,12 @@ st.title("Gráfico de Dispersão por Carro")
 uploaded_file = st.file_uploader("Carregue o arquivo Excel", type=["xlsx"])
 
 if uploaded_file:
-    # Ler os dados ignorando as 2 primeiras linhas
-    df = pd.read_excel(uploaded_file, skiprows=1)
-
-    # Renomear colunas para facilitar
-    df.columns = [str(c) for c in df.columns]
+    # Ler os dados: linha 1 = header, linha 2 = pular
+    df = pd.read_excel(uploaded_file, header=0, skiprows=[1])
 
     # Selecionar colunas relevantes
-    col_carro = df.columns[1]   # Coluna B
-    col_volta = df.columns[4]   # Coluna E
+    col_carro = df.columns[1]   # Coluna B = carro
+    col_volta = df.columns[4]   # Coluna E = volta
     colunas_y = df.columns[6:]  # Colunas a partir da G
 
     st.write("### Prévia dos dados:")
@@ -34,3 +31,4 @@ if uploaded_file:
         labels={col_volta: "Voltas", ycol: ycol, col_carro: "Carro"},
     )
     st.plotly_chart(fig, use_container_width=True)
+
