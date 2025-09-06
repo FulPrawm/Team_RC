@@ -18,9 +18,7 @@ tz = ZoneInfo("America/Sao_Paulo")
 # Session schedule
 # ------------------------
 sessions = [
-    {"name": "Warm up - Grupo Único", "start": "2025-09-06 07:30", "duration": 30},
-    {"name": "Retirada de Pneus Parque Fechado - Classificatório", "start": "2025-09-06 09:10", "duration": 20},
-    {"name": "Qualy", "start": "2025-09-06 10:10", "duration": 50},
+    {"name": "Qualy", "start": "2025-09-06 10:30", "duration": 50},
     {"name": "Retirada de Pneus Parque Fechado - 1a. Corrida", "start": "2025-09-06 12:40", "duration": 20},
     {"name": "Box Aberto", "start": "2025-09-06 13:40", "duration": 10},
     {"name": "Box Fechado - Todos os carros para Box", "start": "2025-09-06 13:50", "duration": 5},
