@@ -196,7 +196,7 @@ if etapa_escolhida != "Select a round...":
             min_value=0.0,
             max_value=20.0,
             value=4.0,
-            step=1,
+            step=1.0,
         )       
         # Tempo limite baseado na % escolhida
         tempo_limite = melhor_volta * (1 + percentual / 100)  
@@ -601,6 +601,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
