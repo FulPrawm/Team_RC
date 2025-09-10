@@ -165,12 +165,27 @@ if etapa_escolhida != "Select a round...":
         analise_Manufacturer = ['Manufacturer', "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
         
 
-        # Automatic filter based 10% of the Best lap in the session
+        # Melhor volta da sessão
         melhor_volta = sessao["Lap Tm (S)"].min()
-        tempo_limite = melhor_volta * 1.04
-        st.subheader("Auto filter applied")
+        
+        # Adicionar slider para o usuário escolher a % do filtro
+        percentual = st.slider(
+            "Select filter percentage (%)",
+            min_value=0.0,
+            max_value=20.0,
+            value=4.0,
+            step=0.5,
+        )
+        
+        # Calcular o tempo limite baseado na % escolhida
+        tempo_limite = melhor_volta * (1 + percentual / 100)
+        
+        # Exibir informações
+        st.subheader("Custom filter applied")
         st.write(f"Best lap in the session: **{melhor_volta:.3f} s**")
-        st.write(f"4% filter applied: **{tempo_limite:.3f} s**")
+        st.write(f"{percentual:.1f}% filter applied: **{tempo_limite:.3f} s**")
+        
+        # Aplicar o filtro
         sessao_filtrado = sessao[sessao["Lap Tm (S)"] <= tempo_limite]
         
 
@@ -374,6 +389,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a session.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
