@@ -188,21 +188,29 @@ if etapa_escolhida != "Select a round...":
         analise_carros = ['Driver',"Manufacturer", "Team", "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
         analise_Manufacturer = ['Manufacturer', "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
 
-     
-        # Auto filter based on 4% of the fastest lap of the session
+        # Melhor volta da sessão
         melhor_volta = sessao["Lap Tm (S)"].min()
-        tempo_limite = melhor_volta * 1.04
-        # Equation for how many laps each driver made
-        voltas_por_piloto = sessao.groupby('Car_ID')['Lap'].nunique()
-        # Driver with most laps (winner)
-        max_voltas = voltas_por_piloto.max()
-        min_voltas_necessarias = int(np.floor(max_voltas * 0.5))  # Rounds to lowest
-        # List of driver with at least 50% of the laps completed
-        pilotos_validos = voltas_por_piloto[voltas_por_piloto >= min_voltas_necessarias].index
-        # Aplying filter to only valid drivers
-        sessao_filtrado = sessao[sessao['Car_ID'].isin(pilotos_validos)]  
-        # Aplying lap time filter (4% of fastest time)
-        sessao_filtrado = sessao_filtrado[sessao_filtrado["Lap Tm (S)"] <= tempo_limite]
+        
+        # Adicionar slider para o usuário escolher a % do filtro
+        percentual = st.slider(
+            "Select filter percentage (%)",
+            min_value=0.0,
+            max_value=20.0,
+            value=4.0,
+            step=0.5,
+        )
+        
+        # Calcular o tempo limite baseado na % escolhida
+        tempo_limite = melhor_volta * (1 + percentual / 100)
+        
+        # Exibir informações
+        st.subheader("Custom filter applied")
+        st.write(f"Best lap in the session: **{melhor_volta:.3f} s**")
+        st.write(f"{percentual:.1f}% filter applied: **{tempo_limite:.3f} s**")
+        
+        # Aplicar o filtro
+        sessao_filtrado = sessao[sessao["Lap Tm (S)"] <= tempo_limite]
+
 
      
         # Exhibiting information of the data filters
@@ -596,6 +604,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
