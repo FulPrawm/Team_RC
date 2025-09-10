@@ -174,7 +174,7 @@ if etapa_escolhida != "Select a round...":
             min_value=0.0,
             max_value=20.0,
             value=4.0,
-            step=0.5,
+            step=1,
         )
         
         # Calcular o tempo limite baseado na % escolhida
@@ -389,6 +389,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a session.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
