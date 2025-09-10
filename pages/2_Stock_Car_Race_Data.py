@@ -211,15 +211,6 @@ if etapa_escolhida != "Select a round...":
         # Aplicar o filtro
         sessao_filtrado = sessao[sessao["Lap Tm (S)"] <= tempo_limite]
 
-
-     
-        # Exhibiting information of the data filters
-        st.subheader("Auto filter applied")
-        st.write(f"🔍 Best lap of the session: **{melhor_volta:.3f} s**")
-        st.write(f"📏 4% filter applied: **{tempo_limite:.3f} s**")
-        st.write(f"🧮 Maximum laps completed: **{max_voltas} laps**")
-        st.write(f"⚠️ Only drivers with **at least {min_voltas_necessarias} laps completed** will be considered in the analysis.")
-
      
         # List of columns that SHOULD be numerics
         colunas_temporais = ["Lap Tm (S)", "S1 Tm", "S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
@@ -604,6 +595,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
