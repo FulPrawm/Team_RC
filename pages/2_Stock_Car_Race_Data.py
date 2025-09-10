@@ -189,29 +189,35 @@ if etapa_escolhida != "Select a round...":
         analise_Manufacturer = ['Manufacturer', "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
 
         # Melhor volta da sessão
-        melhor_volta = sessao["Lap Tm (S)"].min()
-        
-        # Adicionar slider para o usuário escolher a % do filtro
+        melhor_volta = sessao["Lap Tm (S)"].min()        
+        # Slider para o usuário escolher a porcentagem do filtro
         percentual = st.slider(
-            "Select filter percentage (%)",
+            "Select lap time filter percentage (%)",
             min_value=0.0,
             max_value=20.0,
             value=4.0,
-            step=0.5,
-        )
-        
-        # Calcular o tempo limite baseado na % escolhida
-        tempo_limite = melhor_volta * (1 + percentual / 100)
-        
+            step=1,
+        )       
+        # Tempo limite baseado na % escolhida
+        tempo_limite = melhor_volta * (1 + percentual / 100)  
+        # Cálculo de voltas por piloto
+        voltas_por_piloto = sessao.groupby('Car_ID')['Lap'].nunique()
+        # Piloto com mais voltas (para referência de 50%)
+        max_voltas = voltas_por_piloto.max()
+        min_voltas_necessarias = int(np.floor(max_voltas * 0.5))  # Arredonda pra baixo 
+        # Lista de pilotos válidos (com pelo menos 50% das voltas completadas)
+        pilotos_validos = voltas_por_piloto[voltas_por_piloto >= min_voltas_necessarias].index
+        # Aplicar filtro de pilotos válidos
+        sessao_filtrado = sessao[sessao['Car_ID'].isin(pilotos_validos)]
+        # Aplicar filtro de tempo de volta
+        sessao_filtrado = sessao_filtrado[sessao_filtrado["Lap Tm (S)"] <= tempo_limite]
         # Exibir informações
         st.subheader("Custom filter applied")
-        st.write(f"Best lap in the session: **{melhor_volta:.3f} s**")
-        st.write(f"{percentual:.1f}% filter applied: **{tempo_limite:.3f} s**")
-        
-        # Aplicar o filtro
-        sessao_filtrado = sessao[sessao["Lap Tm (S)"] <= tempo_limite]
+        st.write(f"🔍 Best lap of the session: **{melhor_volta:.3f} s**")
+        st.write(f"📏 {percentual:.1f}% filter applied: **{tempo_limite:.3f} s**")
+        st.write(f"🧮 Maximum laps completed: **{max_voltas} laps**")
+        st.write(f"⚠️ Only drivers with **at least {min_voltas_necessarias} laps completed** will be considered in the analysis.")
 
-     
         # List of columns that SHOULD be numerics
         colunas_temporais = ["Lap Tm (S)", "S1 Tm", "S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
         # Converts these columns to Float, forcing errors as NaN
@@ -595,6 +601,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
