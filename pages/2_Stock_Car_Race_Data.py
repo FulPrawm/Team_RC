@@ -371,6 +371,14 @@ if etapa_escolhida != "Select a round...":
             else:
                 st.info("⚠️ 'Crossing Time' not available for this session. Gap to Winner graph will not be displayed.")
 
+                 # Gap to Leader Graph
+            if "Gap to Leader" in sessao.columns:
+                graf_leader = px.line(sessao, x="Lap", y="Gap to Leader", color="Driver", title="Gap to Leader")
+                st.plotly_chart(graf_leader)
+            else:
+                st.info("⚠️ 'Crossing Time' not available for this session. Gap to Leader graph will not be displayed.")
+
+
 
      
         elif option =='Histograms':
@@ -611,6 +619,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
