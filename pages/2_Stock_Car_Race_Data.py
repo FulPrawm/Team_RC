@@ -295,26 +295,24 @@ if etapa_escolhida != "Select a round...":
                 gaps_table = sessao.pivot(index="Position", columns="Lap", values="Gap to Leader")
                 cars_table = sessao.pivot(index="Position", columns="Lap", values="Car_ID")
             
-                # Round gaps and format
-                gaps_table = gaps_table.round(2)
-            
-                # Rename columns to "Lap X"
-                gaps_table.columns = [f"Lap {lap}" for lap in gaps_table.columns]
-                cars_table.columns = [f"Lap {lap}" for lap in cars_table.columns]
+                # Round gaps to 3 decimals
+                gaps_table = gaps_table.round(3)
             
                 # Rename index to P1, P2, ...
                 gaps_table.index = [f"P{pos}" for pos in gaps_table.index]
                 cars_table.index = [f"P{pos}" for pos in cars_table.index]
             
-                st.subheader("Classification Table (Gap to Leader) - Cars")
-                st.dataframe(cars_table, use_container_width=True)
+                # Build final table with two columns per lap (Car + Gap)
+                final_table = pd.DataFrame(index=gaps_table.index)
+                for lap in gaps_table.columns:
+                    final_table[f"Lap {lap} Car"] = cars_table[lap].astype(int)
+                    final_table[f"Lap {lap} Gap"] = gaps_table[lap]
             
-                st.subheader("Classification Table (Gap to Leader) - Gaps")
-                st.dataframe(gaps_table, use_container_width=True)
+                st.subheader("Classification Table (Gap to Leader)")
+                st.dataframe(final_table, use_container_width=True)
             
             else:
                 st.info("⚠️ 'Crossing Time' not available for this session. Classification table will not be displayed.")
-
 
 
         elif option == 'Lines':
@@ -644,4 +642,5 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
