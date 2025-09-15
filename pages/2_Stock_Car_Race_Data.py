@@ -286,7 +286,27 @@ if etapa_escolhida != "Select a round...":
             st.subheader("Table ordered by Manufacturer")
             st.dataframe(tabela3, hide_index=True, column_config={"": None})
 
-        
+                 # === CLASSIFICATION TABLE (Gap to Leader) ===
+            if "Gap to Leader" in sessao.columns:
+                # Determine position at each lap
+                sessao["Position"] = sessao.groupby("Lap")["Gap to Leader"].rank(method="first").astype(int)
+                # Pivot: rows = positions (P1, P2...), columns = laps
+                gaps_table = sessao.pivot(index="Position", columns="Lap", values="Gap to Leader")
+                drivers_table = sessao.pivot(index="Position", columns="Lap", values="Driver")
+                # Combine into final table
+                final_table = pd.DataFrame(index=gaps_table.index, columns=gaps_table.columns)
+                for lap in gaps_table.columns:
+                    gaps = gaps_table[lap].round(2).astype(str) + "s"
+                    cars = drivers_table[lap].astype(str)
+                    final_table[lap] = cars + " (" + gaps + ")"       
+                # Rename index to P1, P2...
+                final_table.index = [f"P{pos}" for pos in final_table.index]
+                st.subheader("Classification Table (Gap to Leader)")
+                st.dataframe(final_table, use_container_width=True)
+            else:
+                st.info("⚠️ 'Crossing Time' not available for this session. Classification table will not be displayed.")
+
+
         elif option == 'Lines':
 
             #Creating tabs for Progression
@@ -614,99 +634,3 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
