@@ -595,7 +595,7 @@ if etapa_escolhida != "Select a round...":
         elif option == 'All Laps':
             alllaps10 = sessao[sessao['Car_ID'] == 10]
             st.write("Ricardo Zonta")
-            st.dataframe(alllaps10))
+            st.dataframe(alllaps10)
         
             alllaps11 = sessao[sessao['Car_ID'] == 11]
             st.write("Gaetano Di Mauro")
@@ -614,6 +614,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
