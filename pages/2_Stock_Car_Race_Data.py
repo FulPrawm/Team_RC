@@ -312,7 +312,7 @@ if etapa_escolhida != "Select a round...":
                         cars_col = cars_table[lap].apply(lambda x: str(int(x)) if pd.notna(x) else "")
             
                     # format gaps as "0.000s" or empty when NaN
-                    gaps_col = gaps_table[lap].apply(lambda x: f"{x:.3f}s" if pd.notna(x) else "")
+                    gaps_col = gaps_table[lap].apply(lambda x: f"{x:.3f}" if pd.notna(x) else "")
             
                     # add columns to final table (Lap {n} Car, Lap {n} Gap)
                     final_table[f"Lap {lap} Car"] = cars_col.values
@@ -651,6 +651,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
