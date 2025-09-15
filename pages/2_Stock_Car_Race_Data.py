@@ -286,7 +286,7 @@ if etapa_escolhida != "Select a round...":
             st.subheader("Table ordered by Manufacturer")
             st.dataframe(tabela3, hide_index=True, column_config={"": None})
 
-            # === CLASSIFICATION TABLE (Gap to Leader) ===
+            # === CLASSIFICATION TABLE (Gap to Leader) - single table with Car & Gap columns ===
             if "Gap to Leader" in sessao.columns:
                 # Determine position at each lap
                 sessao["Position"] = sessao.groupby("Lap")["Gap to Leader"].rank(method="first").astype(int)
@@ -295,22 +295,31 @@ if etapa_escolhida != "Select a round...":
                 gaps_table = sessao.pivot(index="Position", columns="Lap", values="Gap to Leader")
                 cars_table = sessao.pivot(index="Position", columns="Lap", values="Car_ID")
             
-                # Round gaps to 3 decimals
+                # Round gaps to 3 decimals (keep as numeric for formatting below)
                 gaps_table = gaps_table.round(3)
             
-                # Rename index to P1, P2, ...
-                gaps_table.index = [f"P{pos}" for pos in gaps_table.index]
-                cars_table.index = [f"P{pos}" for pos in cars_table.index]
+                # Build final table with two columns per lap
+                # Index as P1, P2, ...
+                final_index = [f"P{p}" for p in gaps_table.index]
+                final_table = pd.DataFrame(index=final_index)
             
-                # Build final table with two columns per lap (Car + Gap)
-                final_table = pd.DataFrame(index=gaps_table.index)
                 for lap in gaps_table.columns:
-                    final_table[f"Lap {lap} Car"] = cars_table[lap].astype(int)
-                    final_table[f"Lap {lap} Gap"] = gaps_table[lap]
+                    # safe conversion of car id: use pandas nullable Int64 then convert to string and replace <NA> with empty
+                    try:
+                        cars_col = cars_table[lap].astype("Int64").astype(str).replace("<NA>", "")
+                    except Exception:
+                        # fallback: apply-safe conversion (works even if pandas older)
+                        cars_col = cars_table[lap].apply(lambda x: str(int(x)) if pd.notna(x) else "")
+            
+                    # format gaps as "0.000s" or empty when NaN
+                    gaps_col = gaps_table[lap].apply(lambda x: f"{x:.3f}s" if pd.notna(x) else "")
+            
+                    # add columns to final table (Lap {n} Car, Lap {n} Gap)
+                    final_table[f"Lap {lap} Car"] = cars_col.values
+                    final_table[f"Lap {lap} Gap"] = gaps_col.values
             
                 st.subheader("Classification Table (Gap to Leader)")
                 st.dataframe(final_table, use_container_width=True)
-            
             else:
                 st.info("⚠️ 'Crossing Time' not available for this session. Classification table will not be displayed.")
 
@@ -642,5 +651,6 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
