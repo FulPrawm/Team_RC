@@ -25,8 +25,15 @@ else:
         errors="coerce"
     )
 
-    # mostrar nomes únicos dos pilotos detectados (apenas para conferência)
-    st.write("Pilotos detectados (após limpeza):", df[col_carro].unique().tolist())
+    # 3) filtrar voltas válidas até 110% do tempo mais rápido
+    if "Calc Lap Time [s]" in df.columns:
+        df["Calc Lap Time [s]"] = pd.to_numeric(
+            df["Calc Lap Time [s]"].astype(str).str.replace(",", ".", regex=False),
+            errors="coerce"
+        )
+        best_lap = df["Calc Lap Time [s]"].min()
+        cutoff = best_lap * 1.10
+        df = df[df["Calc Lap Time [s]"] <= cutoff]
 
     # escolha da coluna Y
     ycol = st.selectbox("Escolha a coluna para o eixo Y", list(colunas_y))
@@ -38,9 +45,9 @@ else:
     df_plot = df.dropna(subset=[col_volta, ycol]).copy()
 
     if df_plot.empty:
-        st.warning("Depois da limpeza, não há dados numéricos suficientes para plotar.")
+        st.warning("Depois da limpeza/filtro, não há dados numéricos suficientes para plotar.")
     else:
-        # mapa de cores fixo por piloto (os nomes devem bater exatamente após a limpeza)
+        # mapa de cores fixo por piloto
         color_map = {
             "Felipe Fraga": "yellow",
             "Ricardo Zonta": "red",
@@ -48,40 +55,21 @@ else:
             "Bruno Baptista": "gray"
         }
 
-        # tentar criar scatter com trendline por série (trendline_scope='trace')
-        try:
-            fig = px.scatter(
-                df_plot,
-                x=col_volta,
-                y=ycol,
-                color=col_carro,
-                color_discrete_map=color_map,
-                title=f"Dispersão de {ycol} por Volta e Carro",
-                labels={col_volta: "Volta", ycol: ycol, col_carro: "Piloto"},
-                trendline="ols",
-                trendline_scope="trace",
-                trendline_color_override="black"  # trendline em preto para visibilidade
-            )
-        except Exception as e:
-            # fallback: sem trendline, e avisa o usuário
-            st.warning("Não foi possível calcular a linha de tendência (biblioteca ausente). Exibindo sem trendline.")
-            fig = px.scatter(
-                df_plot,
-                x=col_volta,
-                y=ycol,
-                color=col_carro,
-                color_discrete_map=color_map,
-                title=f"Dispersão de {ycol} por Volta e Carro",
-                labels={col_volta: "Volta", ycol: ycol, col_carro: "Piloto"},
-            )
+        # gráfico com linha de tendência da mesma cor de cada piloto
+        fig = px.scatter(
+            df_plot,
+            x=col_volta,
+            y=ycol,
+            color=col_carro,
+            color_discrete_map=color_map,
+            title=f"Dispersão de {ycol} por Volta e Carro",
+            labels={col_volta: "Volta", ycol: ycol, col_carro: "Piloto"},
+            trendline="ols",
+            trendline_scope="trace"
+        )
 
-        # ordenar por volta para melhorar visual e trendline
+        # estética
         fig.update_traces(marker=dict(size=8), selector=dict(mode="markers"))
         fig.update_layout(xaxis=dict(title="Volta", tickmode="linear", dtick=1))
 
         st.plotly_chart(fig, use_container_width=True)
-
-        # opcional: mostrar uma tabela curta com os dados que foram efetivamente plotados
-        st.write("Amostra dos dados usados no gráfico:")
-        st.dataframe(df_plot[[col_carro, col_volta, ycol]].head(50))
-
