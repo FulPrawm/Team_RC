@@ -32,7 +32,7 @@ else:
             errors="coerce"
         )
         best_lap = df["Calc Lap Time [s]"].min()
-        cutoff = best_lap * 1.07
+        cutoff = best_lap * 1.05
         df = df[df["Calc Lap Time [s]"] <= cutoff]
 
     # escolha da coluna Y
