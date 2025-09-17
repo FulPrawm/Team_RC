@@ -25,6 +25,9 @@ else:
         errors="coerce"
     )
 
+    # mostrar nomes únicos dos pilotos detectados (apenas para conferência)
+    st.write("Pilotos detectados (após limpeza):", df[col_carro].unique().tolist())
+
     # escolha da coluna Y
     ycol = st.selectbox("Escolha a coluna para o eixo Y", list(colunas_y))
 
@@ -45,8 +48,40 @@ else:
             "Bruno Baptista": "gray"
         }
 
+        # tentar criar scatter com trendline por série (trendline_scope='trace')
+        try:
+            fig = px.scatter(
+                df_plot,
+                x=col_volta,
+                y=ycol,
+                color=col_carro,
+                color_discrete_map=color_map,
+                title=f"Dispersão de {ycol} por Volta e Carro",
+                labels={col_volta: "Volta", ycol: ycol, col_carro: "Piloto"},
+                trendline="ols",
+                trendline_scope="trace",
+                trendline_color_override="black"  # trendline em preto para visibilidade
+            )
+        except Exception as e:
+            # fallback: sem trendline, e avisa o usuário
+            st.warning("Não foi possível calcular a linha de tendência (biblioteca ausente). Exibindo sem trendline.")
+            fig = px.scatter(
+                df_plot,
+                x=col_volta,
+                y=ycol,
+                color=col_carro,
+                color_discrete_map=color_map,
+                title=f"Dispersão de {ycol} por Volta e Carro",
+                labels={col_volta: "Volta", ycol: ycol, col_carro: "Piloto"},
+            )
+
         # ordenar por volta para melhorar visual e trendline
         fig.update_traces(marker=dict(size=8), selector=dict(mode="markers"))
         fig.update_layout(xaxis=dict(title="Volta", tickmode="linear", dtick=1))
 
         st.plotly_chart(fig, use_container_width=True)
+
+        # opcional: mostrar uma tabela curta com os dados que foram efetivamente plotados
+        st.write("Amostra dos dados usados no gráfico:")
+        st.dataframe(df_plot[[col_carro, col_volta, ycol]].head(50))
+
