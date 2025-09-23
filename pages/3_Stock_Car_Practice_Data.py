@@ -428,10 +428,24 @@ if etapa_escolhida != "Select a round...":
             st.plotly_chart(fig_heatmap)
             
             # ---------- Radar Chart ----------
+            # Seleção de pilotos: mais rápido + nossos 4 carros
+            selected_cars = [10, 11, 44, 88]
+            selected_drivers = sessao[sessao["Car_ID"].isin(selected_cars)]["Driver"].unique().tolist()
+            drivers_radar = list(set(selected_drivers) | {fastest_driver})
+            
+            # Filtra apenas os pilotos selecionados
+            radar_data = best_sectors[best_sectors["Driver"].isin(drivers_radar)].copy()
+            
+            # Normalização invertida (mais rápido → mais externo)
+            for col in ["S1 Tm", "S2 Tm", "S3 Tm"]:
+                max_val = radar_data[col].max()
+                radar_data[col] = max_val - radar_data[col]
+            
+            # Converte para formato "long" para o plotly
             df_radar = radar_data.melt(
-                id_vars=["Driver"], 
+                id_vars=["Driver"],
                 value_vars=["S1 Tm", "S2 Tm", "S3 Tm"],
-                var_name="Sector", 
+                var_name="Sector",
                 value_name="Score"
             )
             
@@ -451,6 +465,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a session.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
