@@ -407,31 +407,38 @@ if etapa_escolhida != "Select a round...":
             best_sectors = best_sectors.merge(best_laps, on="Driver").sort_values("Lap Tm (S)").reset_index(drop=True)
  
             # ---------- Heatmap ----------
+            df_heatmap = best_sectors.melt(
+                id_vars=["Driver"], 
+                value_vars=["S1 Tm", "S2 Tm", "S3 Tm"],
+                var_name="Sector", 
+                value_name="Gap to Best Sector"
+            )
+            
             fig_heatmap = px.imshow(
-                best_sectors.set_index("Driver")[["S1 Tm", "S2 Tm", "S3 Tm"]].T,
+                best_sectors.set_index("Driver")[["S1 Tm", "S2 Tm", "S3 Tm"]],
                 color_continuous_scale="Turbo",
                 aspect="auto",
                 text_auto=".3f"
             )
-            fig_heatmap.update_layout(title="Driver Times in Each Sector (Gap to Best)")
+            fig_heatmap.update_layout(
+                title="Driver Times in Each Sector (Gap to Best)",
+                xaxis_title="Sector",
+                yaxis_title="Driver"
+            )
             st.plotly_chart(fig_heatmap)
- 
+            
             # ---------- Radar Chart ----------
-            selected_cars = [10, 11, 44, 88]
-            selected_drivers = sessao[sessao["Car_ID"].isin(selected_cars)]["Driver"].unique().tolist()
-            drivers_radar = list(set(selected_drivers) | {fastest_driver})
- 
-            radar_data = best_sectors[best_sectors["Driver"].isin(drivers_radar)]
- 
-            # Normalização invertida (mais rápido → mais externo)
-            for col in ["S1 Tm", "S2 Tm", "S3 Tm"]:
-                max_val = radar_data[col].max()
-                radar_data[col] = max_val - radar_data[col]
- 
+            df_radar = radar_data.melt(
+                id_vars=["Driver"], 
+                value_vars=["S1 Tm", "S2 Tm", "S3 Tm"],
+                var_name="Sector", 
+                value_name="Score"
+            )
+            
             fig_radar = px.line_polar(
-                radar_data,
-                r=["S1 Tm", "S2 Tm", "S3 Tm"],
-                theta=["Sector 1", "Sector 2", "Sector 3"],
+                df_radar,
+                r="Score",
+                theta="Sector",
                 color="Driver",
                 line_close=True
             )
@@ -439,10 +446,12 @@ if etapa_escolhida != "Select a round...":
             fig_radar.update_layout(title="Top Drivers - Sector Performance Comparison")
             st.plotly_chart(fig_radar)
 
+
     else:
         st.warning("Please, select a session.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
