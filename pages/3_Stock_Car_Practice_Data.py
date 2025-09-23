@@ -384,70 +384,67 @@ if etapa_escolhida != "Select a round...":
             st.write("Felipe Fraga")
             st.dataframe(alllaps88)
          
-       elif option == "Sector Analysis":
-           st.subheader("Sector Heatmap & Radar Comparison")
-       
-           # Melhor volta de cada piloto
-           best_laps = sessao_filtrado.groupby("Driver")["Lap Tm (S)"].min().reset_index()
-           fastest_driver = best_laps.loc[best_laps["Lap Tm (S)"].idxmin(), "Driver"]
-       
-           # Tempos mínimos por setor de cada piloto
-           best_sectors = sessao_filtrado.groupby("Driver")[["S1 Tm", "S2 Tm", "S3 Tm"]].min().reset_index()
-       
-           # Diferença para o setor mais rápido
-           sector_refs = {
-               "S1 Tm": best_sectors["S1 Tm"].min(),
-               "S2 Tm": best_sectors["S2 Tm"].min(),
-               "S3 Tm": best_sectors["S3 Tm"].min(),
-           }
-           for col in ["S1 Tm", "S2 Tm", "S3 Tm"]:
-               best_sectors[col] = best_sectors[col] - sector_refs[col]
-       
-           # Ordena pela melhor volta global
-           best_sectors = best_sectors.merge(best_laps, on="Driver").sort_values("Lap Tm (S)").reset_index(drop=True)
-       
-           # ---------- Heatmap ----------
-           df_heatmap = best_sectors.melt(id_vars=["Driver"], value_vars=["S1 Tm", "S2 Tm", "S3 Tm"],
-                                          var_name="Sector", value_name="Gap to Best Sector")
-       
-           fig_heatmap = px.imshow(
-               best_sectors.set_index("Driver")[["S1 Tm", "S2 Tm", "S3 Tm"]].T,
-               color_continuous_scale="Turbo",
-               aspect="auto",
-               text_auto=".3f"
-           )
-           fig_heatmap.update_layout(title="Driver Times in Each Sector (Gap to Best)")
-           st.plotly_chart(fig_heatmap)
-       
-           # ---------- Radar Chart ----------
-           # Seleção de pilotos: mais rápido + nossos 4 carros
-           selected_cars = [10, 11, 44, 88]
-           selected_drivers = sessao[sessao["Car_ID"].isin(selected_cars)]["Driver"].unique().tolist()
-           drivers_radar = list(set(selected_drivers) | {fastest_driver})
-       
-           radar_data = best_sectors[best_sectors["Driver"].isin(drivers_radar)]
-       
-           # Normalização invertida (mais rápido → mais externo)
-           for col in ["S1 Tm", "S2 Tm", "S3 Tm"]:
-               max_val = radar_data[col].max()
-               radar_data[col] = max_val - radar_data[col]
-       
-           fig_radar = px.line_polar(
-               radar_data,
-               r=["S1 Tm", "S2 Tm", "S3 Tm"],
-               theta=["Sector 1", "Sector 2", "Sector 3"],
-               color="Driver",
-               line_close=True
-           )
-           fig_radar.update_traces(fill="toself", opacity=0.6)
-           fig_radar.update_layout(title="Top Drivers - Sector Performance Comparison")
-           st.plotly_chart(fig_radar)
+        elif option == "Sector Analysis":
+            st.subheader("Sector Heatmap & Radar Comparison")
+
+            # Melhor volta de cada piloto
+            best_laps = sessao_filtrado.groupby("Driver")["Lap Tm (S)"].min().reset_index()
+            fastest_driver = best_laps.loc[best_laps["Lap Tm (S)"].idxmin(), "Driver"]
+
+            # Tempos mínimos por setor de cada piloto
+            best_sectors = sessao_filtrado.groupby("Driver")[["S1 Tm", "S2 Tm", "S3 Tm"]].min().reset_index()
+
+            # Diferença para o setor mais rápido
+            sector_refs = {
+                "S1 Tm": best_sectors["S1 Tm"].min(),
+                "S2 Tm": best_sectors["S2 Tm"].min(),
+                "S3 Tm": best_sectors["S3 Tm"].min(),
+            }
+            for col in ["S1 Tm", "S2 Tm", "S3 Tm"]:
+                best_sectors[col] = best_sectors[col] - sector_refs[col]
+
+            # Ordena pela melhor volta global
+            best_sectors = best_sectors.merge(best_laps, on="Driver").sort_values("Lap Tm (S)").reset_index(drop=True)
+
+            # ---------- Heatmap ----------
+            fig_heatmap = px.imshow(
+                best_sectors.set_index("Driver")[["S1 Tm", "S2 Tm", "S3 Tm"]].T,
+                color_continuous_scale="Turbo",
+                aspect="auto",
+                text_auto=".3f"
+            )
+            fig_heatmap.update_layout(title="Driver Times in Each Sector (Gap to Best)")
+            st.plotly_chart(fig_heatmap)
+
+            # ---------- Radar Chart ----------
+            selected_cars = [10, 11, 44, 88]
+            selected_drivers = sessao[sessao["Car_ID"].isin(selected_cars)]["Driver"].unique().tolist()
+            drivers_radar = list(set(selected_drivers) | {fastest_driver})
+
+            radar_data = best_sectors[best_sectors["Driver"].isin(drivers_radar)]
+
+            # Normalização invertida (mais rápido → mais externo)
+            for col in ["S1 Tm", "S2 Tm", "S3 Tm"]:
+                max_val = radar_data[col].max()
+                radar_data[col] = max_val - radar_data[col]
+
+            fig_radar = px.line_polar(
+                radar_data,
+                r=["S1 Tm", "S2 Tm", "S3 Tm"],
+                theta=["Sector 1", "Sector 2", "Sector 3"],
+                color="Driver",
+                line_close=True
+            )
+            fig_radar.update_traces(fill="toself", opacity=0.6)
+            fig_radar.update_layout(title="Top Drivers - Sector Performance Comparison")
+            st.plotly_chart(fig_radar)
 
 
     else:
         st.warning("Please, select a session.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
