@@ -383,7 +383,7 @@ if etapa_escolhida != "Select a round...":
             alllaps88 = sessao[sessao['Car_ID'] == 88]
             st.write("Felipe Fraga")
             st.dataframe(alllaps88)
-
+         
        elif option == "Sector Analysis":
            st.subheader("Sector Heatmap & Radar Comparison")
        
@@ -443,10 +443,12 @@ if etapa_escolhida != "Select a round...":
            fig_radar.update_layout(title="Top Drivers - Sector Performance Comparison")
            st.plotly_chart(fig_radar)
 
+
     else:
         st.warning("Please, select a session.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
