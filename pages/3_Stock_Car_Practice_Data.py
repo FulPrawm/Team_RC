@@ -472,15 +472,27 @@ if etapa_escolhida != "Select a round...":
                 color_discrete_map=color_map
             )
             fig_radar.update_traces(fill="toself", opacity=0.6)
-            fig_radar.update_layout(title="Top Drivers - Sector Performance Comparison")
+            
+            # Custom ticks no eixo radial
+            fig_radar.update_layout(
+                title="Top Drivers - Sector Performance Comparison",
+                polar=dict(
+                    radialaxis=dict(
+                        tickmode='array',
+                        tickvals=[0, 0.5, 1],
+                        ticktext=['Slow', 'Average', 'Fast']
+                    )
+                )
+            )
+            
             st.plotly_chart(fig_radar)
-
 
 
     else:
         st.warning("Please, select a session.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
