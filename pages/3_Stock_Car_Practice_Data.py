@@ -427,44 +427,61 @@ if etapa_escolhida != "Select a round...":
             )
             st.plotly_chart(fig_heatmap)
             
-            # ---------- Radar Chart ----------
-            # Seleção de pilotos: mais rápido + nossos 4 carros
+            # ---------- Radar Chart with Absolute Times Normalized ----------
             selected_cars = [10, 11, 44, 88]
             selected_drivers = sessao[sessao["Car_ID"].isin(selected_cars)]["Driver"].unique().tolist()
             drivers_radar = list(set(selected_drivers) | {fastest_driver})
             
-            # Filtra apenas os pilotos selecionados
             radar_data = best_sectors[best_sectors["Driver"].isin(drivers_radar)].copy()
             
-            # Normalização invertida (mais rápido → mais externo)
-            for col in ["S1 Tm", "S2 Tm", "S3 Tm"]:
-                max_val = radar_data[col].max()
-                radar_data[col] = max_val - radar_data[col]
+            # Normalização por setor (0 = mais lento, 1 = mais rápido)
+            normalized = pd.DataFrame()
+            normalized["Driver"] = radar_data["Driver"]
             
-            # Converte para formato "long" para o plotly
-            df_radar = radar_data.melt(
+            for col in ["S1 Tm", "S2 Tm", "S3 Tm"]:
+                min_val = radar_data[col].min()
+                max_val = radar_data[col].max()
+                normalized[col] = (max_val - radar_data[col]) / (max_val - min_val)
+            
+            # Melt para plotly
+            df_radar = normalized.melt(
                 id_vars=["Driver"],
                 value_vars=["S1 Tm", "S2 Tm", "S3 Tm"],
                 var_name="Sector",
                 value_name="Score"
             )
             
+            # Criar dicionário de cores
+            driver_colors = {10: "red", 11: "blue", 44: "gray", 88: "yellow"}
+            color_map = {}
+            
+            for driver in df_radar["Driver"].unique():
+                car_id = sessao.loc[sessao["Driver"] == driver, "Car_ID"].iloc[0]
+                if car_id in driver_colors:
+                    color_map[driver] = driver_colors[car_id]
+                else:
+                    color_map[driver] = "green"  # fastest outsider
+            
+            # Plot
             fig_radar = px.line_polar(
                 df_radar,
                 r="Score",
                 theta="Sector",
                 color="Driver",
-                line_close=True
+                line_close=True,
+                color_discrete_map=color_map
             )
             fig_radar.update_traces(fill="toself", opacity=0.6)
             fig_radar.update_layout(title="Top Drivers - Sector Performance Comparison")
             st.plotly_chart(fig_radar)
 
 
+
     else:
         st.warning("Please, select a session.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
