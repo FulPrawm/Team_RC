@@ -480,7 +480,7 @@ if etapa_escolhida != "Select a round...":
                     radialaxis=dict(
                         tickmode='array',
                         tickvals=[0, 0.5, 1],
-                        ticktext=['Slow', 'Average', 'Fast']
+                        ticktext=['Slow', 'Average', 'Fast'],
                         tickfont=dict(color="black")  # <<< deixa o texto preto
                     )
                 )
@@ -493,6 +493,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a session.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
