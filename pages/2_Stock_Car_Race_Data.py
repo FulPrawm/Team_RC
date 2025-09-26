@@ -104,14 +104,14 @@ if etapa_escolhida != "Select a round...":
                 121: 'Car Racing KTF', 101: 'Car Racing KTF',
                 7: 'FT Gazoo Racing', 9: 'FT Gazoo Racing',
                 95: 'Scuderia Chiarelli', 0: 'Scuderia Chiarelli',
-                6: 'A. Mattheis Motorsport'
+                6: 'A. Mattheis Motorsport', 72: 'FT Cavaleiro'
                     }
             return Teams_dict.get(x, None)
         # Creating a new column for what team each driver races
         sessao['Team'] = sessao['Car_ID'].apply(Teams)
 
              # Creating 3 manufacturer groups
-        carros_toyota = [301, 4, 30, 111, 38, 81, 5, 7, 9, 21]
+        carros_toyota = [301, 4, 30, 111, 38, 81, 5, 7, 9, 21, 72]
         carros_mitsubishi = [101, 444, 44, 33, 29, 11, 121, 18, 10, 88]
         # Function that verifies if the car is Toyota, if not its Mitsubishi, and if its not either, its Chevrolet
         def brand(x):
@@ -156,7 +156,7 @@ if etapa_escolhida != "Select a round...":
          121: 'Felipe Baptista', 101: 'Gianluca Petecof',
          7: 'JP Oliveira', 9: 'Arthur Gama',
          95: 'Lucas Kohl', 0: 'Cacá Bueno',
-         6: 'Hélio Castroneves'
+         6: 'Hélio Castroneves', 72: 'Antonella Bassani'
         }
         sessao['Driver'] = sessao['Car_ID'].map(drivers_dict)
 
@@ -651,6 +651,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
