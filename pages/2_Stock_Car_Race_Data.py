@@ -459,73 +459,67 @@ if etapa_escolhida != "Select a round...":
         
             st.plotly_chart(fig, use_container_width=True)
  
-            # Tabs to Gap to Fastest (incluindo SPT)
-            tabs = st.tabs([
-                "Gap to Fastest Car in AVG - Lap",
-                "Gap to Fastest Car in AVG - S1",
-                "Gap to Fastest Car in AVG - S2",
-                "Gap to Fastest Car in AVG - S3",
-                "Gap to Fastest Car in AVG - SPT"   # ✅ nova aba
-            ])
-
-            st.write("DEBUG - Tabs criadas:", len(tabs))
-
-            colunas_setores = {
-                "Gap to Fastest Car in AVG - Lap": "Lap Tm (S)",
-                "Gap to Fastest Car in AVG - S1": "S1 Tm",
-                "Gap to Fastest Car in AVG - S2": "S2 Tm",
-                "Gap to Fastest Car in AVG - S3": "S3 Tm",
-                "Gap to Fastest Car in AVG - SPT": "SPT"         # ✅ novo mapeamento
-            }
-
-
-            # Dicionário de cores dos seus carros
-            cores_personalizadas = {
-                "Ricardo Zonta": "red",
-                "Gaetano Di Mauro": "blue",
-                "Bruno Baptista": "gray",
-                "Felipe Fraga": "yellow"
-            }
-        
-            for i, tab_name in enumerate(colunas_setores.keys()):
-                coluna = colunas_setores[tab_name]
-                with tabs[i]:
-                    st.write(f"DEBUG - Renderizando {tab_name} (coluna = {coluna})")
+            # === GAP TO FASTEST (inclui SPT) — substitua este bloco no lugar do antigo ===
+            pairs = [
+                ("Gap to Fastest Car in AVG - Lap", "Lap Tm (S)"),
+                ("Gap to Fastest Car in AVG - S1", "S1 Tm"),
+                ("Gap to Fastest Car in AVG - S2", "S2 Tm"),
+                ("Gap to Fastest Car in AVG - S3", "S3 Tm"),
+                ("Gap to Fastest Car in AVG - SPT", "SPT"),
+            ]
             
+            # cria as tabs na mesma ordem dos pairs
+            tabs = st.tabs([p[0] for p in pairs])
+            
+            for i, (tab_name, coluna) in enumerate(pairs):
+                with tabs[i]:
+                    # verifica se a coluna existe
+                    if coluna not in sessao_filtrado.columns:
+                        st.info(f"Coluna '{coluna}' não disponível nesta sessão.")
+                        continue
+            
+                    # média por driver (pode haver NaNs)
                     media_por_car_id = sessao_filtrado.groupby('Driver')[coluna].mean().reset_index()
             
+                    # checa se há dados válidos
+                    if media_por_car_id.empty or media_por_car_id[coluna].isna().all():
+                        st.info(f"Sem valores válidos para '{coluna}' após os filtros.")
+                        continue
+            
+                    # lógica: SPT -> melhor = MAIOR; tempos -> melhor = MENOR
                     if coluna == "SPT":
-                        # Para velocidade, o melhor é o MAIOR valor
                         best_valor = media_por_car_id[coluna].max()
                         media_por_car_id['Diff'] = best_valor - media_por_car_id[coluna]
+                        y_title = "Diff to Best Speed (SPT)"
                     else:
-                        # Para tempos, o melhor é o MENOR valor
                         best_valor = media_por_car_id[coluna].min()
                         media_por_car_id['Diff'] = media_por_car_id[coluna] - best_valor
+                        y_title = f"Diff to Best {coluna} (s)"
             
+                    # ordena e aplica cores (usa o dicionário cores_personalizadas que já existe no seu código)
                     media_por_car_id = media_por_car_id.sort_values(by='Diff')
-                    media_por_car_id['Color'] = media_por_car_id['Driver'].map(cores_personalizadas).fillna('white')
+                    media_por_car_id['Color'] = media_por_car_id['Driver'].map(cores_personalizadas).fillna('gray')
             
+                    # monta o gráfico Altair
                     bars = alt.Chart(media_por_car_id).mark_bar().encode(
                         x=alt.X('Driver:N', sort=media_por_car_id['Diff'].tolist()),
-                        y=alt.Y('Diff', title=f'Diff to Best {coluna}'),
+                        y=alt.Y('Diff:Q', title=y_title),
                         color=alt.Color('Color:N', scale=None)
                     )
             
                     labels = alt.Chart(media_por_car_id).mark_text(
                         align='center',
                         baseline='bottom',
-                        dy=-2,
-                        color='white'
+                        dy=-2
                     ).encode(
                         x=alt.X('Driver:N', sort=media_por_car_id['Diff'].tolist()),
-                        y='Diff',
+                        y='Diff:Q',
                         text=alt.Text('Diff', format='.2f')
                     )
             
                     chart = (bars + labels).properties(title=tab_name)
                     st.altair_chart(chart, use_container_width=True)
-
+            # === fim do bloco ===
 
             # Percentual difference with tendency
             st.header("Percentual difference to the best lap for each driver from this team")
@@ -672,6 +666,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
