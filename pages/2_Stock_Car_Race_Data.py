@@ -467,7 +467,9 @@ if etapa_escolhida != "Select a round...":
                 "Gap to Fastest Car in AVG - S3",
                 "Gap to Fastest Car in AVG - SPT"   # ✅ nova aba
             ])
-            
+
+            st.write("DEBUG - Tabs criadas:", len(tabs))
+
             colunas_setores = {
                 "Gap to Fastest Car in AVG - Lap": "Lap Tm (S)",
                 "Gap to Fastest Car in AVG - S1": "S1 Tm",
@@ -666,6 +668,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
