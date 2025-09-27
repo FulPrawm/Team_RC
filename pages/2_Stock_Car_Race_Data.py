@@ -460,15 +460,23 @@ if etapa_escolhida != "Select a round...":
             st.plotly_chart(fig, use_container_width=True)
  
             # Tabs to Gap to Fastest
-            tabs = st.tabs(["Gap to Fastest Car in AVG - Lap", "Gap to Fastest Car in AVG - S1", "Gap to Fastest Car in AVG - S2", "Gap to Fastest Car in AVG - S3"])
-        
+            tabs = st.tabs([
+                "Gap to Fastest Car in AVG - Lap", 
+                "Gap to Fastest Car in AVG - S1", 
+                "Gap to Fastest Car in AVG - S2", 
+                "Gap to Fastest Car in AVG - S3", 
+                "Gap to Fastest Car in AVG - SPT"
+            ])
+            
             colunas_setores = {
                 "Gap to Fastest Car in AVG - Lap": "Lap Tm (S)",
                 "Gap to Fastest Car in AVG - S1": "S1 Tm",
                 "Gap to Fastest Car in AVG - S2": "S2 Tm",
-                "Gap to Fastest Car in AVG - S3": "S3 Tm"
+                "Gap to Fastest Car in AVG - S3": "S3 Tm",
+                "Gap to Fastest Car in AVG - SPT": "SPT"
             }
-        
+
+
             # Dicionário de cores dos seus carros
             cores_personalizadas = {
                 "Ricardo Zonta": "red",
@@ -480,17 +488,25 @@ if etapa_escolhida != "Select a round...":
             for i, (tab_name, coluna) in enumerate(colunas_setores.items()):
                 with tabs[i]:
                     media_por_car_id = sessao_filtrado.groupby('Driver')[coluna].mean().reset_index()
-                    min_valor = media_por_car_id[coluna].min()
-                    media_por_car_id['Diff'] = media_por_car_id[coluna] - min_valor
+            
+                    if coluna == "SPT":
+                        # Para velocidade, o melhor é o MAIOR valor
+                        max_valor = media_por_car_id[coluna].max()
+                        media_por_car_id['Diff'] = max_valor - media_por_car_id[coluna]
+                    else:
+                        # Para tempos, o melhor é o MENOR valor
+                        min_valor = media_por_car_id[coluna].min()
+                        media_por_car_id['Diff'] = media_por_car_id[coluna] - min_valor
+            
                     media_por_car_id = media_por_car_id.sort_values(by='Diff')
                     media_por_car_id['Color'] = media_por_car_id['Driver'].map(cores_personalizadas).fillna('white')
-        
+            
                     bars = alt.Chart(media_por_car_id).mark_bar().encode(
                         x=alt.X('Driver:N', sort=media_por_car_id['Diff'].tolist()),
-                        y=alt.Y('Diff', title=f'Diff to Best {coluna} (s)'),
+                        y=alt.Y('Diff', title=f'Diff to Best {coluna}'),
                         color=alt.Color('Color:N', scale=None)
                     )
-        
+            
                     labels = alt.Chart(media_por_car_id).mark_text(
                         align='center',
                         baseline='bottom',
@@ -501,11 +517,10 @@ if etapa_escolhida != "Select a round...":
                         y='Diff',
                         text=alt.Text('Diff', format='.2f')
                     )
-        
+            
                     chart = (bars + labels).properties(title=tab_name)
-        
                     st.altair_chart(chart, use_container_width=True)
-        
+
             # Percentual difference with tendency
             st.header("Percentual difference to the best lap for each driver from this team")
         
@@ -651,6 +666,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
