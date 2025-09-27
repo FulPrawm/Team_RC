@@ -364,6 +364,39 @@ if etapa_escolhida != "Select a round...":
                              color='Manufacturer',
                              title=f'{var} distribution')  # Title inside graph
                 st.plotly_chart(fig)
+             
+            # Block 2 — por Car_ID (como rótulo) em tabs
+            tabs_box = st.tabs(["Lap", "S1", "S2", "S3", "SPT"])
+            colunas_boxplot = {
+                "Lap": "Lap Tm (S)",
+                "S1": "S1 Tm",
+                "S2": "S2 Tm",
+                "S3": "S3 Tm",
+                "SPT": "SPT"
+            }
+            for i, (tab_nome, coluna) in enumerate(colunas_boxplot.items()):
+                with tabs_box[i]:
+                    df_plot = sessao_filtrado.copy()
+                    
+                    # Pega lista de drivers em ordem alfabética
+                    drivers_unicos = sorted(df_plot["Driver"].unique())
+            
+                    fig = px.box(
+                        df_plot,
+                        x="Driver",
+                        y=coluna,
+                        points="all",
+                        color="Driver",
+                        category_orders={"Driver": drivers_unicos},
+                    )
+            
+                    fig.update_layout(
+                        yaxis_title=coluna,
+                        title=f"Boxplot - {coluna}",
+                        showlegend=False
+                    )
+            
+                    st.plotly_chart(fig, use_container_width=True)
         
         
         elif option == 'All Laps':
@@ -493,6 +526,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a session.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
