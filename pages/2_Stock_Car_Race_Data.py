@@ -487,8 +487,11 @@ if etapa_escolhida != "Select a round...":
                 "Felipe Fraga": "yellow"
             }
         
-            for i, (tab_name, coluna) in enumerate(colunas_setores.items()):
+            for i, tab_name in enumerate(colunas_setores.keys()):
+                coluna = colunas_setores[tab_name]
                 with tabs[i]:
+                    st.write(f"DEBUG - Renderizando {tab_name} (coluna = {coluna})")
+            
                     media_por_car_id = sessao_filtrado.groupby('Driver')[coluna].mean().reset_index()
             
                     if coluna == "SPT":
@@ -522,6 +525,7 @@ if etapa_escolhida != "Select a round...":
             
                     chart = (bars + labels).properties(title=tab_name)
                     st.altair_chart(chart, use_container_width=True)
+
 
             # Percentual difference with tendency
             st.header("Percentual difference to the best lap for each driver from this team")
@@ -668,6 +672,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
