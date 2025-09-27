@@ -459,13 +459,13 @@ if etapa_escolhida != "Select a round...":
         
             st.plotly_chart(fig, use_container_width=True)
  
-            # Tabs to Gap to Fastest
+            # Tabs to Gap to Fastest (incluindo SPT)
             tabs = st.tabs([
-                "Gap to Fastest Car in AVG - Lap", 
-                "Gap to Fastest Car in AVG - S1", 
-                "Gap to Fastest Car in AVG - S2", 
-                "Gap to Fastest Car in AVG - S3", 
-                "Gap to Fastest Car in AVG - SPT"
+                "Gap to Fastest Car in AVG - Lap",
+                "Gap to Fastest Car in AVG - S1",
+                "Gap to Fastest Car in AVG - S2",
+                "Gap to Fastest Car in AVG - S3",
+                "Gap to Fastest Car in AVG - SPT"   # ✅ nova aba
             ])
             
             colunas_setores = {
@@ -473,8 +473,9 @@ if etapa_escolhida != "Select a round...":
                 "Gap to Fastest Car in AVG - S1": "S1 Tm",
                 "Gap to Fastest Car in AVG - S2": "S2 Tm",
                 "Gap to Fastest Car in AVG - S3": "S3 Tm",
-                "Gap to Fastest Car in AVG - SPT": "SPT"
+                "Gap to Fastest Car in AVG - SPT": "SPT"         # ✅ novo mapeamento
             }
+
 
             # Dicionário de cores dos seus carros
             cores_personalizadas = {
@@ -490,12 +491,12 @@ if etapa_escolhida != "Select a round...":
             
                     if coluna == "SPT":
                         # Para velocidade, o melhor é o MAIOR valor
-                        max_valor = media_por_car_id[coluna].max()
-                        media_por_car_id['Diff'] = max_valor - media_por_car_id[coluna]
+                        best_valor = media_por_car_id[coluna].max()
+                        media_por_car_id['Diff'] = best_valor - media_por_car_id[coluna]
                     else:
                         # Para tempos, o melhor é o MENOR valor
-                        min_valor = media_por_car_id[coluna].min()
-                        media_por_car_id['Diff'] = media_por_car_id[coluna] - min_valor
+                        best_valor = media_por_car_id[coluna].min()
+                        media_por_car_id['Diff'] = media_por_car_id[coluna] - best_valor
             
                     media_por_car_id = media_por_car_id.sort_values(by='Diff')
                     media_por_car_id['Color'] = media_por_car_id['Driver'].map(cores_personalizadas).fillna('white')
@@ -665,6 +666,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
