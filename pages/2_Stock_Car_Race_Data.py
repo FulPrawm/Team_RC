@@ -478,8 +478,14 @@ if etapa_escolhida != "Select a round...":
                         st.info(f"Coluna '{coluna}' não disponível nesta sessão.")
                         continue
             
-                    # média por driver (pode haver NaNs)
-                    media_por_car_id = sessao_filtrado.groupby('Driver')[coluna].mean().reset_index()
+                    cores = globals().get('cores_personalizadas', {
+                        "Ricardo Zonta": "red",
+                        "Gaetano Di Mauro": "blue",
+                        "Bruno Baptista": "gray",
+                        "Felipe Fraga": "yellow"
+                    })
+                    media_por_car_id['Color'] = media_por_car_id['Driver'].map(cores).fillna('gray')
+
             
                     # checa se há dados válidos
                     if media_por_car_id.empty or media_por_car_id[coluna].isna().all():
@@ -666,6 +672,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
