@@ -476,7 +476,6 @@ if etapa_escolhida != "Select a round...":
                 "Gap to Fastest Car in AVG - SPT": "SPT"
             }
 
-
             # Dicionário de cores dos seus carros
             cores_personalizadas = {
                 "Ricardo Zonta": "red",
@@ -666,6 +665,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
