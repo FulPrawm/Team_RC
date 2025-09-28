@@ -29,7 +29,10 @@ sessions = [
     {"name": "Briefing CBA", "start": "2025-09-26 18:00", "duration": 30},
     {"name": "Qualy", "start": "2025-09-27 09:55", "duration": 50},
     {"name": "Box Aberto", "start": "2025-09-27 13:25", "duration": 13},
-    {"name": "Corrida 1", "start": "2025-09-27 14:30", "duration": 32}
+    {"name": "Corrida 1", "start": "2025-09-27 14:30", "duration": 32},
+    {"name": "Warm Up - Grupo Único", "start": "2025-09-28 10:00", "duration": 10},
+    {"name": "Box Aberto", "start": "2025-09-28 11:15", "duration": 10},
+    {"name": "Corrida 2", "start": "2025-09-28 12:13", "duration": 52}
 ]
 
 # Convert start times into timezone-aware datetime objects
