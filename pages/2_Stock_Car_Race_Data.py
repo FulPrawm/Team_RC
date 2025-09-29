@@ -398,12 +398,12 @@ if etapa_escolhida != "Select a round...":
 
             # --- Last Lap Diff Graph ---
             with tabs[0]:
-                graf7 = px.line(sessao, x="Lap", y= "Seconds", color="Driver", title='Last Lap Difference')
+                graf7 = px.line(sessao, x="Lap", y= "Last Lap Diff", color="Driver", title='Last Lap Difference')
                 st.plotly_chart(graf7)
         
             # --- Fast Lap Diff Graph ---
             with tabs [1]:
-                graf8 = px.line(sessao, x="Lap", y= "Seconds", color="Driver", title='Fast Lap Delta')
+                graf8 = px.line(sessao, x="Lap", y= "Fast Lap Diff", color="Driver", title='Fast Lap Delta')
                 st.plotly_chart(graf8)
 
             
@@ -662,6 +662,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
