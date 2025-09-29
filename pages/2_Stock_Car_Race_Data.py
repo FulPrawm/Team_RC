@@ -408,7 +408,7 @@ if etapa_escolhida != "Select a round...":
 
             
             # Tabs for Gaps
-            tabs = st.tabs(["Last Lap Difference Graph", "Fast Lap Difference Graph"])
+            tabs = st.tabs(["Gap to Winner", "Gap to Lap Leader"])
          
             # --- Gap to Winner Graph ---
             with tabs[0]:
@@ -662,6 +662,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
