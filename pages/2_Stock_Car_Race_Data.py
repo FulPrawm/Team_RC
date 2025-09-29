@@ -392,28 +392,39 @@ if etapa_escolhida != "Select a round...":
                 graf6 = px.line(sessao_filtrado, x='Ranking', y='SPT', color='Driver', title='Speed Trap Raising Average')
                 st.plotly_chart(graf6)
 
-        
-            #Last Lap Diff Graph
-            graf7 = px.line(sessao, x="Lap", y= "Last Lap Diff", color="Driver", title='Last Lap Diff')
-            st.plotly_chart(graf7)
-        
-            #Fast Lap Diff Graph
-            graf8 = px.line(sessao, x="Lap", y= "Fast Lap Diff", color="Driver", title='Fast Lap Diff')
-            st.plotly_chart(graf8)
 
-            #Gap to Leader Graph
-            if "Gap to Winner" in sessao.columns:
-                graf = px.line(sessao, x="Lap", y="Gap to Winner", color="Driver", title="Gap to Winner")
-                st.plotly_chart(graf)
-            else:
-                st.info("⚠️ 'Crossing Time' not available for this session. Gap to Winner graph will not be displayed.")
+            # Tabs for Difference
+            tabs = st.tabs(["Last Lap Diff Graph", "Fast Lap Diff Graph"])
 
-                 # Gap to Leader Graph
-            if "Gap to Leader" in sessao.columns:
-                graf_leader = px.line(sessao, x="Lap", y="Gap to Leader", color="Driver", title="Gap to Leader")
-                st.plotly_chart(graf_leader)
-            else:
-                st.info("⚠️ 'Crossing Time' not available for this session. Gap to Leader graph will not be displayed.")
+            # --- Last Lap Diff Graph ---
+            with tabs[0]:
+                graf7 = px.line(sessao, x="Lap", y= "Last Lap Diff", color="Driver", title='Last Lap Diff')
+                st.plotly_chart(graf7)
+        
+            # --- Fast Lap Diff Graph ---
+            with tabs [1]:
+                graf8 = px.line(sessao, x="Lap", y= "Fast Lap Diff", color="Driver", title='Fast Lap Diff')
+                st.plotly_chart(graf8)
+
+            
+            # Tabs for Gaps
+            tabs = st.tabs(["Last Lap Difference Graph", "Fast Lap Difference Graph"])
+         
+            # --- Gap to Winner Graph ---
+            with tabs[0]:
+                if "Gap to Winner" in sessao.columns:
+                    graf = px.line(sessao, x="Lap", y="Gap to Winner", color="Driver", title="Gap to Winner")
+                    st.plotly_chart(graf)
+                else:
+                    st.info("⚠️ 'Crossing Time' not available for this session. Gap to Winner graph will not be displayed.")
+
+            # --- Gap to Leader Graph ---
+            with tabs[1]:
+                if "Gap to Leader" in sessao.columns:
+                    graf_leader = px.line(sessao, x="Lap", y="Gap to Leader", color="Driver", title="Gap to Leader")
+                    st.plotly_chart(graf_leader)
+                else:
+                    st.info("⚠️ 'Crossing Time' not available for this session. Gap to Leader graph will not be displayed.")
 
 
 
@@ -651,6 +662,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
