@@ -394,16 +394,16 @@ if etapa_escolhida != "Select a round...":
 
 
             # Tabs for Difference
-            tabs = st.tabs(["Last Lap Diff Graph", "Fast Lap Diff Graph"])
+            tabs = st.tabs(["Last Lap Delta", "Fast Lap Delta"])
 
             # --- Last Lap Diff Graph ---
             with tabs[0]:
-                graf7 = px.line(sessao, x="Lap", y= "Last Lap Diff", color="Driver", title='Last Lap Diff')
+                graf7 = px.line(sessao, x="Lap", y= "Seconds", color="Driver", title='Last Lap Difference')
                 st.plotly_chart(graf7)
         
             # --- Fast Lap Diff Graph ---
             with tabs [1]:
-                graf8 = px.line(sessao, x="Lap", y= "Fast Lap Diff", color="Driver", title='Fast Lap Diff')
+                graf8 = px.line(sessao, x="Lap", y= "Seconds", color="Driver", title='Fast Lap Delta')
                 st.plotly_chart(graf8)
 
             
@@ -413,7 +413,7 @@ if etapa_escolhida != "Select a round...":
             # --- Gap to Winner Graph ---
             with tabs[0]:
                 if "Gap to Winner" in sessao.columns:
-                    graf = px.line(sessao, x="Lap", y="Gap to Winner", color="Driver", title="Gap to Winner")
+                    graf = px.line(sessao, x="Lap", y="Seconds", color="Driver", title="Gap to Winner")
                     st.plotly_chart(graf)
                 else:
                     st.info("⚠️ 'Crossing Time' not available for this session. Gap to Winner graph will not be displayed.")
@@ -421,7 +421,7 @@ if etapa_escolhida != "Select a round...":
             # --- Gap to Leader Graph ---
             with tabs[1]:
                 if "Gap to Leader" in sessao.columns:
-                    graf_leader = px.line(sessao, x="Lap", y="Gap to Leader", color="Driver", title="Gap to Leader")
+                    graf_leader = px.line(sessao, x="Lap", y="Seconds", color="Driver", title="Gap to Leader")
                     st.plotly_chart(graf_leader)
                 else:
                     st.info("⚠️ 'Crossing Time' not available for this session. Gap to Leader graph will not be displayed.")
@@ -662,6 +662,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
