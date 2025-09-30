@@ -326,7 +326,7 @@ if etapa_escolhida != "Select a round...":
                                                      .format(precision=3)\
                                                      .apply(highlight_manufacturer, subset=["Manufacturer"])
             
-            st.subheader("Analysis of BoP (best 2 results from each brand)")
+            st.subheader("Analysis of BoP (average of the best 2 results from each brand)")
             st.dataframe(manufacturer_table, hide_index=True)
 
 
@@ -706,6 +706,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
