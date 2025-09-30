@@ -273,25 +273,18 @@ if etapa_escolhida != "Select a round...":
             )
             st.dataframe(tabela2, hide_index=True, column_config={"B": None})
 
-            # === Manufacturer Table (Top 2 Cars Only, Only Finished Cars) ===
+            # === Manufacturer Table (Top 2 Cars Only, Finished Cars) ===
             
             # Ensure Crossing Time is in seconds
             if "Crossing Time" in sessao.columns:
                 sessao["Crossing Seconds"] = pd.to_timedelta(sessao["Crossing Time"]).dt.total_seconds()
-                sessao["Cumulative Crossing"] = sessao.groupby("Car_ID")["Crossing Seconds"].cummax()
             
-            # Determine the number of laps per car
-            laps_per_car = sessao.groupby("Car_ID")["Lap"].max()
-            
-            # Keep only cars that completed at least one lap
-            eligible_cars = laps_per_car[laps_per_car > 0].index
-            
-            # Get final cumulative crossing time for each eligible car
+            # Get the last crossing time for each car (last lap completed)
             final_times = (
-                sessao[sessao["Car_ID"].isin(eligible_cars)]
-                .groupby("Car_ID")["Cumulative Crossing"]
-                .max()
-                .reset_index()
+                sessao.groupby("Car_ID").apply(
+                    lambda df: df.loc[df["Lap"].idxmax(), "Crossing Seconds"]
+                )
+                .reset_index(name="Final Crossing Seconds")
             )
             
             # Add manufacturer info
@@ -299,10 +292,10 @@ if etapa_escolhida != "Select a round...":
                 sessao.set_index("Car_ID")["Manufacturer"].to_dict()
             )
             
-            # Select the top 2 cars per manufacturer (lowest cumulative crossing → best finish)
+            # Select the top 2 cars per manufacturer (lowest Final Crossing Seconds → best finish)
             top2_per_manufacturer = (
                 final_times.groupby("Manufacturer", group_keys=False)
-                .apply(lambda x: x.nsmallest(2, "Cumulative Crossing"))
+                .apply(lambda x: x.nsmallest(2, "Final Crossing Seconds"))
                 .reset_index(drop=True)
             )
             
@@ -330,7 +323,6 @@ if etapa_escolhida != "Select a round...":
             
             st.subheader("Table ordered by Manufacturer (Top 2 Cars Only, Finished Cars)")
             st.dataframe(manufacturer_table, hide_index=True)
-
 
 
             # === CLASSIFICATION TABLE (Gap to Leader) - single table with Car & Gap columns ===
@@ -709,6 +701,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
