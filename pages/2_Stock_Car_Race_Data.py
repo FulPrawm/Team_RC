@@ -273,18 +273,15 @@ if etapa_escolhida != "Select a round...":
             )
             st.dataframe(tabela2, hide_index=True, column_config={"B": None})
 
+         
             # === Manufacturer Table (Top 2 Cars Only, Finished Cars, With Tie Handling) ===
-            
             # Ensure Crossing Time is in seconds
             if "Crossing Time" in sessao.columns:
                 sessao["Crossing Seconds"] = pd.to_timedelta(sessao["Crossing Time"]).dt.total_seconds()
-            
             # Compute the max lap per car
             laps_per_car = sessao.groupby("Car_ID")["Lap"].max()
-            
             # Keep only cars that completed at least one lap
             eligible_cars = laps_per_car[laps_per_car > 0].index
-            
             # Get last crossing time for each eligible car (last lap completed)
             final_times = (
                 sessao[sessao["Car_ID"].isin(eligible_cars)]
@@ -295,12 +292,10 @@ if etapa_escolhida != "Select a round...":
                 }))
                 .reset_index()
             )
-            
             # Add manufacturer info
             final_times["Manufacturer"] = final_times["Car_ID"].map(
                 sessao.set_index("Car_ID")["Manufacturer"].to_dict()
             )
-            
             # Select top 2 cars per manufacturer:
             #   1. highest MaxLap
             #   2. if tie, lowest LastCrossing
@@ -313,13 +308,10 @@ if etapa_escolhida != "Select a round...":
                 .apply(select_top2)
                 .reset_index(drop=True)
             )
-            
             # Keep track of selected Car_IDs for each manufacturer
             top2_cars_dict = top2_per_manufacturer.groupby("Manufacturer")["Car_ID"].apply(list).to_dict()
-            
             # Filter session for only those top 2 cars
             sessao_top2 = sessao_filtrado[sessao_filtrado["Car_ID"].isin(top2_per_manufacturer["Car_ID"])]
-            
             # Compute averages by manufacturer using only top 2 cars
             manufacturer_table = (
                 sessao_top2[analise_Manufacturer]
@@ -327,18 +319,15 @@ if etapa_escolhida != "Select a round...":
                 .mean(numeric_only=True)
                 .reset_index()
             )
-            
             # Add a column showing the top 2 car IDs
             manufacturer_table["Top 2 Cars"] = manufacturer_table["Manufacturer"].map(top2_cars_dict)
-            
             # Apply styling
             manufacturer_table = manufacturer_table.style.background_gradient(cmap="coolwarm")\
                                                      .format(precision=3)\
                                                      .apply(highlight_manufacturer, subset=["Manufacturer"])
             
-            st.subheader("Table ordered by Manufacturer (Top 2 Cars Only, Finished Cars)")
+            st.subheader("Analysis of BoP (best 2 results from each brand)")
             st.dataframe(manufacturer_table, hide_index=True)
-
 
 
             # === CLASSIFICATION TABLE (Gap to Leader) - single table with Car & Gap columns ===
@@ -717,6 +706,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
