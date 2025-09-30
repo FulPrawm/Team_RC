@@ -273,18 +273,45 @@ if etapa_escolhida != "Select a round...":
             )
             st.dataframe(tabela2, hide_index=True, column_config={"B": None})
 
-            # Ordering by each manufacturer
+            # === Manufacturer Table (Top 2 Cars Only) ===
+            
+            # Get the final position of each car based on Gap to Leader (last lap)
+            final_positions = (
+                sessao.groupby("Car_ID")["Gap to Leader"]
+                .last()  # take the last lap value
+                .sort_values()
+                .reset_index()
+            )
+            
+            # Add manufacturer info
+            final_positions["Manufacturer"] = final_positions["Car_ID"].map(
+                sessao.set_index("Car_ID")["Manufacturer"].to_dict()
+            )
+            
+            # Select only the top 2 cars of each manufacturer
+            top2_per_manufacturer = (
+                final_positions.groupby("Manufacturer")
+                .head(2)["Car_ID"]
+                .tolist()
+            )
+            
+            # Filter session for only those top 2 cars
+            sessao_top2 = sessao_filtrado[sessao_filtrado["Car_ID"].isin(top2_per_manufacturer)]
+            
+            # Compute averages by manufacturer using only top 2 cars
             tabela3 = (
-                sessao_filtrado[analise_Manufacturer]
+                sessao_top2[analise_Manufacturer]
                 .groupby(by=["Manufacturer"])
                 .mean(numeric_only=True)
-                .reset_index()  # 🔑
-                .style.background_gradient(cmap='coolwarm')
+                .reset_index()
+                .style.background_gradient(cmap="coolwarm")
                 .format(precision=3)
                 .apply(highlight_manufacturer, subset=["Manufacturer"])
             )
-            st.subheader("Table ordered by Manufacturer")
-            st.dataframe(tabela3, hide_index=True, column_config={"": None})
+            
+            st.subheader("Table ordered by Manufacturer (Top 2 Cars Only)")
+            st.dataframe(tabela3, hide_index=True)
+
 
             # === CLASSIFICATION TABLE (Gap to Leader) - single table with Car & Gap columns ===
             if "Gap to Leader" in sessao.columns:
@@ -662,6 +689,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
