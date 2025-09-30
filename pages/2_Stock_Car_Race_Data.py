@@ -273,12 +273,12 @@ if etapa_escolhida != "Select a round...":
             )
             st.dataframe(tabela2, hide_index=True, column_config={"B": None})
 
-            # === Manufacturer Table (Top 2 Cars Only) ===
+            # === Manufacturer Table (Top 2 Cars Only) with Car IDs ===
             
             # Get the final position of each car based on Gap to Leader (last lap)
             final_positions = (
                 sessao.groupby("Car_ID")["Gap to Leader"]
-                .last()  # take the last lap value
+                .last()
                 .sort_values()
                 .reset_index()
             )
@@ -291,23 +291,34 @@ if etapa_escolhida != "Select a round...":
             # Select only the top 2 cars of each manufacturer
             top2_per_manufacturer = (
                 final_positions.groupby("Manufacturer")
-                .head(2)["Car_ID"]
-                .tolist()
+                .head(2)
+            )
+            
+            # Keep track of which cars were chosen for each manufacturer
+            top2_cars_dict = (
+                top2_per_manufacturer.groupby("Manufacturer")["Car_ID"]
+                .apply(list)
+                .to_dict()
             )
             
             # Filter session for only those top 2 cars
-            sessao_top2 = sessao_filtrado[sessao_filtrado["Car_ID"].isin(top2_per_manufacturer)]
+            sessao_top2 = sessao_filtrado[sessao_filtrado["Car_ID"].isin(top2_per_manufacturer["Car_ID"])]
             
             # Compute averages by manufacturer using only top 2 cars
             tabela3 = (
                 sessao_top2[analise_Manufacturer]
-                .groupby(by=["Manufacturer"])
+                .groupby("Manufacturer")
                 .mean(numeric_only=True)
                 .reset_index()
-                .style.background_gradient(cmap="coolwarm")
-                .format(precision=3)
-                .apply(highlight_manufacturer, subset=["Manufacturer"])
             )
+            
+            # Add a column with the selected Car_IDs
+            tabela3["Top 2 Cars"] = tabela3["Manufacturer"].map(top2_cars_dict)
+            
+            # Apply styling
+            tabela3 = tabela3.style.background_gradient(cmap="coolwarm")\
+                                 .format(precision=3)\
+                                 .apply(highlight_manufacturer, subset=["Manufacturer"])
             
             st.subheader("Table ordered by Manufacturer (Top 2 Cars Only)")
             st.dataframe(tabela3, hide_index=True)
@@ -689,6 +700,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
