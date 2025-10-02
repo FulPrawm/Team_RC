@@ -18,21 +18,13 @@ tz = ZoneInfo("America/Sao_Paulo")
 # Session schedule
 # ------------------------
 sessions = [
-    {"name": "Retirada de Pneus Parque Fechado - Shakedown", "start": "2025-09-26 08:45", "duration": 20},
-    {"name": "Shakedown - 1° Grupo", "start": "2025-09-26 09:45", "duration": 15},
-    {"name": "Shakedown - 2° Grupo", "start": "2025-09-26 10:05", "duration": 15},
-    {"name": "Retirada de Pneus Parque Fechado - 1° e 2° Treino", "start": "2025-09-26 12:05", "duration": 20},
-    {"name": "TL1 - 1° Grupo", "start": "2025-09-26 13:05", "duration": 30},
-    {"name": "TL1 - 2° Grupo", "start": "2025-09-26 13:40", "duration": 30},
-    {"name": "TL2 - 1° Grupo", "start": "2025-09-26 15:45", "duration": 30},
-    {"name": "TL2 - 2° Grupo", "start": "2025-09-26 16:20", "duration": 30},
-    {"name": "Briefing CBA", "start": "2025-09-26 18:00", "duration": 30},
-    {"name": "Qualy", "start": "2025-09-27 09:55", "duration": 50},
-    {"name": "Box Aberto", "start": "2025-09-27 13:25", "duration": 13},
-    {"name": "Corrida 1", "start": "2025-09-27 14:30", "duration": 32},
-    {"name": "Warm Up - Grupo Único", "start": "2025-09-28 10:00", "duration": 10},
-    {"name": "Box Aberto", "start": "2025-09-28 11:15", "duration": 10},
-    {"name": "Corrida 2", "start": "2025-09-28 12:13", "duration": 52}
+    {"name": "Shakedown - 1° Grupo", "start": "2025-10-03 09:45", "duration": 15},
+    {"name": "Shakedown - 2° Grupo", "start": "2025-10-03 10:05", "duration": 15},
+    {"name": "TL1 - 1° Grupo", "start": "2025-10-03 13:10", "duration": 30},
+    {"name": "TL1 - 2° Grupo", "start": "2025-10-03 13:45", "duration": 30},
+    {"name": "TL2 - 1° Grupo", "start": "2025-10-03 15:45", "duration": 30},
+    {"name": "TL2 - 1° Grupo", "start": "2025-10-03 16:20", "duration": 30},
+
 ]
 
 # Convert start times into timezone-aware datetime objects
