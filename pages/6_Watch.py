@@ -22,8 +22,8 @@ sessions = [
     {"name": "Shakedown - 2° Grupo", "start": "2025-10-03 10:05", "duration": 15},
     {"name": "TL1 - 1° Grupo (Zonta)", "start": "2025-10-03 13:18", "duration": 30},
     {"name": "TL1 - 2° Grupo (Baptista)", "start": "2025-10-03 13:53", "duration": 30},
-    {"name": "TL2 - 1° Grupo (Zonta)", "start": "2025-10-03 15:45", "duration": 30},
-    {"name": "TL2 - 2° Grupo (Baptista)", "start": "2025-10-03 16:20", "duration": 30},
+    {"name": "TL2 - 1° Grupo (Zonta)", "start": "2025-10-03 15:55", "duration": 30},
+    {"name": "TL2 - 2° Grupo (Baptista)", "start": "2025-10-03 16:30", "duration": 30},
 
 ]
 
