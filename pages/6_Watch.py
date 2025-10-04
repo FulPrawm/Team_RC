@@ -24,7 +24,7 @@ sessions = [
     {"name": "TL1 - 2° Grupo (Baptista)", "start": "2025-10-03 13:53", "duration": 30},
     {"name": "TL2 - 1° Grupo (Zonta)", "start": "2025-10-03 15:55", "duration": 30},
     {"name": "TL2 - 2° Grupo (Baptista)", "start": "2025-10-03 16:30", "duration": 30},
-
+    {"name": "Qualy", "start": "2025-10-04 10:00", "duration": 40}
 ]
 
 # Convert start times into timezone-aware datetime objects
