@@ -85,7 +85,7 @@ if current_session:
 else:
     st.markdown(
         f"""
-        <div style='background:#2e7d32; color:white; padding:20px; border-radius:15px; margin-top:20px;'>
+        <div style='background:#2e7d32; color:white; padding:80px; border-radius:60px; margin-top:80px;'>
             <h2>Sessão Atual: -</h2>
             <p><b>Início:</b> - &nbsp;&nbsp; <b>Fim:</b> -</p>
             <p><b>Tempo Decorrido:</b> - &nbsp;&nbsp; <b>Tempo Restante:</b> -</p>
