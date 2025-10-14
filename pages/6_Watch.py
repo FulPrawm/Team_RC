@@ -66,16 +66,43 @@ for i, s in enumerate(sessions):
         next_session = s
         break
 
-# ---------------- Próxima Sessão (EM CIMA E DESTACADA) ----------------
+# ---------------- Sessão Atual PEQUENA ----------------
+if current_session:
+    st.markdown(
+        f"""
+        <div style='background:#2e7d32; color:white; padding:10px; border-radius:10px; margin-top:5px;'>
+            <h4 style='margin:0;'>Sessão Atual: {current_session['name']}</h4>
+            <p style='margin:0; font-size:14px;'>
+                {current_session['start_dt'].strftime('%d/%m %H:%M')} - {current_session['end_dt'].strftime('%d/%m %H:%M')}
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+else:
+    st.markdown(
+        """
+        <div style='background:#2e7d32; color:white; padding:10px; border-radius:10px; margin-top:5px;'>
+            <h4 style='margin:0;'>Sessão Atual: -</h4>
+            <p style='margin:0; font-size:14px;'>-</p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+# ---------------- BLOCO PRINCIPAL: Próxima Sessão ----------------
 if next_session:
     countdown = next_session["start_dt"] - now
     st.markdown(
         f"""
-        <div style='background:#1B4F72; color:white; padding:30px; border-radius:20px; margin-top:20px; text-align:center;'>
-            <h2 style='font-size:28px;'>Próxima Sessão: {next_session['name']}</h2>
-            <p style='font-size:20px;'><b>Início:</b> {next_session['start_dt'].strftime('%d/%m %H:%M')}</p>
-            <p style='font-size:20px;'><b>Duração:</b> {next_session['duration']:02d} min</p>
-            <p style='font-size:55px; font-weight:bold; margin-top:15px; color:#00FF99;'>
+        <div style='background:#1B4F72; color:white; padding:40px; border-radius:20px; margin-top:25px; text-align:center;'>
+            <h2 style='font-size:32px;'>Próxima Sessão: {next_session['name']}</h2>
+            <p style='font-size:22px; margin-top:10px;'>
+                Início: {next_session['start_dt'].strftime('%d/%m %H:%M')}  
+                &nbsp;&nbsp; | &nbsp;&nbsp;
+                Duração: {next_session['duration']:02d} min
+            </p>
+            <p style='font-size:65px; font-weight:bold; margin-top:25px; color:#00FF99;'>
                 {str(countdown).split('.')[0]}
             </p>
         </div>
@@ -85,39 +112,10 @@ if next_session:
 else:
     st.markdown(
         """
-        <div style='background:#1B4F72; color:white; padding:30px; border-radius:20px; margin-top:20px; text-align:center;'>
-            <h2 style='font-size:28px;'>Próxima Sessão: -</h2>
-            <p><b>Início:</b> -</p>
-            <p><b>Duração:</b> -</p>
-            <p style='font-size:55px; font-weight:bold; margin-top:15px;'>-</p>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-# ---------------- Sessão Atual (MENOS DESTAQUE) ----------------
-if current_session:
-    elapsed = now - current_session["start_dt"]
-    remaining = current_session["end_dt"] - now
-    st.markdown(
-        f"""
-        <div style='background:#2e7d32; color:white; padding:20px; border-radius:15px; margin-top:15px;'>
-            <h3>Sessão Atual: {current_session['name']}</h3>
-            <p><b>Início:</b> {current_session['start_dt'].strftime('%d/%m %H:%M')} &nbsp;&nbsp; 
-               <b>Fim:</b> {current_session['end_dt'].strftime('%d/%m %H:%M')}</p>
-            <p><b>Tempo Decorrido:</b> {str(elapsed).split('.')[0]} &nbsp;&nbsp;
-               <b>Tempo Restante:</b> {str(remaining).split('.')[0]}</p>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-else:
-    st.markdown(
-        """
-        <div style='background:#2e7d32; color:white; padding:20px; border-radius:15px; margin-top:15px;'>
-            <h3>Sessão Atual: -</h3>
-            <p><b>Início:</b> - &nbsp;&nbsp; <b>Fim:</b> -</p>
-            <p><b>Tempo Decorrido:</b> - &nbsp;&nbsp; <b>Tempo Restante:</b> -</p>
+        <div style='background:#1B4F72; color:white; padding:40px; border-radius:20px; margin-top:25px; text-align:center;'>
+            <h2 style='font-size:32px;'>Próxima Sessão: -</h2>
+            <p style='font-size:22px;'>Início: - &nbsp;&nbsp; | &nbsp;&nbsp; Duração: -</p>
+            <p style='font-size:65px; font-weight:bold; margin-top:25px;'>-</p>
         </div>
         """,
         unsafe_allow_html=True
