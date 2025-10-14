@@ -18,15 +18,18 @@ tz = ZoneInfo("America/Sao_Paulo")
 # Sessions
 # ------------------------
 sessions = [
-    {"name": "Treino Livre 1", "start": "2025-09-05 09:00", "duration": 35},
-    {"name": "FP1", "start": "2025-09-05 11:20", "duration": 65},
-    {"name": "FP2", "start": "2025-09-05 15:25", "duration": 65},
-    {"name": "Q1 - Grupo 1", "start": "2025-09-06 15:35", "duration": 8},
-    {"name": "Q1 - Grupo 2", "start": "2025-09-06 16:05", "duration": 8},
-    {"name": "Q2", "start": "2025-09-06 16:20", "duration": 8},
-    {"name": "Q3", "start": "2025-09-06 16:35", "duration": 8},
-    {"name": "Corrida 1", "start": "2025-09-06 18:00", "duration": 30},
-    {"name": "Corrida 2", "start": "2025-09-07 14:10", "duration": 50},
+    {"name": "Shakedown - Grupo 1 (Baptista)", "start": "2025-10-24 08:45", "duration": 15},
+    {"name": "Shakedown - Grupo 2 (Zonta)", "start": "2025-10-24 09:05", "duration": 15},
+    {"name": "TL1 - Grupo 1 (Baptista)", "start": "2025-10-24 09:55", "duration": 30},
+    {"name": "TL1 - Grupo 2 (Zonta)", "start": "2025-10-24 10:30", "duration": 30},
+    {"name": "TL2 - Grupo 1 (Baptista)", "start": "2025-10-24 15:25", "duration": 30},
+    {"name": "TL2 - Grupo 2 (Zonta)", "start": "2025-10-24 16:00", "duration": 30},
+    {"name": "Classificatório - Grupo 1 Zonta", "start": "2025-10-25 08:30", "duration": 50},
+    {"name": "Box Aberto", "start": "2025-10-25 15:10", "duration": 10},
+    {"name": "Corrida 1", "start": "2025-10-25 16:03", "duration": 32},
+    {"name": "Warm Up - Grupo Único", "start": "2025-10-26 08:40", "duration": 10},
+    {"name": "Box Aberto", "start": "2025-10-26 10:20", "duration": 10},
+    {"name": "Corrida 2", "start": "2025-10-26 11:13", "duration": 52},
 ]
 
 for s in sessions:
