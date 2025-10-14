@@ -72,7 +72,7 @@ if current_session:
     remaining = current_session["end_dt"] - now
     st.markdown(
         f"""
-        <div style='background:#2e7d32; color:white; padding:20px; border-radius:15px; margin-top:20px;'>
+        <div style='background:#2e7d32; color:white; padding:40px; border-radius:30px; margin-top:40px;'>
             <h2>Sessão Atual: {current_session['name']}</h2>
             <p><b>Início:</b> {current_session['start_dt'].strftime('%d/%m %H:%M')} &nbsp;&nbsp; 
                <b>Fim:</b> {current_session['end_dt'].strftime('%d/%m %H:%M')}</p>
