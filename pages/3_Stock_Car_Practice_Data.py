@@ -350,74 +350,7 @@ if etapa_escolhida != "Select a round...":
                     chart = (bars + labels).properties(title=tab_name)
             
                     st.altair_chart(chart, use_container_width=True)
-
-        
-
-        elif option == 'BoxPlots':
-            st.write('Values from every car for each manufacturer')
-            for var in analise_Manufacturer:
-                if var == 'Manufacturer':
-                    continue
-                fig = px.box(sessao_filtrado, 
-                             x=sessao_filtrado[var], 
-                             points='all', 
-                             color='Manufacturer',
-                             title=f'{var} distribution')  # Title inside graph
-                st.plotly_chart(fig)
-             
-            # Block 2 — por Car_ID (como rótulo) em tabs
-            tabs_box = st.tabs(["Lap", "S1", "S2", "S3", "SPT"])
-            colunas_boxplot = {
-                "Lap": "Lap Tm (S)",
-                "S1": "S1 Tm",
-                "S2": "S2 Tm",
-                "S3": "S3 Tm",
-                "SPT": "SPT"
-            }
-            for i, (tab_nome, coluna) in enumerate(colunas_boxplot.items()):
-                with tabs_box[i]:
-                    df_plot = sessao_filtrado.copy()
-                    
-                    # Pega lista de drivers em ordem alfabética
-                    drivers_unicos = sorted(df_plot["Driver"].unique())
-            
-                    fig = px.box(
-                        df_plot,
-                        x="Driver",
-                        y=coluna,
-                        points="all",
-                        color="Driver",
-                        category_orders={"Driver": drivers_unicos},
-                    )
-            
-                    fig.update_layout(
-                        yaxis_title=coluna,
-                        title=f"Boxplot - {coluna}",
-                        showlegend=False
-                    )
-            
-                    st.plotly_chart(fig, use_container_width=True)
-        
-        
-        elif option == 'All Laps':
-         
-            alllaps10 = sessao[sessao['Car_ID'] == 10]
-            st.write("Ricardo Zonta")
-            st.dataframe(alllaps10)
-        
-            alllaps11 = sessao[sessao['Car_ID'] == 11]
-            st.write("Gaetano Di Mauro")
-            st.dataframe(alllaps11)
-        
-            alllaps44 = sessao[sessao['Car_ID'] == 44]
-            st.write("Bruno Baptista")
-            st.dataframe(alllaps44)
-        
-            alllaps88 = sessao[sessao['Car_ID'] == 88]
-            st.write("Felipe Fraga")
-            st.dataframe(alllaps88)
-         
-        elif option == "Sector Analysis":
+                 
             st.subheader("Sector Heatmap & Radar Comparison")
  
             # Melhor volta de cada piloto
@@ -521,11 +454,76 @@ if etapa_escolhida != "Select a round...":
             
             st.plotly_chart(fig_radar)
 
+        
+        elif option == 'BoxPlots':
+            st.write('Values from every car for each manufacturer')
+            for var in analise_Manufacturer:
+                if var == 'Manufacturer':
+                    continue
+                fig = px.box(sessao_filtrado, 
+                             x=sessao_filtrado[var], 
+                             points='all', 
+                             color='Manufacturer',
+                             title=f'{var} distribution')  # Title inside graph
+                st.plotly_chart(fig)
+             
+            # Block 2 — por Car_ID (como rótulo) em tabs
+            tabs_box = st.tabs(["Lap", "S1", "S2", "S3", "SPT"])
+            colunas_boxplot = {
+                "Lap": "Lap Tm (S)",
+                "S1": "S1 Tm",
+                "S2": "S2 Tm",
+                "S3": "S3 Tm",
+                "SPT": "SPT"
+            }
+            for i, (tab_nome, coluna) in enumerate(colunas_boxplot.items()):
+                with tabs_box[i]:
+                    df_plot = sessao_filtrado.copy()
+                    
+                    # Pega lista de drivers em ordem alfabética
+                    drivers_unicos = sorted(df_plot["Driver"].unique())
+            
+                    fig = px.box(
+                        df_plot,
+                        x="Driver",
+                        y=coluna,
+                        points="all",
+                        color="Driver",
+                        category_orders={"Driver": drivers_unicos},
+                    )
+            
+                    fig.update_layout(
+                        yaxis_title=coluna,
+                        title=f"Boxplot - {coluna}",
+                        showlegend=False
+                    )
+            
+                    st.plotly_chart(fig, use_container_width=True)
+        
+        
+        elif option == 'All Laps':
+         
+            alllaps10 = sessao[sessao['Car_ID'] == 10]
+            st.write("Ricardo Zonta")
+            st.dataframe(alllaps10)
+        
+            alllaps11 = sessao[sessao['Car_ID'] == 11]
+            st.write("Gaetano Di Mauro")
+            st.dataframe(alllaps11)
+        
+            alllaps44 = sessao[sessao['Car_ID'] == 44]
+            st.write("Bruno Baptista")
+            st.dataframe(alllaps44)
+        
+            alllaps88 = sessao[sessao['Car_ID'] == 88]
+            st.write("Felipe Fraga")
+            st.dataframe(alllaps88)
 
     else:
         st.warning("Please, select a session.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
