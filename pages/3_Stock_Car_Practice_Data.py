@@ -199,7 +199,7 @@ if etapa_escolhida != "Select a round...":
         # Creating a list to select which type of graphs we want to display
         option = st.selectbox(
             "Select the type of graph",
-            ("Charts", "Lines", "BoxPlots", "Others", "All Laps", "Sector Analysis"),
+            ("Charts", "Lines", "BoxPlots", "Others", "All Laps"),
             index=0  # number 0 is to open it blank
         )
         
@@ -523,6 +523,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a session.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
