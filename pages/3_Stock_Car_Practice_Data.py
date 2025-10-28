@@ -75,7 +75,7 @@ if etapa_escolhida != "Select a round...":
                 21: 'Ipiranga Racing', 30: 'Ipiranga Racing',
                 12: 'Amattheis Vogel', 83: 'Amattheis Vogel',
                 10: 'RCM Motorsport', 44: 'RCM Motorsport',
-                8: 'TMG Racing', 19: 'TMG Racing',
+                8: 'TMG Racing', 19: 'TMG Racing', 70: 'TMG Racing',
                 11: 'Eurofarma RC', 88: 'Eurofarma RC',
                 4: 'Crown Racing', 81: 'Crown Racing',
                 85: 'Cavaleiro Sports', 90: 'Cavaleiro Sports',
@@ -112,7 +112,7 @@ if etapa_escolhida != "Select a round...":
          21: 'Thiago Camilo', 30: 'Cesar Ramos',
          12: 'Lucas Foresti', 83: 'Gabriel Casagrande',
          10: 'Ricardo Zonta', 44: 'Bruno Baptista',
-         8: 'Rafael Suzuki', 19: 'Felipe Massa',
+         8: 'Rafael Suzuki', 19: 'Felipe Massa', 70: 'Rafael Suzuki',
          11: 'Gaetano Di Mauro', 88: 'Felipe Fraga',
          4: 'Julio Campos', 81: 'Arthur Leist',
          85: 'Guilherme Salas', 90: 'Ricardo Mauricio',
@@ -523,6 +523,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a session.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
