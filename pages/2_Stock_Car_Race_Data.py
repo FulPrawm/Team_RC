@@ -653,15 +653,21 @@ if etapa_escolhida != "Select a round...":
                     st.plotly_chart(fig, use_container_width=True)
               
         elif option == 'BoxPlots':
-            for var in analise_Manufacturer:
-                if var == 'Manufacturer':
-                    continue
-                fig = px.box(sessao_filtrado, 
-                             x=sessao_filtrado[var], 
-                             points='all', 
-                             color='Manufacturer',
-                             title=f'{var} distribution')
-                st.plotly_chart(fig)
+            # ✅ Tabs for Manufacturer box plots
+            tabs_manuf = st.tabs([col for col in analise_Manufacturer if col != "Manufacturer"])
+            
+            for tab, var in zip(tabs_manuf, [col for col in analise_Manufacturer if col != "Manufacturer"]):
+                with tab:
+                    fig = px.box(
+                        sessao_filtrado,
+                        x="Manufacturer",
+                        y=var,
+                        points="all",
+                        color="Manufacturer",
+                        title=f"{var} Distribution by Manufacturer"
+                    )
+                    fig.update_layout(showlegend=False)
+                    st.plotly_chart(fig, use_container_width=True)
 
                  # Block 2 — por Car_ID (como rótulo) em tabs
             tabs_box = st.tabs(["Lap", "S1", "S2", "S3", "SPT"])
@@ -718,6 +724,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
