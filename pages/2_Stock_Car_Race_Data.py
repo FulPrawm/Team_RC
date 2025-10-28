@@ -208,19 +208,31 @@ if etapa_escolhida != "Select a round...":
             value=4.0,
             step=1.0,
         )       
-        # Tempo limite baseado na % escolhida
+        # Time limit based on the % chosen
         tempo_limite = melhor_volta * (1 + percentual / 100)  
-        # Cálculo de voltas por piloto
+        # Calculating how many laps each driver made
         voltas_por_piloto = sessao.groupby('Car_ID')['Lap'].nunique()
-        # Piloto com mais voltas (para referência de 50%)
+        # Driver with most laps (for 50% reference)
         max_voltas = voltas_por_piloto.max()
-        min_voltas_necessarias = int(np.floor(max_voltas * 0.5))  # Arredonda pra baixo 
-        # Lista de pilotos válidos (com pelo menos 50% das voltas completadas)
+        min_voltas_necessarias = int(np.floor(max_voltas * 0.5))  # Rounds it down 
+        # List of valid drivers (With at least 50% of the laps completed)
         pilotos_validos = voltas_por_piloto[voltas_por_piloto >= min_voltas_necessarias].index
-        # Aplicar filtro de pilotos válidos
+        # Applying the filter to only valid drivers
         sessao_filtrado = sessao[sessao['Car_ID'].isin(pilotos_validos)]
-        # Aplicar filtro de tempo de volta
+        # Applying the filter based on lap time
         sessao_filtrado = sessao_filtrado[sessao_filtrado["Lap Tm (S)"] <= tempo_limite]
+        #  Normalize times to avoid string values such as "1:00.164"
+        def convert_to_seconds(x):
+            if isinstance(x, str) and ":" in x:
+                parts = x.split(":")
+                if len(parts) == 2:
+                    return float(parts[0]) * 60 + float(parts[1])
+            try:
+                return float(x)
+            except:
+                return pd.NA
+        for col in ["S1 Tm", "S2 Tm", "S3 Tm"]:
+            sessao_filtrado[col] = sessao_filtrado[col].apply(convert_to_seconds)
         # Exibir informações
         st.subheader("Custom filter applied")
         st.write(f"🔍 Best lap of the session: **{melhor_volta:.3f} s**")
@@ -706,6 +718,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
