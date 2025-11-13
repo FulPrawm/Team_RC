@@ -12,24 +12,24 @@ st_autorefresh(interval=1000, limit=None)
 # ------------------------
 # Timezone
 # ------------------------
-tz = ZoneInfo("America/Sao_Paulo")
+tz = ZoneInfo("America/Cuiaba")
 
 # ------------------------
 # Sessions
 # ------------------------
 sessions = [
-    {"name": "Shakedown - Grupo 1 (Baptista)", "start": "2025-10-24 08:40", "duration": 15},
-    {"name": "Shakedown - Grupo 2 (Zonta)", "start": "2025-10-24 09:00", "duration": 15},
-    {"name": "TL1 - Grupo 1 (Baptista)", "start": "2025-10-24 10:05", "duration": 30},
-    {"name": "TL1 - Grupo 2 (Zonta)", "start": "2025-10-24 10:40", "duration": 30},
-    {"name": "TL2 - Grupo 1 (Baptista)", "start": "2025-10-24 15:25", "duration": 30},
-    {"name": "TL2 - Grupo 2 (Zonta)", "start": "2025-10-24 16:00", "duration": 30},
-    {"name": "Classificatório - Grupo 1 Zonta", "start": "2025-10-25 08:30", "duration": 50},
-    {"name": "Box Aberto", "start": "2025-10-25 14:40", "duration": 10},
-    {"name": "Corrida 1", "start": "2025-10-25 15:33", "duration": 32},
-    {"name": "Warm Up - Grupo Único", "start": "2025-10-26 08:40", "duration": 10},
-    {"name": "Box Aberto", "start": "2025-10-26 10:20", "duration": 10},
-    {"name": "Corrida 2", "start": "2025-10-26 11:13", "duration": 52},
+    {"name": "Shakedown - Grupo 1 (Zonta)", "start": "2025-11-13 17:55", "duration": 15},
+    {"name": "Shakedown - Grupo 2 (Baptista)", "start": "2025-11-13 18:15", "duration": 15},
+    {"name": "TL1 - Grupo 1 (Zonta)", "start": "2025-11-13 19:20", "duration": 30},
+    {"name": "TL1 - Grupo 2 (Baptista)", "start": "2025-11-13 20:00", "duration": 30},
+    {"name": "TL2 - Grupo 1 (Zonta)", "start": "2025-11-13 22:00", "duration": 30},
+    {"name": "TL2 - Grupo 2 (Baptista)", "start": "2025-11-13 22:40", "duration": 30},
+    {"name": "Classificatório - Grupo 1 (Zonta e Baptista)", "start": "2025-11-14 18:25", "duration": 50},
+    {"name": "Box Aberto", "start": "2025-11-14 20:30", "duration": 10},
+    {"name": "Corrida 1", "start": "2025-11-14 21:13", "duration": 32},
+    {"name": "Warm Up - Grupo Único", "start": "2025-11-15 17:55", "duration": 10},
+    {"name": "Box Aberto", "start": "2025-11-15 20:50", "duration": 10},
+    {"name": "Corrida 2", "start": "2025-11-15 21:43", "duration": 52},
 ]
 
 for s in sessions:
