@@ -18,12 +18,12 @@ tz = ZoneInfo("America/Cuiaba")
 # Sessions
 # ------------------------
 sessions = [
-    {"name": "Shakedown - Grupo 1 (Zonta)", "start": "2025-11-13 17:55", "duration": 15},
-    {"name": "Shakedown - Grupo 2 (Baptista)", "start": "2025-11-13 18:15", "duration": 15},
-    {"name": "TL1 - Grupo 1 (Zonta)", "start": "2025-11-13 19:20", "duration": 30},
-    {"name": "TL1 - Grupo 2 (Baptista)", "start": "2025-11-13 20:00", "duration": 30},
-    {"name": "TL2 - Grupo 1 (Zonta)", "start": "2025-11-13 22:00", "duration": 30},
-    {"name": "TL2 - Grupo 2 (Baptista)", "start": "2025-11-13 22:40", "duration": 30},
+    {"name": "Shakedown - Grupo 1 (Zonta)", "start": "2025-11-13 19:55", "duration": 15},
+    {"name": "Shakedown - Grupo 2 (Baptista)", "start": "2025-11-13 20:15", "duration": 15},
+    {"name": "TL1 - Grupo 1 (Zonta)", "start": "2025-11-13 21:20", "duration": 30},
+    {"name": "TL1 - Grupo 2 (Baptista)", "start": "2025-11-13 22:00", "duration": 30},
+    {"name": "TL2 - Grupo 1 (Zonta)", "start": "2025-11-13 24:00", "duration": 30},
+    {"name": "TL2 - Grupo 2 (Baptista)", "start": "2025-11-14 02:40", "duration": 30},
     {"name": "Classificatório - Grupo 1 (Zonta e Baptista)", "start": "2025-11-14 18:25", "duration": 50},
     {"name": "Box Aberto", "start": "2025-11-14 20:30", "duration": 10},
     {"name": "Corrida 1", "start": "2025-11-14 21:13", "duration": 32},
