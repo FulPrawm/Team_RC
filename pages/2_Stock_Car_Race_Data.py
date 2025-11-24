@@ -494,37 +494,110 @@ if etapa_escolhida != "Select a round...":
         
         elif option == 'Others':
             st.subheader("Car Efficiency")
-
-            # General filter
-            sessao_eff = sessao_filtrado.copy()
-        
-            # Defining the average to cut the quadrants
-            media_avg_speed = sessao_eff["Avg Speed"].mean()
-            media_spt = sessao_eff["SPT"].mean()
-        
-            # Graph
-            fig = px.scatter(sessao_eff, x='Avg Speed', y='SPT', color='Team', symbol='Team',
-                             title="Aerodynamic Efficiency - Avg Speed vs SPT",
-                             hover_data=['Car_ID'])
-        
-            fig.update_traces(marker_size=10)
-        
-            # Linhas de corte no meio dos dados
-            fig.add_vline(x=media_avg_speed, line_dash="dash", line_color="white", annotation_text="Average 'Avg Speed'", 
-                          annotation_position="bottom left", annotation_font_color="white")
-        
-            fig.add_hline(y=media_spt, line_dash="dash", line_color="white", annotation_text="Average 'SPT'",
-                          annotation_position="top right", annotation_font_color="white")
-        
-            # Texto descritivo sobre os quadrantes
-            st.markdown("""
-            - **↗ Upper Right Quadrant**: High overall efficiency (straight + turn)
-            - **↖ Upper Left Quadrant**: Low downforce (good straight, bad cornering)
-            - **↘ Lower Right Quadrant**: High downforce (good cornering, bad straight)
-            - **↙ Lower Left Quadrant**: Low efficiency (neither)
-            """)
-        
-            st.plotly_chart(fig, use_container_width=True)
+            
+            # Tabs
+            tab1, tab2 = st.tabs(["Fastest Lap per Team", "Average per Team"])
+            
+            # --- FUNÇÃO PARA PLOTAR O GRÁFICO (reutilizável) ---
+            def plot_efficiency(df, title_suffix=""):
+                # Define average lines
+                media_avg_speed = df["Avg Speed"].mean()
+                media_spt = df["SPT"].mean()
+            
+                # Graph
+                fig = px.scatter(
+                    df, 
+                    x='Avg Speed', 
+                    y='SPT', 
+                    color='Team', 
+                    symbol='Team',
+                    title=f"Aerodynamic Efficiency {title_suffix}",
+                    hover_data=['Car_ID']
+                )
+            
+                fig.update_traces(marker_size=12)
+            
+                # Vertical cut line
+                fig.add_vline(
+                    x=media_avg_speed,
+                    line_dash="dash",
+                    line_color="white",
+                    annotation_text="Average Avg Speed",
+                    annotation_position="bottom left",
+                    annotation_font_color="white"
+                )
+            
+                # Horizontal cut line
+                fig.add_hline(
+                    y=media_spt,
+                    line_dash="dash",
+                    line_color="white",
+                    annotation_text="Average SPT",
+                    annotation_position="top right",
+                    annotation_font_color="white"
+                )
+            
+                return fig
+            
+            
+            # =============================================================
+            #  TAB 1 → FASTEST LAP PER TEAM
+            # =============================================================
+            with tab1:
+                st.markdown("### Fastest Lap per Team")
+            
+                sessao_eff = sessao_filtrado.copy()
+            
+                # pegar a volta mais rápida de cada equipe
+                fastest_per_team = (
+                    sessao_eff.sort_values("Lap Tm (S)")
+                    .groupby("Team")
+                    .first()
+                    .reset_index()
+                )
+            
+                fig_fastest = plot_efficiency(fastest_per_team, "(Fastest Lap per Team)")
+                st.plotly_chart(fig_fastest, use_container_width=True)
+            
+                st.markdown("""
+                - **↗ Upper Right** → Equipes com ótima eficiência geral  
+                - **↖ Upper Left** → Baixo downforce (reta boa, curva ruim)  
+                - **↘ Lower Right** → Alto downforce (reta ruim, curva boa)  
+                - **↙ Lower Left** → Baixa eficiência (ruim nos dois)  
+                """)
+            
+            
+            # =============================================================
+            #  TAB 2 → AVERAGE PER TEAM
+            # =============================================================
+            with tab2:
+                st.markdown("### Average per Team")
+            
+                sessao_eff = sessao_filtrado.copy()
+            
+                # média de todas as voltas por equipe
+                avg_per_team = (
+                    sessao_eff.groupby("Team", as_index=False)[["Avg Speed", "SPT"]].mean()
+                )
+            
+                # pegar um Car_ID representativo para o hover
+                represent_car = (
+                    sessao_eff.groupby("Team")["Car_ID"]
+                    .first()
+                    .reset_index()
+                )
+            
+                avg_per_team = avg_per_team.merge(represent_car, on="Team")
+            
+                fig_avg = plot_efficiency(avg_per_team, "(Average per Team)")
+                st.plotly_chart(fig_avg, use_container_width=True)
+            
+                st.markdown("""
+                - **↗ Upper Right** → Equipes eficientes em ritmo médio  
+                - **↖ Upper Left** → Baixo downforce na média  
+                - **↘ Lower Right** → Alto downforce na média  
+                - **↙ Lower Left** → Eficiência geral baixa  
+                """)
  
             # Tabs to Gap to Fastest
             tabs = st.tabs(["Gap to Fastest Car in AVG - Lap", "Gap to Fastest Car in AVG - S1", "Gap to Fastest Car in AVG - S2", "Gap to Fastest Car in AVG - S3"])
@@ -724,6 +797,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
