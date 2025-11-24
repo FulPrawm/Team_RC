@@ -560,10 +560,10 @@ if etapa_escolhida != "Select a round...":
                 st.plotly_chart(fig_fastest, use_container_width=True)
             
                 st.markdown("""
-                - **↗ Upper Right** → Equipes com ótima eficiência geral  
-                - **↖ Upper Left** → Baixo downforce (reta boa, curva ruim)  
-                - **↘ Lower Right** → Alto downforce (reta ruim, curva boa)  
-                - **↙ Lower Left** → Baixa eficiência (ruim nos dois)  
+                - **↗ Upper Right** → High overall efficiency (straight + turn)
+                - **↖ Upper Left** → Low downforce (good straight, bad cornering)
+                - **↘ Lower Right** → High downforce (good cornering, bad straight)
+                - **↙ Lower Left** → Lower Left Quadrant**: Low efficiency (neither)
                 """)
             
             
@@ -593,10 +593,10 @@ if etapa_escolhida != "Select a round...":
                 st.plotly_chart(fig_avg, use_container_width=True)
             
                 st.markdown("""
-                - **↗ Upper Right** → Equipes eficientes em ritmo médio  
-                - **↖ Upper Left** → Baixo downforce na média  
-                - **↘ Lower Right** → Alto downforce na média  
-                - **↙ Lower Left** → Eficiência geral baixa  
+                - **↗ Upper Right** → High overall efficiency (straight + turn)
+                - **↖ Upper Left** → Low downforce (good straight, bad cornering)
+                - **↘ Lower Right** → High downforce (good cornering, bad straight)
+                - **↙ Lower Left** → Lower Left Quadrant**: Low efficiency (neither)
                 """)
  
             # Tabs to Gap to Fastest
@@ -797,6 +797,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
