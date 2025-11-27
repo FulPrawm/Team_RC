@@ -12,7 +12,7 @@ st_autorefresh(interval=1000, limit=None)
 # ------------------------
 # Timezone
 # ------------------------
-tz = ZoneInfo("America/Cuiaba")
+tz = ZoneInfo("America/Sao Paulo")
 
 # ------------------------
 # Sessions
