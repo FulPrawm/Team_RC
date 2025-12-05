@@ -18,18 +18,18 @@ tz = ZoneInfo("America/Sao_Paulo")
 # Sessions
 # ------------------------
 sessions = [
-    {"name": "Shakedown - Grupo 1 (Baptista)", "start": "2025-11-28 09:20", "duration": 15},
-    {"name": "Shakedown - Grupo 2 (Zonta)", "start": "2025-11-28 09:45", "duration": 15},
-    {"name": "TL1 - Grupo 1 (Baptista)", "start": "2025-11-28 11:35", "duration": 30},
-    {"name": "TL1 - Grupo 2 (Zonta)", "start": "2025-11-28 12:15", "duration": 30},
-    {"name": "TL2 - Grupo 1 (Baptista)", "start": "2025-11-28 15:15", "duration": 30},
-    {"name": "TL2 - Grupo 2 (Zonta)", "start": "2025-11-28 15:55", "duration": 30},
-    {"name": "Classificatório - Grupo 1 (Zonta e Baptista)", "start": "2025-11-29 10:40", "duration": 50},
-    {"name": "Box Aberto", "start": "2025-11-29 14:50", "duration": 10},
-    {"name": "Corrida 1", "start": "2025-11-29 15:43", "duration": 32},
-    {"name": "Warm Up - Grupo Único", "start": "2025-11-30 10:50", "duration": 10},
-    {"name": "Box Aberto", "start": "2025-11-30 14:30", "duration": 10},
-    {"name": "Corrida 2", "start": "2025-11-30 15:33", "duration": 52},
+    {"name": "Shakedown - Grupo 1", "start": "2025-12-11 16:25", "duration": 10},
+    {"name": "Shakedown - Grupo 2", "start": "2025-12-11 16:40", "duration": 10},
+    {"name": "TL1 - Grupo 1", "start": "2025-12-12 10:15", "duration": 30},
+    {"name": "TL1 - Grupo 2", "start": "2025-11-12 10:50", "duration": 30},
+    {"name": "TL2 - Grupo 1", "start": "2025-12-12 13:40", "duration": 30},
+    {"name": "TL2 - Grupo 2", "start": "2025-12-12 14:15", "duration": 30},
+    {"name": "Classificatório - Grupo 1", "start": "2025-12-13 09:20", "duration": 50},
+    {"name": "Box Aberto", "start": "2025-12-13 12:40", "duration": 10},
+    {"name": "Corrida 1", "start": "2025-12-13 13:28", "duration": 32},
+    {"name": "Warm Up - Grupo Único", "start": "2025-12-14 09:40", "duration": 10},
+    {"name": "Box Aberto", "start": "2025-12-14 11:20", "duration": 10},
+    {"name": "Corrida 2", "start": "2025-12-14 12:13", "duration": 52},
 ]
 
 for s in sessions:
