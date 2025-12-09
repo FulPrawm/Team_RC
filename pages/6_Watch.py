@@ -18,12 +18,12 @@ tz = ZoneInfo("America/Sao_Paulo")
 # Sessions
 # ------------------------
 sessions = [
-    {"name": "Shakedown - Grupo 1", "start": "2025-12-11 16:25", "duration": 10},
-    {"name": "Shakedown - Grupo 2", "start": "2025-12-11 16:40", "duration": 10},
-    {"name": "TL1 - Grupo 1", "start": "2025-12-12 10:15", "duration": 30},
-    {"name": "TL1 - Grupo 2", "start": "2025-11-12 10:50", "duration": 30},
-    {"name": "TL2 - Grupo 1", "start": "2025-12-12 13:40", "duration": 30},
-    {"name": "TL2 - Grupo 2", "start": "2025-12-12 14:15", "duration": 30},
+    {"name": "Shakedown - Grupo 1 (Regadas)", "start": "2025-12-11 16:25", "duration": 15},
+    {"name": "Shakedown - Grupo 2 (Zonta)", "start": "2025-12-11 16:40", "duration": 15},
+    {"name": "TL1 - Grupo 1 (Regadas)", "start": "2025-12-12 10:30", "duration": 30},
+    {"name": "TL1 - Grupo 2 (Zonta)", "start": "2025-11-12 11:10", "duration": 30},
+    {"name": "TL2 - Grupo 1 (Regadas)", "start": "2025-12-12 14:10", "duration": 30},
+    {"name": "TL2 - Grupo 2 (Zonta)", "start": "2025-12-12 14:50", "duration": 30},
     {"name": "Classificatório - Grupo 1", "start": "2025-12-13 09:20", "duration": 50},
     {"name": "Box Aberto", "start": "2025-12-13 12:40", "duration": 10},
     {"name": "Corrida 1", "start": "2025-12-13 13:28", "duration": 32},
