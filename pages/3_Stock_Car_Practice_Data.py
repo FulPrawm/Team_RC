@@ -316,8 +316,7 @@ if etapa_escolhida != "Select a round...":
                 "Gaetano Di Mauro": "blue",
                 "Bruno Baptista": "gray",
                 "Felipe Fraga": "yellow",
-                "Marcos Regadas: "blue",
-                
+                "Marcos Regadas": "blue",
             }
             
             for i, (tab_name, coluna) in enumerate(colunas_setores.items()):
@@ -532,6 +531,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a session.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
