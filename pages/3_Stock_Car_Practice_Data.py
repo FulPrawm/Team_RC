@@ -134,7 +134,8 @@ if etapa_escolhida != "Select a round...":
             "Ricardo Zonta": ("red", "white"),
             "Gaetano Di Mauro": ("lightblue", "black"),   # azul claro → texto preto
             "Bruno Baptista": ("gray", "white"),
-            "Felipe Fraga": ("yellow", "black")      # fundo amarelo → texto preto
+            "Felipe Fraga": ("yellow", "black"),  # fundo amarelo → texto preto
+            "Marcos Regadas": ("gray", "white")
         }
         colors_team = {
             "Eurofarma RC": ("yellow", "black"),     # amarelo → preto
@@ -525,6 +526,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a session.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
