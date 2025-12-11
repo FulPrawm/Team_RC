@@ -315,7 +315,9 @@ if etapa_escolhida != "Select a round...":
                 "Ricardo Zonta": "red",
                 "Gaetano Di Mauro": "blue",
                 "Bruno Baptista": "gray",
-                "Felipe Fraga": "yellow"
+                "Felipe Fraga": "yellow",
+                "Marcos Regadas: "blue",
+                
             }
             
             for i, (tab_name, coluna) in enumerate(colunas_setores.items()):
@@ -397,7 +399,7 @@ if etapa_escolhida != "Select a round...":
             st.plotly_chart(fig_heatmap)
             
             # ---------- Radar Chart with Absolute Times Normalized ----------
-            selected_cars = [10, 11, 44, 88]
+            selected_cars = [10, 11, 44, 88, 31]
             selected_drivers = sessao[sessao["Car_ID"].isin(selected_cars)]["Driver"].unique().tolist()
             drivers_radar = list(set(selected_drivers) | {fastest_driver})
             
@@ -421,7 +423,7 @@ if etapa_escolhida != "Select a round...":
             )
             
             # Criar dicionário de cores
-            driver_colors = {10: "red", 11: "blue", 44: "gray", 88: "yellow"}
+            driver_colors = {10: "red", 11: "blue", 44: "gray", 88: "yellow", 31:"blue"}
             color_map = {}
             
             for driver in df_radar["Driver"].unique():
@@ -522,10 +524,15 @@ if etapa_escolhida != "Select a round...":
             st.write("Felipe Fraga")
             st.dataframe(alllaps88)
 
+            alllaps31 = sessao[sessao['Car_ID'] == 31]
+            st.write("Marcos Regadas")
+            st.dataframe(alllaps31)
+
     else:
         st.warning("Please, select a session.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
