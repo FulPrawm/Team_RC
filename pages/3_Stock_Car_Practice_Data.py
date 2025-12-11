@@ -316,7 +316,7 @@ if etapa_escolhida != "Select a round...":
                 "Gaetano Di Mauro": "blue",
                 "Bruno Baptista": "gray",
                 "Felipe Fraga": "yellow",
-                "Marcos Regadas": "blue",
+                "Marcos Regadas": "gray",
             }
             
             for i, (tab_name, coluna) in enumerate(colunas_setores.items()):
@@ -422,7 +422,7 @@ if etapa_escolhida != "Select a round...":
             )
             
             # Criar dicionário de cores
-            driver_colors = {10: "red", 11: "blue", 44: "gray", 88: "yellow", 31:"blue"}
+            driver_colors = {10: "red", 11: "blue", 44: "gray", 88: "yellow", 31:"gray"}
             color_map = {}
             
             for driver in df_radar["Driver"].unique():
@@ -531,6 +531,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a session.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
