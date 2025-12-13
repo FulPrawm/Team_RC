@@ -104,7 +104,8 @@ if etapa_escolhida != "Select a round...":
                 121: 'Car Racing KTF', 101: 'Car Racing KTF',
                 7: 'FT Gazoo Racing', 9: 'FT Gazoo Racing',
                 95: 'Scuderia Chiarelli', 0: 'Scuderia Chiarelli',
-                6: 'A. Mattheis Motorsport', 72: 'FT Cavaleiro'
+                6: 'A. Mattheis Motorsport', 72: 'FT Gazoo Racing',
+                31: 'RCM Motorsport'
                     }
             return Teams_dict.get(x, None)
         # Creating a new column for what team each driver races
@@ -112,7 +113,7 @@ if etapa_escolhida != "Select a round...":
 
              # Creating 3 manufacturer groups
         carros_toyota = [301, 4, 30, 111, 38, 81, 5, 7, 9, 21, 72]
-        carros_mitsubishi = [101, 444, 44, 33, 29, 11, 121, 18, 10, 88]
+        carros_mitsubishi = [101, 444, 44, 33, 29, 11, 121, 18, 10, 88, 31]
         # Function that verifies if the car is Toyota, if not its Mitsubishi, and if its not either, its Chevrolet
         def brand(x):
             if x in carros_toyota:
@@ -156,7 +157,8 @@ if etapa_escolhida != "Select a round...":
          121: 'Felipe Baptista', 101: 'Gianluca Petecof',
          7: 'JP Oliveira', 9: 'Arthur Gama',
          95: 'Lucas Kohl', 0: 'Cacá Bueno',
-         6: 'Hélio Castroneves', 72: 'Antonella Bassani'
+         6: 'Hélio Castroneves', 72: 'Antonella Bassani',
+         31: 'Marcos Regadas'
         }
         sessao['Driver'] = sessao['Car_ID'].map(drivers_dict)
 
@@ -166,7 +168,8 @@ if etapa_escolhida != "Select a round...":
             "Ricardo Zonta": ("red", "white"),
             "Gaetano Di Mauro": ("lightblue", "black"),   # azul claro → texto preto
             "Bruno Baptista": ("gray", "white"),
-            "Felipe Fraga": ("yellow", "black")      # fundo amarelo → texto preto
+            "Felipe Fraga": ("yellow", "black"),         # fundo amarelo → texto preto
+            "Marcos Regadas": ("gray", "white")
         }
         colors_team = {
             "Eurofarma RC": ("yellow", "black"),     # amarelo → preto
@@ -563,7 +566,7 @@ if etapa_escolhida != "Select a round...":
                 - **↗ Upper Right** → High overall efficiency (straight + turn)
                 - **↖ Upper Left** → Low downforce (good straight, bad cornering)
                 - **↘ Lower Right** → High downforce (good cornering, bad straight)
-                - **↙ Lower Left** → Lower Left Quadrant**: Low efficiency (neither)
+                - **↙ Lower Left** → Lower Left Quadrant: Low efficiency (neither)
                 """)
             
             
@@ -596,7 +599,7 @@ if etapa_escolhida != "Select a round...":
                 - **↗ Upper Right** → High overall efficiency (straight + turn)
                 - **↖ Upper Left** → Low downforce (good straight, bad cornering)
                 - **↘ Lower Right** → High downforce (good cornering, bad straight)
-                - **↙ Lower Left** → Lower Left Quadrant**: Low efficiency (neither)
+                - **↙ Lower Left** → Lower Left Quadrant: Low efficiency (neither)
                 """)
  
             # Tabs to Gap to Fastest
@@ -614,7 +617,8 @@ if etapa_escolhida != "Select a round...":
                 "Ricardo Zonta": "red",
                 "Gaetano Di Mauro": "blue",
                 "Bruno Baptista": "gray",
-                "Felipe Fraga": "yellow"
+                "Felipe Fraga": "yellow",
+                "Marcos Regadas": "gray"
             }
         
             for i, (tab_name, coluna) in enumerate(colunas_setores.items()):
@@ -649,19 +653,21 @@ if etapa_escolhida != "Select a round...":
             # Percentual difference with tendency
             st.header("Percentual difference to the best lap for each driver from this team")
         
-            carros_desejados = [10, 11, 44, 88]
+            carros_desejados = [10, 11, 44, 88, 31]
             nomes_carros = {
                 10: "Ricardo Zonta",
                 11: "Gaetano Di Mauro",
                 44: "Bruno Baptista",
-                88: "Felipe Fraga"
+                88: "Felipe Fraga",
+                31: "Marcos Regadas"
             }
         
             cores_carros = {
                 10: "red",
                 11: "blue",
                 44: "gray",
-                88: "yellow"
+                88: "yellow",
+                31: "gray"
             }
         
             tabs_dif = st.tabs([nomes_carros[carro] for carro in carros_desejados])
@@ -792,11 +798,16 @@ if etapa_escolhida != "Select a round...":
             st.write("Felipe Fraga")
             st.dataframe(alllaps88)
 
+            alllaps31 = sessao[sessao['Car_ID'] == 31]
+            st.write("Marcos Regadas")
+            st.dataframe(alllaps31)
+
 
     else:
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
