@@ -30,6 +30,7 @@ sessions = [
     {"name": "Warm Up - Grupo Único", "start": "2025-12-14 09:40", "duration": 10},
     {"name": "Box Aberto", "start": "2025-12-14 11:20", "duration": 10},
     {"name": "Corrida 2", "start": "2025-12-14 12:13", "duration": 52},
+    {"name": "Férias", "start": "2025-12-14 13:20", "duration": 43200},
 ]
 
 for s in sessions:
