@@ -25,7 +25,7 @@ sessions = [
     {"name": "TL2 - Grupo 1 (Regadas)", "start": "2025-12-12 14:10", "duration": 30},
     {"name": "TL2 - Grupo 2 (Zonta)", "start": "2025-12-12 14:50", "duration": 30},
     {"name": "Classificatório - Grupo 1", "start": "2025-12-13 09:20", "duration": 50},
-    {"name": "Box Aberto", "start": "2025-12-13 12:40", "duration": 10},
+    {"name": "Box Aberto", "start": "2025-12-13 12:50", "duration": 10},
     {"name": "Corrida 1", "start": "2025-12-13 13:28", "duration": 32},
     {"name": "Warm Up - Grupo Único", "start": "2025-12-14 09:40", "duration": 10},
     {"name": "Box Aberto", "start": "2025-12-14 11:20", "duration": 10},
