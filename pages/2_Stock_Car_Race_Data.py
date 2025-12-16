@@ -390,27 +390,27 @@ if etapa_escolhida != "Select a round...":
 
             #Lap Progression
             with tabs[0]:
-                graf1 = px.line(sessao, x="Lap", y= "Lap Tm (S)", color="Driver", title='Lap Time Progression')
+                graf1 = px.line(sessao_filtrado, x="Lap", y= "Lap Tm (S)", color="Driver", title='Lap Time Progression')
                 st.plotly_chart(graf1)
         
             #S1 Progression
             with tabs[1]:
-                graf9 = px.line(sessao, x="Lap", y= "S1 Tm", color="Driver", title='S1 Time Progression')
+                graf9 = px.line(sessao_filtrado, x="Lap", y= "S1 Tm", color="Driver", title='S1 Time Progression')
                 st.plotly_chart(graf9)
         
             #S2 Progression
             with tabs[2]:
-                graf10 = px.line(sessao, x="Lap", y= "S2 Tm", color="Driver", title='S2 Time Progression')
+                graf10 = px.line(sessao_filtrado, x="Lap", y= "S2 Tm", color="Driver", title='S2 Time Progression')
                 st.plotly_chart(graf10)
         
             #S3 Progression
             with tabs[3]:
-                graf11 = px.line(sessao, x="Lap", y= "S3 Tm", color="Driver", title='S3 Time Progression')
+                graf11 = px.line(sessao_filtrado, x="Lap", y= "S3 Tm", color="Driver", title='S3 Time Progression')
                 st.plotly_chart(graf11)
         
             #SPT Progression
             with tabs[4]:
-                graf12 = px.line(sessao, x="Lap", y= "SPT", color="Driver", title='SPT Progression')
+                graf12 = px.line(sessao_filtrado, x="Lap", y= "SPT", color="Driver", title='SPT Progression')
                 st.plotly_chart(graf12)
         
             # Create tabs for Raising Average
@@ -807,6 +807,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
