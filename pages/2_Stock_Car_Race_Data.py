@@ -661,7 +661,7 @@ if etapa_escolhida != "Select a round...":
                 11: "Gaetano Di Mauro",
                 44: "Bruno Baptista",
                 88: "Felipe Fraga",
-                31: "Marcos Regadas"
+                31: "Marcos Regadas",
                 38: "Zezinho Muggiati"
             }
         
@@ -814,6 +814,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
