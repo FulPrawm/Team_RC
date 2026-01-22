@@ -655,7 +655,7 @@ if etapa_escolhida != "Select a round...":
             # Percentual difference with tendency
             st.header("Percentual difference to the best lap for each driver from this team")
         
-            carros_desejados = [10, 11, 44, 88, 31]
+            carros_desejados = [10, 11, 44, 88, 31, 38]
             nomes_carros = {
                 10: "Ricardo Zonta",
                 11: "Gaetano Di Mauro",
@@ -814,6 +814,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
