@@ -132,13 +132,14 @@ if etapa_escolhida != "Select a round...":
         # Personalized colors with text contrast
         colors_driver = {
             "Ricardo Zonta": ("red", "white"),
-            "Gaetano Di Mauro": ("lightblue", "black"),   # azul claro → texto preto
+            "Gaetano Di Mauro": ("lightblue", "black"),
             "Bruno Baptista": ("gray", "white"),
-            "Felipe Fraga": ("yellow", "black"),  # fundo amarelo → texto preto
-            "Marcos Regadas": ("gray", "white")
+            "Felipe Fraga": ("yellow", "black"),
+            "Marcos Regadas": ("gray", "white"),
+            "Zezinho Muggiati": ("#0057B8", "white")
         }
         colors_team = {
-            "Eurofarma RC": ("yellow", "black"),     # amarelo → preto
+            "Eurofarma RC": ("yellow", "black"),
             "RCM Motorsport": ("gray", "white")
         }
         colors_manufacturer = {
@@ -317,6 +318,7 @@ if etapa_escolhida != "Select a round...":
                 "Bruno Baptista": "gray",
                 "Felipe Fraga": "yellow",
                 "Marcos Regadas": "gray",
+                "Zezinho Muggiati": "#0057B8"
             }
             
             for i, (tab_name, coluna) in enumerate(colunas_setores.items()):
@@ -398,7 +400,7 @@ if etapa_escolhida != "Select a round...":
             st.plotly_chart(fig_heatmap)
             
             # ---------- Radar Chart with Absolute Times Normalized ----------
-            selected_cars = [10, 11, 44, 88, 31]
+            selected_cars = [10, 11, 44, 88, 31, 38]
             selected_drivers = sessao[sessao["Car_ID"].isin(selected_cars)]["Driver"].unique().tolist()
             drivers_radar = list(set(selected_drivers) | {fastest_driver})
             
@@ -422,7 +424,7 @@ if etapa_escolhida != "Select a round...":
             )
             
             # Criar dicionário de cores
-            driver_colors = {10: "red", 11: "blue", 44: "gray", 88: "yellow", 31:"gray"}
+            driver_colors = {10: "red", 11: "blue", 44: "gray", 88: "yellow", 31:"gray", 38:"#0057B8"}
             color_map = {}
             
             for driver in df_radar["Driver"].unique():
@@ -527,10 +529,15 @@ if etapa_escolhida != "Select a round...":
             st.write("Marcos Regadas")
             st.dataframe(alllaps31)
 
+            alllaps38 = sessao[sessao['Car_ID'] == 38]
+            st.write("Zezinho Mugiatti")
+            st.dataframe(alllaps38)
+
     else:
         st.warning("Please, select a session.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
