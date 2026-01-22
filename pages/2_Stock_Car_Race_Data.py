@@ -670,7 +670,7 @@ if etapa_escolhida != "Select a round...":
                 11: "blue",
                 44: "gray",
                 88: "yellow",
-                31: "gray"
+                31: "gray",
                 38: "#0057B8"
             }
         
@@ -814,6 +814,7 @@ if etapa_escolhida != "Select a round...":
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
