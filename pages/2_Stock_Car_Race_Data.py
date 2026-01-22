@@ -166,13 +166,14 @@ if etapa_escolhida != "Select a round...":
         # Personalized colors with text contrast
         colors_driver = {
             "Ricardo Zonta": ("red", "white"),
-            "Gaetano Di Mauro": ("lightblue", "black"),   # azul claro → texto preto
+            "Gaetano Di Mauro": ("lightblue", "black"),
             "Bruno Baptista": ("gray", "white"),
-            "Felipe Fraga": ("yellow", "black"),         # fundo amarelo → texto preto
-            "Marcos Regadas": ("gray", "white")
+            "Felipe Fraga": ("yellow", "black"),
+            "Marcos Regadas": ("gray", "white"),
+            "Zezinho Muggiati": ("#0057B8", "white")
         }
         colors_team = {
-            "Eurofarma RC": ("yellow", "black"),     # amarelo → preto
+            "Eurofarma RC": ("yellow", "black"),
             "RCM Motorsport": ("gray", "white")
         }
         colors_manufacturer = {
@@ -618,7 +619,8 @@ if etapa_escolhida != "Select a round...":
                 "Gaetano Di Mauro": "blue",
                 "Bruno Baptista": "gray",
                 "Felipe Fraga": "yellow",
-                "Marcos Regadas": "gray"
+                "Marcos Regadas": "gray",
+                "Zezinho Muggiati": "#0057B8"
             }
         
             for i, (tab_name, coluna) in enumerate(colunas_setores.items()):
@@ -660,6 +662,7 @@ if etapa_escolhida != "Select a round...":
                 44: "Bruno Baptista",
                 88: "Felipe Fraga",
                 31: "Marcos Regadas"
+                38: "Zezinho Muggiati"
             }
         
             cores_carros = {
@@ -668,6 +671,7 @@ if etapa_escolhida != "Select a round...":
                 44: "gray",
                 88: "yellow",
                 31: "gray"
+                38: "#0057B8"
             }
         
             tabs_dif = st.tabs([nomes_carros[carro] for carro in carros_desejados])
@@ -802,11 +806,15 @@ if etapa_escolhida != "Select a round...":
             st.write("Marcos Regadas")
             st.dataframe(alllaps31)
 
+            alllaps38 = sessao[sessao['Car_ID'] == 38]
+            st.write("Zezinho Muggiati")
+            st.dataframe(alllaps38) 
 
     else:
         st.warning("Please, select a race.")
 else:
     st.warning("Please, select a round.")
+
 
 
 
