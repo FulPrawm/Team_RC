@@ -36,7 +36,6 @@ if "sessions_df" not in st.session_state:
             "Warm Up - Grupo Único",
             "Box Aberto",
             "Corrida 2",
-            "Férias"
         ],
         "Data": [
             "2025-12-11",
@@ -51,7 +50,6 @@ if "sessions_df" not in st.session_state:
             "2025-12-14",
             "2025-12-14",
             "2025-12-14",
-            "2025-12-14"
         ],
         "Horário": [
             "16:25",
@@ -66,7 +64,6 @@ if "sessions_df" not in st.session_state:
             "09:40",
             "11:20",
             "12:13",
-            "13:20"
         ],
         "Duração (min)": [
         15,
