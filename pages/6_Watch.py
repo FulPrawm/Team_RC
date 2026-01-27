@@ -2,6 +2,8 @@ import streamlit as st
 from streamlit_autorefresh import st_autorefresh
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
+import pandas as pd
+import os
 
 # ------------------------
 # Configuration
@@ -14,30 +16,65 @@ st_autorefresh(interval=1000, limit=None)
 # ------------------------
 tz = ZoneInfo("America/Sao_Paulo")
 
-# ------------------------
-# Sessions
-# ------------------------
-sessions = [
-    {"name": "Shakedown - Grupo 1 (Regadas)", "start": "2025-12-11 16:25", "duration": 15},
-    {"name": "Shakedown - Grupo 2 (Zonta)", "start": "2025-12-11 16:40", "duration": 15},
-    {"name": "TL1 - Grupo 1 (Regadas)", "start": "2025-12-12 10:40", "duration": 30},
-    {"name": "TL1 - Grupo 2 (Zonta)", "start": "2025-12-12 11:20", "duration": 30},
-    {"name": "TL2 - Grupo 1 (Regadas)", "start": "2025-12-12 14:10", "duration": 30},
-    {"name": "TL2 - Grupo 2 (Zonta)", "start": "2025-12-12 14:50", "duration": 30},
-    {"name": "Classificatório - Grupo 1", "start": "2025-12-13 09:20", "duration": 50},
-    {"name": "Box Aberto", "start": "2025-12-13 12:50", "duration": 10},
-    {"name": "Corrida 1", "start": "2025-12-13 13:28", "duration": 32},
-    {"name": "Warm Up - Grupo Único", "start": "2025-12-14 09:40", "duration": 10},
-    {"name": "Box Aberto", "start": "2025-12-14 11:20", "duration": 10},
-    {"name": "Corrida 2", "start": "2025-12-14 12:13", "duration": 52},
-    {"name": "Férias", "start": "2025-12-14 13:20", "duration": 43200},
-]
+import pandas as pd
 
-for s in sessions:
-    naive = datetime.strptime(s["start"], "%Y-%m-%d %H:%M")
-    start_dt = naive.replace(tzinfo=tz)
-    s["start_dt"] = start_dt
-    s["end_dt"] = start_dt + timedelta(minutes=s["duration"])
+st.markdown("## ⚙️ Ajuste dos Horários das Sessões")
+
+# cria tabela padrão apenas quando a página carrega
+if "sessions_df" not in st.session_state:
+    st.session_state.sessions_df = pd.DataFrame({
+        "Sessão": [
+            "Shakedown - Grupo 1 (Regadas)",
+            "Shakedown - Grupo 2 (Zonta)",
+            "TL1 - Grupo 1 (Regadas)",
+            "TL1 - Grupo 2 (Zonta)",
+            "TL2 - Grupo 1 (Regadas)",
+            "TL2 - Grupo 2 (Zonta)",
+            "Classificatório - Grupo 1",
+            "Box Aberto",
+            "Corrida 1",
+            "Warm Up - Grupo Único",
+            "Box Aberto",
+            "Corrida 2",
+            "Férias"
+        ],
+        "Data": [
+            "2025-12-11","2025-12-11","2025-12-12","2025-12-12","2025-12-12","2025-12-12",
+            "2025-12-13","2025-12-13","2025-12-13","2025-12-14","2025-12-14","2025-12-14","2025-12-14"
+        ],
+        "Horário": [
+            "16:25","16:40","10:40","11:20","14:10","14:50",
+            "09:20","12:50","13:28","09:40","11:20","12:13","13:20"
+        ],
+        "Duração (min)": [15,15,30,30,30,30,50,10,32,10,10,52,43200]
+    })
+
+# editor na tela
+st.session_state.sessions_df = st.data_editor(
+    st.session_state.sessions_df,
+    num_rows="dynamic",
+    use_container_width=True
+)
+
+
+sessions = []
+
+for _, row in st.session_state.sessions_df.iterrows():
+    try:
+        start_str = f"{row['Data']} {row['Horário']}"
+        start_dt = datetime.strptime(start_str, "%Y-%m-%d %H:%M").replace(tzinfo=tz)
+        end_dt = start_dt + timedelta(minutes=int(row["Duração (min)"]))
+
+        sessions.append({
+            "name": row["Sessão"],
+            "start_dt": start_dt,
+            "end_dt": end_dt,
+            "duration": int(row["Duração (min)"])
+        })
+    except:
+        pass  # ignora linhas incompletas enquanto você edita
+
+sessions.sort(key=lambda x: x["start_dt"])
 
 # ------------------------
 # Layout
