@@ -1,0 +1,818 @@
+ # Importando as bibliotecas
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import plotly.express as px
+import streamlit as st
+import altair as alt
+import os
+from sklearn.linear_model import LinearRegression
+import plotly.graph_objects as go
+
+def show():
+    # Ignoring warnings - for aesthetic purposes
+    import warnings
+    warnings.filterwarnings('ignore')
+
+
+    #header
+    st.image('header.png')
+    #title
+    st.title("Session Data Report")
+
+
+    # Path to where the round folders are
+    PASTA_ETAPAS = "Arquivos"
+    # List of every round (folders inside "resultados")
+    etapas_disponiveis = [p for p in os.listdir(PASTA_ETAPAS) if os.path.isdir(os.path.join(PASTA_ETAPAS, p))]
+    st.subheader("Round and Session Selector")
+    etapas_opcoes = ["Select a round..."] + sorted(etapas_disponiveis)
+    etapa_escolhida = st.selectbox("Choose the round:", etapas_opcoes)
+    if etapa_escolhida != "Select a round...":
+        pasta_etapa = os.path.join(PASTA_ETAPAS, etapa_escolhida)
+        arquivos_xlsx = [f for f in os.listdir(pasta_etapa) if f.endswith(".xlsx")]
+        corrida_labels = [os.path.splitext(f)[0] for f in arquivos_xlsx]
+        corridas_opcoes = ["Select a race..."] + sorted(corrida_labels)
+        corrida_label = st.selectbox("Choose a race:", corridas_opcoes)
+        if corrida_label != "Select a race...":
+            corrida_index = corrida_labels.index(corrida_label)
+            corrida_arquivo = arquivos_xlsx[corrida_index]
+            corrida_escolhida = corrida_arquivo  # manter compatibilidade
+            caminho_corrida = os.path.join(pasta_etapa, corrida_arquivo)
+        
+            # ✅ EVERYTHING below stays inside this box
+        
+            sessao = pd.read_excel(caminho_corrida)
+            # Not limiting the number of rows that can be visualized
+            pd.set_option('display.max_rows', None)
+
+        
+            #Creating a new column for Last Lap Difference
+            sessao['Last Lap Diff'] = sessao.groupby('Car_ID')['Lap Tm (S)'].diff()
+            #Calculating the fastest time for each driver
+            fastest_lap_global = sessao.groupby('Car_ID')['Lap Tm (S)'].transform('min')
+            #Creating a new column for the fastest lap difference
+            sessao['Fast Lap Diff'] = sessao['Lap Tm (S)'] - fastest_lap_global
+
+        
+            #Creating another new column to calculate Gap to Leader
+            if "Crossing Time" in sessao.columns:
+            # Convert to seconds
+            sessao["Crossing Seconds"] = pd.to_timedelta(sessao["Crossing Time"]).dt.total_seconds()
+        
+            # Calculate cumulative crossing
+            sessao["Cumulative Crossing"] = sessao.groupby("Car_ID")["Crossing Seconds"].cummax()
+        
+            # Find winner (max laps, then lowest crossing time)
+            laps_per_car = sessao.groupby("Car_ID")["Lap"].max()
+            max_laps = laps_per_car.max()
+            candidates = laps_per_car[laps_per_car == max_laps].index
+            winner = sessao[sessao["Car_ID"].isin(candidates)].groupby("Car_ID")["Cumulative Crossing"].max().idxmin()
+        
+            # Calculate gap to winner
+            winner_times = sessao[sessao["Car_ID"] == winner][["Lap", "Cumulative Crossing"]].rename(
+                columns={"Cumulative Crossing": "Winner Crossing"}
+            )
+            sessao = sessao.merge(winner_times, on="Lap", how="left")
+            sessao["Gap to Winner"] = sessao["Cumulative Crossing"] - sessao["Winner Crossing"]
+
+            # === GAP TO LEADER CREATION ===
+            if "Crossing Time" in sessao.columns:
+                # Crossing in seconds
+                sessao["Crossing Seconds"] = pd.to_timedelta(sessao["Crossing Time"]).dt.total_seconds()
+            
+                # Leader reference time at each lap (minimum crossing time of that lap)
+                leader_times = sessao.groupby("Lap")["Crossing Seconds"].transform("min")
+            
+                # Gap to leader at that lap
+                sessao["Gap to Leader"] = sessao["Crossing Seconds"] - leader_times
+
+            # Dictionary relating each driver with each team
+            def Teams(x):
+                Teams_dict = {
+                    18: 'Blau Motorsport', 29: 'Blau Motorsport',
+                    38: 'Car Racing Sterling', 301: 'Car Racing Sterling',
+                    21: 'Ipiranga Racing', 30: 'Ipiranga Racing',
+                    12: 'Amattheis Vogel', 83: 'Amattheis Vogel',
+                    10: 'RCM Motorsport', 44: 'RCM Motorsport',
+                    8: 'TMG Racing', 19: 'TMG Racing', 70: 'TMG Racing',
+                    11: 'Eurofarma RC', 88: 'Eurofarma RC',
+                    4: 'Crown Racing', 81: 'Crown Racing',
+                    85: 'Cavaleiro Sports', 90: 'Cavaleiro Sports',
+                    5: 'FT Cavaleiro', 111: 'FT Cavaleiro',
+                    73: 'Scuderia Bandeiras', 51: 'Scuderia Bandeiras',
+                    444: 'Scuderia Bandeiras Sports', 33: 'Scuderia Bandeiras Sports',
+                    121: 'Car Racing KTF', 101: 'Car Racing KTF',
+                    7: 'FT Gazoo Racing', 9: 'FT Gazoo Racing',
+                    95: 'Scuderia Chiarelli', 0: 'Scuderia Chiarelli',
+                    6: 'A. Mattheis Motorsport', 72: 'FT Gazoo Racing',
+                    31: 'RCM Motorsport'
+                        }
+                return Teams_dict.get(x, None)
+            # Creating a new column for what team each driver races
+            sessao['Team'] = sessao['Car_ID'].apply(Teams)
+
+                # Creating 3 manufacturer groups
+            carros_toyota = [301, 4, 30, 111, 38, 81, 5, 7, 9, 21, 72]
+            carros_mitsubishi = [101, 444, 44, 33, 29, 11, 121, 18, 10, 88, 31]
+            # Function that verifies if the car is Toyota, if not its Mitsubishi, and if its not either, its Chevrolet
+            def brand(x):
+                if x in carros_toyota:
+                    return 'Toyota'
+                if x in carros_mitsubishi:
+                    return 'Mitsubishi'
+                else:
+                    return 'Chevrolet'
+            # Creating a new column called "Manufacturer" and apllying the fucition "brand"
+            sessao['Manufacturer'] = sessao['Car_ID'].apply(brand)
+
+    
+            # Dictionary relating each team with each manufacturer
+            Team_para_Manufacturer = {
+            "Eurofarma RC": "Mitsubishi", "Blau Motorsport": "Mitsubishi",
+            "Car Racing Sterling": "Toyota", "Ipiranga Racing": "Toyota",
+            "Amattheis Vogel": "Chevrolet", "RCM Motorsport": "Mitsubishi",
+            "TMG Racing": "Chevrolet", "Crown Racing": "Toyota",
+            "Cavaleiro Sports": "Chevrolet", "FT Cavaleiro": "Toyota",
+            "Scuderia Bandeiras": "Chevrolet", "Scuderia Bandeiras Sports": "Mitsubishi",
+            "Car Racing KTF": "Mitsubishi", "FT Gazoo Racing": "Toyota",
+            "Scuderia Chiarelli": "Chevrolet", "A. Mattheis Motorsport": "Chevrolet"
+            } 
+            # Creating a new column for what Manufacturer each team races
+            sessao['Manufacturer'] = sessao['Team'].map(Team_para_Manufacturer)
+
+            #Last Dictionary relating each car to their drivers
+            drivers_dict = {
+            18: 'Allam Khodair', 29: 'Daniel Serra',
+            38: 'Zezinho Muggiati', 301: 'Rafael Reis',
+            21: 'Thiago Camilo', 30: 'Cesar Ramos',
+            12: 'Lucas Foresti', 83: 'Gabriel Casagrande',
+            10: 'Ricardo Zonta', 44: 'Bruno Baptista',
+            8: 'Rafael Suzuki', 19: 'Felipe Massa', 70: 'Rafael Suzuki',
+            11: 'Gaetano Di Mauro', 88: 'Felipe Fraga',
+            4: 'Julio Campos', 81: 'Arthur Leist',
+            85: 'Guilherme Salas', 90: 'Ricardo Mauricio',
+            5: 'Denis Navarro', 111: 'Rubens Barrichello',
+            73: 'Enzo Elias', 51: 'Átila Abreu',
+            444: 'Vicente Orige', 33: 'Nelsinho Piquet',
+            121: 'Felipe Baptista', 101: 'Gianluca Petecof',
+            7: 'JP Oliveira', 9: 'Arthur Gama',
+            95: 'Lucas Kohl', 0: 'Cacá Bueno',
+            6: 'Hélio Castroneves', 72: 'Antonella Bassani',
+            31: 'Marcos Regadas'
+            }
+            sessao['Driver'] = sessao['Car_ID'].map(drivers_dict)
+
+
+            # Personalized colors with text contrast
+            colors_driver = {
+                "Ricardo Zonta": ("red", "white"),
+                "Gaetano Di Mauro": ("lightblue", "black"),
+                "Bruno Baptista": ("gray", "white"),
+                "Felipe Fraga": ("yellow", "black"),
+                "Marcos Regadas": ("gray", "white"),
+                "Zezinho Muggiati": ("#0057B8", "white")
+            }
+            colors_team = {
+                "Eurofarma RC": ("yellow", "black"),
+                "RCM Motorsport": ("gray", "white")
+            }
+            colors_manufacturer = {
+                "Mitsubishi": ("red", "white")
+            }
+            # Style functions
+            def highlight_driver(s):
+                return [
+                    f"background-color: {colors_driver[v][0]}; color: {colors_driver[v][1]}"
+                    if v in colors_driver else "" for v in s
+                ]
+            def highlight_team(s):
+                return [
+                    f"background-color: {colors_team[v][0]}; color: {colors_team[v][1]}"
+                    if v in colors_team else "" for v in s
+                ]
+            def highlight_manufacturer(s):
+                return [
+                    f"background-color: {colors_manufacturer[v][0]}; color: {colors_manufacturer[v][1]}"
+                    if v in colors_manufacturer else "" for v in s
+                ]
+
+
+            # Creating a list to be used on the table graphs
+            analise_Team = ["Team", "Manufacturer", "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
+            analise_carros = ['Driver',"Manufacturer", "Team", "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
+            analise_Manufacturer = ['Manufacturer', "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
+
+            # Melhor volta da sessão
+            melhor_volta = sessao["Lap Tm (S)"].min()        
+            # Slider para o usuário escolher a porcentagem do filtro
+            percentual = st.slider(
+                "Select lap time filter percentage (%)",
+                min_value=0.0,
+                max_value=20.0,
+                value=4.0,
+                step=1.0,
+            )       
+            # Time limit based on the % chosen
+            tempo_limite = melhor_volta * (1 + percentual / 100)  
+            # Calculating how many laps each driver made
+            voltas_por_piloto = sessao.groupby('Car_ID')['Lap'].nunique()
+            # Driver with most laps (for 50% reference)
+            max_voltas = voltas_por_piloto.max()
+            min_voltas_necessarias = int(np.floor(max_voltas * 0.5))  # Rounds it down 
+            # List of valid drivers (With at least 50% of the laps completed)
+            pilotos_validos = voltas_por_piloto[voltas_por_piloto >= min_voltas_necessarias].index
+            # Applying the filter to only valid drivers
+            sessao_filtrado = sessao[sessao['Car_ID'].isin(pilotos_validos)]
+            # Applying the filter based on lap time
+            sessao_filtrado = sessao_filtrado[sessao_filtrado["Lap Tm (S)"] <= tempo_limite]
+            #  Normalize times to avoid string values such as "1:00.164"
+            def convert_to_seconds(x):
+                if isinstance(x, str) and ":" in x:
+                    parts = x.split(":")
+                    if len(parts) == 2:
+                        return float(parts[0]) * 60 + float(parts[1])
+                try:
+                    return float(x)
+                except:
+                    return pd.NA
+            for col in ["S1 Tm", "S2 Tm", "S3 Tm"]:
+                sessao_filtrado[col] = sessao_filtrado[col].apply(convert_to_seconds)
+            # Exibir informações
+            st.subheader("Custom filter applied")
+            st.write(f"🔍 Best lap of the session: **{melhor_volta:.3f} s**")
+            st.write(f"📏 {percentual:.1f}% filter applied: **{tempo_limite:.3f} s**")
+            st.write(f"🧮 Maximum laps completed: **{max_voltas} laps**")
+            st.write(f"⚠️ Only drivers with **at least {min_voltas_necessarias} laps completed** will be considered in the analysis.")
+
+            # List of columns that SHOULD be numerics
+            colunas_temporais = ["Lap Tm (S)", "S1 Tm", "S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
+            # Converts these columns to Float, forcing errors as NaN
+            for col in colunas_temporais:
+                sessao_filtrado[col] = pd.to_numeric(sessao_filtrado[col], errors='coerce')
+
+        
+            #Creating a list to select which type of graphs we want to display
+            option = st.selectbox(
+                "Select the type of graph",
+                ("Chart", "Lines", "Histograms", "BoxPlots", "Others", "All Laps"),
+                index=0  # number 0 is to open it blank
+            )
+
+        
+            if option == "Chart":
+                # Ordering by each car
+                st.subheader("Table ordered by Car")
+                tabela1 = (
+                    sessao_filtrado[analise_carros]
+                    .groupby(by=['Driver', "Team", "Manufacturer"])
+                    .mean(numeric_only=True)
+                    .reset_index()   # <-- transforma índice em colunas normais
+                    .style.background_gradient(cmap='coolwarm')
+                    .format(precision=3)
+                    .apply(highlight_driver, subset=['Driver'])
+                    .apply(highlight_team, subset=['Team'])
+                    .apply(highlight_manufacturer, subset=['Manufacturer'])
+                )
+                st.dataframe(tabela1, hide_index=True, column_config={"": None})
+            
+                # Ordering by each team
+                st.subheader("Table ordered by Team")
+                tabela2 = (
+                    sessao_filtrado[analise_Team]
+                    .groupby(by=["Team", "Manufacturer"])
+                    .mean(numeric_only=True)
+                    .reset_index()  # 🔑
+                    .style.background_gradient(cmap='coolwarm')
+                    .format(precision=3)
+                    .apply(highlight_team, subset=["Team"])
+                    .apply(highlight_manufacturer, subset=["Manufacturer"])
+                )
+                st.dataframe(tabela2, hide_index=True, column_config={"B": None})
+
+            
+                # === Manufacturer Table (Top 2 Cars Only, Finished Cars, With Tie Handling) ===
+                # Ensure Crossing Time is in seconds
+                if "Crossing Time" in sessao.columns:
+                    sessao["Crossing Seconds"] = pd.to_timedelta(sessao["Crossing Time"]).dt.total_seconds()
+                # Compute the max lap per car
+                laps_per_car = sessao.groupby("Car_ID")["Lap"].max()
+                # Keep only cars that completed at least one lap
+                eligible_cars = laps_per_car[laps_per_car > 0].index
+                # Get last crossing time for each eligible car (last lap completed)
+                final_times = (
+                    sessao[sessao["Car_ID"].isin(eligible_cars)]
+                    .groupby("Car_ID")
+                    .apply(lambda df: pd.Series({
+                        "MaxLap": df["Lap"].max(),
+                        "LastCrossing": df.loc[df["Lap"].idxmax(), "Crossing Seconds"]
+                    }))
+                    .reset_index()
+                )
+                # Add manufacturer info
+                final_times["Manufacturer"] = final_times["Car_ID"].map(
+                    sessao.set_index("Car_ID")["Manufacturer"].to_dict()
+                )
+                # Select top 2 cars per manufacturer:
+                #   1. highest MaxLap
+                #   2. if tie, lowest LastCrossing
+                def select_top2(group):
+                    # Sort by MaxLap descending, then LastCrossing ascending
+                    return group.sort_values(["MaxLap", "LastCrossing"], ascending=[False, True]).head(2)
+                
+                top2_per_manufacturer = (
+                    final_times.groupby("Manufacturer", group_keys=False)
+                    .apply(select_top2)
+                    .reset_index(drop=True)
+                )
+                # Keep track of selected Car_IDs for each manufacturer
+                top2_cars_dict = top2_per_manufacturer.groupby("Manufacturer")["Car_ID"].apply(list).to_dict()
+                # Filter session for only those top 2 cars
+                sessao_top2 = sessao_filtrado[sessao_filtrado["Car_ID"].isin(top2_per_manufacturer["Car_ID"])]
+                # Compute averages by manufacturer using only top 2 cars
+                manufacturer_table = (
+                    sessao_top2[analise_Manufacturer]
+                    .groupby("Manufacturer")
+                    .mean(numeric_only=True)
+                    .reset_index()
+                )
+                # Add a column showing the top 2 car IDs
+                manufacturer_table["Top 2 Cars"] = manufacturer_table["Manufacturer"].map(top2_cars_dict)
+                # Apply styling
+                manufacturer_table = manufacturer_table.style.background_gradient(cmap="coolwarm")\
+                                                        .format(precision=3)\
+                                                        .apply(highlight_manufacturer, subset=["Manufacturer"])
+                
+                st.subheader("Analysis of BoP (average of the best 2 results from each brand)")
+                st.dataframe(manufacturer_table, hide_index=True)
+
+
+                # === CLASSIFICATION TABLE (Gap to Leader) - single table with Car & Gap columns ===
+                if "Gap to Leader" in sessao.columns:
+                    # Determine position at each lap
+                    sessao["Position"] = sessao.groupby("Lap")["Gap to Leader"].rank(method="first").astype(int)
+                
+                    # Pivot tables: one for gaps, one for car numbers (Car_ID)
+                    gaps_table = sessao.pivot(index="Position", columns="Lap", values="Gap to Leader")
+                    cars_table = sessao.pivot(index="Position", columns="Lap", values="Car_ID")
+                
+                    # Round gaps to 3 decimals (keep as numeric for formatting below)
+                    gaps_table = gaps_table.round(3)
+                
+                    # Build final table with two columns per lap
+                    # Index as P1, P2, ...
+                    final_index = [f"P{p}" for p in gaps_table.index]
+                    final_table = pd.DataFrame(index=final_index)
+                
+                    for lap in gaps_table.columns:
+                        # safe conversion of car id: use pandas nullable Int64 then convert to string and replace <NA> with empty
+                        try:
+                            cars_col = cars_table[lap].astype("Int64").astype(str).replace("<NA>", "")
+                        except Exception:
+                            # fallback: apply-safe conversion (works even if pandas older)
+                            cars_col = cars_table[lap].apply(lambda x: str(int(x)) if pd.notna(x) else "")
+                
+                        # format gaps as "0.000s" or empty when NaN
+                        gaps_col = gaps_table[lap].apply(lambda x: f"{x:.3f}" if pd.notna(x) else "")
+                
+                        # add columns to final table (Lap {n} Car, Lap {n} Gap)
+                        final_table[f"Lap {lap} Car"] = cars_col.values
+                        final_table[f"Lap {lap} Gap"] = gaps_col.values
+                
+                    st.subheader("Classification Table (Gap to Leader)")
+                    st.dataframe(final_table, use_container_width=True)
+                else:
+                    st.info("⚠️ 'Crossing Time' not available for this session. Classification table will not be displayed.")
+
+
+            elif option == 'Lines':
+
+                #Creating tabs for Progression
+                tabs = st.tabs(["Lap Time", "Sector 1", "Sector 2", "Sector 3", "Speed Trap"])
+
+                #Lap Progression
+                with tabs[0]:
+                    graf1 = px.line(sessao_filtrado, x="Lap", y= "Lap Tm (S)", color="Driver", title='Lap Time Progression')
+                    st.plotly_chart(graf1)
+            
+                #S1 Progression
+                with tabs[1]:
+                    graf9 = px.line(sessao_filtrado, x="Lap", y= "S1 Tm", color="Driver", title='S1 Time Progression')
+                    st.plotly_chart(graf9)
+            
+                #S2 Progression
+                with tabs[2]:
+                    graf10 = px.line(sessao_filtrado, x="Lap", y= "S2 Tm", color="Driver", title='S2 Time Progression')
+                    st.plotly_chart(graf10)
+            
+                #S3 Progression
+                with tabs[3]:
+                    graf11 = px.line(sessao_filtrado, x="Lap", y= "S3 Tm", color="Driver", title='S3 Time Progression')
+                    st.plotly_chart(graf11)
+            
+                #SPT Progression
+                with tabs[4]:
+                    graf12 = px.line(sessao_filtrado, x="Lap", y= "SPT", color="Driver", title='SPT Progression')
+                    st.plotly_chart(graf12)
+            
+                # Create tabs for Raising Average
+                tabs = st.tabs(["Lap Time", "Sector 1", "Sector 2", "Sector 3", "Speed Trap"])
+                
+                # --- Lap Time Raising Average ---
+                with tabs[0]:
+                    sessao_filtrado['Ranking'] = sessao_filtrado.groupby('Driver')['Lap Tm (S)'].rank(ascending=True)
+                    sessao_filtrado = sessao_filtrado.sort_values(by=['Driver', 'Ranking'])
+                    graf2 = px.line(sessao_filtrado, x='Ranking', y='Lap Tm (S)', color='Driver', title='Lap Time Raising Average')
+                    st.plotly_chart(graf2)
+                
+                # --- Sector 1 Raising Average ---
+                with tabs[1]:
+                    sessao_filtrado['Ranking'] = sessao_filtrado.groupby('Driver')['S1 Tm'].rank(ascending=True)
+                    sessao_filtrado = sessao_filtrado.sort_values(by=['Driver', 'Ranking'])
+                    graf3 = px.line(sessao_filtrado, x='Ranking', y='S1 Tm', color='Driver', title='Sector 1 Raising Average')
+                    st.plotly_chart(graf3)
+                
+                # --- Sector 2 Raising Average ---
+                with tabs[2]:
+                    sessao_filtrado['Ranking'] = sessao_filtrado.groupby('Driver')['S2 Tm'].rank(ascending=True)
+                    sessao_filtrado = sessao_filtrado.sort_values(by=['Driver', 'Ranking'])
+                    graf4 = px.line(sessao_filtrado, x='Ranking', y='S2 Tm', color='Driver', title='Sector 2 Raising Average')
+                    st.plotly_chart(graf4)
+                
+                # --- Sector 3 Raising Average ---
+                with tabs[3]:
+                    sessao_filtrado['Ranking'] = sessao_filtrado.groupby('Driver')['S3 Tm'].rank(ascending=True)
+                    sessao_filtrado = sessao_filtrado.sort_values(by=['Driver', 'Ranking'])
+                    graf5 = px.line(sessao_filtrado, x='Ranking', y='S3 Tm', color='Driver', title='Sector 3 Raising Average')
+                    st.plotly_chart(graf5)
+                
+                # --- Speed Trap Raising Average ---
+                with tabs[4]:
+                    sessao_filtrado['Ranking'] = sessao_filtrado.groupby('Driver')['SPT'].rank(ascending=False)
+                    sessao_filtrado = sessao_filtrado.sort_values(by=['Driver', 'Ranking'])
+                    graf6 = px.line(sessao_filtrado, x='Ranking', y='SPT', color='Driver', title='Speed Trap Raising Average')
+                    st.plotly_chart(graf6)
+
+
+                # Tabs for Difference
+                tabs = st.tabs(["Last Lap Delta", "Fast Lap Delta"])
+
+                # --- Last Lap Diff Graph ---
+                with tabs[0]:
+                    graf7 = px.line(sessao, x="Lap", y= "Last Lap Diff", color="Driver", title='Last Lap Difference')
+                    st.plotly_chart(graf7)
+            
+                # --- Fast Lap Diff Graph ---
+                with tabs [1]:
+                    graf8 = px.line(sessao, x="Lap", y= "Fast Lap Diff", color="Driver", title='Fast Lap Delta')
+                    st.plotly_chart(graf8)
+
+                
+                # Tabs for Gaps
+                tabs = st.tabs(["Gap to Winner", "Gap to Lap Leader"])
+            
+                # --- Gap to Winner Graph ---
+                with tabs[0]:
+                    if "Gap to Winner" in sessao.columns:
+                        graf = px.line(sessao, x="Lap", y="Gap to Winner", color="Driver", title="Gap to Winner")
+                        st.plotly_chart(graf)
+                    else:
+                        st.info("⚠️ 'Crossing Time' not available for this session. Gap to Winner graph will not be displayed.")
+
+                # --- Gap to Leader Graph ---
+                with tabs[1]:
+                    if "Gap to Leader" in sessao.columns:
+                        graf_leader = px.line(sessao, x="Lap", y="Gap to Leader", color="Driver", title="Gap to Leader")
+                        st.plotly_chart(graf_leader)
+                    else:
+                        st.info("⚠️ 'Crossing Time' not available for this session. Gap to Leader graph will not be displayed.")
+
+
+
+        
+            elif option =='Histograms':
+                for var in analise_carros:
+                    if var in ['Car_ID', 'Driver', 'Team', 'Manufacturer']:
+                        continue #skips these columns
+                    fig = px.histogram(sessao_filtrado[var], nbins=25,title=f'{var} distribution')
+                    st.plotly_chart(fig)
+            
+            elif option == 'Others':
+                st.subheader("Car Efficiency")
+                
+                # Tabs
+                tab1, tab2 = st.tabs(["Fastest Lap per Team", "Average per Team"])
+                
+                # --- FUNÇÃO PARA PLOTAR O GRÁFICO (reutilizável) ---
+                def plot_efficiency(df, title_suffix=""):
+                    # Define average lines
+                    media_avg_speed = df["Avg Speed"].mean()
+                    media_spt = df["SPT"].mean()
+                
+                    # Graph
+                    fig = px.scatter(
+                        df, 
+                        x='Avg Speed', 
+                        y='SPT', 
+                        color='Team', 
+                        symbol='Team',
+                        title=f"Aerodynamic Efficiency {title_suffix}",
+                        hover_data=['Car_ID']
+                    )
+                
+                    fig.update_traces(marker_size=12)
+                
+                    # Vertical cut line
+                    fig.add_vline(
+                        x=media_avg_speed,
+                        line_dash="dash",
+                        line_color="white",
+                        annotation_text="Average Avg Speed",
+                        annotation_position="bottom left",
+                        annotation_font_color="white"
+                    )
+                
+                    # Horizontal cut line
+                    fig.add_hline(
+                        y=media_spt,
+                        line_dash="dash",
+                        line_color="white",
+                        annotation_text="Average SPT",
+                        annotation_position="top right",
+                        annotation_font_color="white"
+                    )
+                
+                    return fig
+                
+                
+                # =============================================================
+                #  TAB 1 → FASTEST LAP PER TEAM
+                # =============================================================
+                with tab1:
+                    st.markdown("### Fastest Lap per Team")
+                
+                    sessao_eff = sessao_filtrado.copy()
+                
+                    # pegar a volta mais rápida de cada equipe
+                    fastest_per_team = (
+                        sessao_eff.sort_values("Lap Tm (S)")
+                        .groupby("Team")
+                        .first()
+                        .reset_index()
+                    )
+                
+                    fig_fastest = plot_efficiency(fastest_per_team, "(Fastest Lap per Team)")
+                    st.plotly_chart(fig_fastest, use_container_width=True)
+                
+                    st.markdown("""
+                    - **↗ Upper Right** → High overall efficiency (straight + turn)
+                    - **↖ Upper Left** → Low downforce (good straight, bad cornering)
+                    - **↘ Lower Right** → High downforce (good cornering, bad straight)
+                    - **↙ Lower Left** → Lower Left Quadrant: Low efficiency (neither)
+                    """)
+                
+                
+                # =============================================================
+                #  TAB 2 → AVERAGE PER TEAM
+                # =============================================================
+                with tab2:
+                    st.markdown("### Average per Team")
+                
+                    sessao_eff = sessao_filtrado.copy()
+                
+                    # média de todas as voltas por equipe
+                    avg_per_team = (
+                        sessao_eff.groupby("Team", as_index=False)[["Avg Speed", "SPT"]].mean()
+                    )
+                
+                    # pegar um Car_ID representativo para o hover
+                    represent_car = (
+                        sessao_eff.groupby("Team")["Car_ID"]
+                        .first()
+                        .reset_index()
+                    )
+                
+                    avg_per_team = avg_per_team.merge(represent_car, on="Team")
+                
+                    fig_avg = plot_efficiency(avg_per_team, "(Average per Team)")
+                    st.plotly_chart(fig_avg, use_container_width=True)
+                
+                    st.markdown("""
+                    - **↗ Upper Right** → High overall efficiency (straight + turn)
+                    - **↖ Upper Left** → Low downforce (good straight, bad cornering)
+                    - **↘ Lower Right** → High downforce (good cornering, bad straight)
+                    - **↙ Lower Left** → Lower Left Quadrant: Low efficiency (neither)
+                    """)
+    
+                # Tabs to Gap to Fastest
+                tabs = st.tabs(["Gap to Fastest Car in AVG - Lap", "Gap to Fastest Car in AVG - S1", "Gap to Fastest Car in AVG - S2", "Gap to Fastest Car in AVG - S3"])
+            
+                colunas_setores = {
+                    "Gap to Fastest Car in AVG - Lap": "Lap Tm (S)",
+                    "Gap to Fastest Car in AVG - S1": "S1 Tm",
+                    "Gap to Fastest Car in AVG - S2": "S2 Tm",
+                    "Gap to Fastest Car in AVG - S3": "S3 Tm"
+                }
+            
+                # Dicionário de cores dos seus carros
+                cores_personalizadas = {
+                    "Ricardo Zonta": "red",
+                    "Gaetano Di Mauro": "blue",
+                    "Bruno Baptista": "gray",
+                    "Felipe Fraga": "yellow",
+                    "Marcos Regadas": "gray",
+                    "Zezinho Muggiati": "#0057B8"
+                }
+            
+                for i, (tab_name, coluna) in enumerate(colunas_setores.items()):
+                    with tabs[i]:
+                        media_por_car_id = sessao_filtrado.groupby('Driver')[coluna].mean().reset_index()
+                        min_valor = media_por_car_id[coluna].min()
+                        media_por_car_id['Diff'] = media_por_car_id[coluna] - min_valor
+                        media_por_car_id = media_por_car_id.sort_values(by='Diff')
+                        media_por_car_id['Color'] = media_por_car_id['Driver'].map(cores_personalizadas).fillna('white')
+            
+                        bars = alt.Chart(media_por_car_id).mark_bar().encode(
+                            x=alt.X('Driver:N', sort=media_por_car_id['Diff'].tolist()),
+                            y=alt.Y('Diff', title=f'Diff to Best {coluna} (s)'),
+                            color=alt.Color('Color:N', scale=None)
+                        )
+            
+                        labels = alt.Chart(media_por_car_id).mark_text(
+                            align='center',
+                            baseline='bottom',
+                            dy=-2,
+                            color='white'
+                        ).encode(
+                            x=alt.X('Driver:N', sort=media_por_car_id['Diff'].tolist()),
+                            y='Diff',
+                            text=alt.Text('Diff', format='.2f')
+                        )
+            
+                        chart = (bars + labels).properties(title=tab_name)
+            
+                        st.altair_chart(chart, use_container_width=True)
+            
+                # Percentual difference with tendency
+                st.header("Percentual difference to the best lap for each driver from this team")
+            
+                carros_desejados = [10, 11, 44, 88, 31, 38]
+                nomes_carros = {
+                    10: "Ricardo Zonta",
+                    11: "Gaetano Di Mauro",
+                    44: "Bruno Baptista",
+                    88: "Felipe Fraga",
+                    31: "Marcos Regadas",
+                    38: "Zezinho Muggiati"
+                }
+            
+                cores_carros = {
+                    10: "red",
+                    11: "blue",
+                    44: "gray",
+                    88: "yellow",
+                    31: "gray",
+                    38: "#0057B8"
+                }
+            
+                tabs_dif = st.tabs([nomes_carros[carro] for carro in carros_desejados])
+            
+                for i, carro in enumerate(carros_desejados):
+                    with tabs_dif[i]:
+                        df = sessao_filtrado[sessao_filtrado['Car_ID'] == carro].copy()
+            
+                        if df.empty:
+                            st.write("No laps avaiable for this car after the filter.")
+                            continue
+            
+                        melhor_volta = df['Lap Tm (S)'].min()
+                        volta_mais_rapida = df[df['Lap Tm (S)'] == melhor_volta]['Lap'].iloc[0]
+                        df['Diff %'] = ((df['Lap Tm (S)'] - melhor_volta) / melhor_volta) * 100
+            
+                        # Quebra em blocos contínuos
+                        df = df.sort_values('Lap')
+                        df['Gap'] = df['Lap'].diff().fillna(1)
+                        df['Bloco'] = (df['Gap'] > 1).cumsum()
+            
+                        fig = px.bar(
+                            df, x="Lap", y="Diff %",
+                            text=df['Diff %'].map(lambda x: f"{x:.2f}%"),
+                            color_discrete_sequence=[cores_carros[carro]],
+                            title=f"{nomes_carros[carro]} - Diff % by lap"
+                        )
+            
+                        fig.update_traces(textposition='outside')
+            
+                        fig.add_vline(x=volta_mais_rapida, line_dash="dash", line_color="white",
+                                    annotation_text="Best lap", annotation_position="top")
+            
+                        # Linhas de tendência por bloco
+                        for bloco_id in df['Bloco'].unique():
+                            bloco = df[df['Bloco'] == bloco_id]
+                            if len(bloco) < 2:
+                                continue
+            
+                            from sklearn.linear_model import LinearRegression
+                            X = bloco['Lap'].values.reshape(-1, 1)
+                            y = bloco['Diff %'].values
+                            modelo = LinearRegression().fit(X, y)
+                            y_pred = modelo.predict(X)
+            
+                            fig.add_trace(go.Scatter(
+                                x=bloco['Lap'],
+                                y=y_pred,
+                                mode='lines',
+                                line=dict(color='lightgray', width=2, dash='dot'),
+                                opacity=0.4,
+                                showlegend=False
+                            ))
+            
+                        fig.update_layout(
+                            yaxis_title="Difference to best lap (%)",
+                            xaxis_title="Lap",
+                            uniformtext_minsize=8,
+                            uniformtext_mode='show'
+                        )
+            
+                        st.plotly_chart(fig, use_container_width=True)
+                
+            elif option == 'BoxPlots':
+                # ✅ Tabs for Manufacturer box plots
+                tabs_manuf = st.tabs([col for col in analise_Manufacturer if col != "Manufacturer"])
+                
+                for tab, var in zip(tabs_manuf, [col for col in analise_Manufacturer if col != "Manufacturer"]):
+                    with tab:
+                        fig = px.box(
+                            sessao_filtrado,
+                            x="Manufacturer",
+                            y=var,
+                            points="all",
+                            color="Manufacturer",
+                            title=f"{var} Distribution by Manufacturer"
+                        )
+                        fig.update_layout(showlegend=False)
+                        st.plotly_chart(fig, use_container_width=True)
+
+                    # Block 2 — por Car_ID (como rótulo) em tabs
+                tabs_box = st.tabs(["Lap", "S1", "S2", "S3", "SPT"])
+                colunas_boxplot = {
+                    "Lap": "Lap Tm (S)",
+                    "S1": "S1 Tm",
+                    "S2": "S2 Tm",
+                    "S3": "S3 Tm",
+                    "SPT": "SPT"
+                }
+                for i, (tab_nome, coluna) in enumerate(colunas_boxplot.items()):
+                    with tabs_box[i]:
+                        df_plot = sessao_filtrado.copy()
+                        
+                        # Pega lista de drivers em ordem alfabética
+                        drivers_unicos = sorted(df_plot["Driver"].unique())
+                
+                        fig = px.box(
+                            df_plot,
+                            x="Driver",
+                            y=coluna,
+                            points="all",
+                            color="Driver",
+                            category_orders={"Driver": drivers_unicos},
+                        )
+                
+                        fig.update_layout(
+                            yaxis_title=coluna,
+                            title=f"Boxplot - {coluna}",
+                            showlegend=False
+                        )
+                
+                        st.plotly_chart(fig, use_container_width=True)
+            
+            elif option == 'All Laps':
+                alllaps10 = sessao[sessao['Car_ID'] == 10]
+                st.write("Ricardo Zonta")
+                st.dataframe(alllaps10)
+            
+                alllaps11 = sessao[sessao['Car_ID'] == 11]
+                st.write("Gaetano Di Mauro")
+                st.dataframe(alllaps11)
+            
+                alllaps44 = sessao[sessao['Car_ID'] == 44]
+                st.write("Bruno Baptista")
+                st.dataframe(alllaps44)
+            
+                alllaps88 = sessao[sessao['Car_ID'] == 88]
+                st.write("Felipe Fraga")
+                st.dataframe(alllaps88)
+
+                alllaps31 = sessao[sessao['Car_ID'] == 31]
+                st.write("Marcos Regadas")
+                st.dataframe(alllaps31)
+
+                alllaps38 = sessao[sessao['Car_ID'] == 38]
+                st.write("Zezinho Muggiati")
+                st.dataframe(alllaps38) 
+
+        else:
+            st.warning("Please, select a race.")
+    else:
+        st.warning("Please, select a round.")
