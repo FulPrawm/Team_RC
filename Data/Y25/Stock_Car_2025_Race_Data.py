@@ -245,6 +245,9 @@ def show():
             st.write(f"📏 {percentual:.1f}% filter applied: **{tempo_limite:.3f} s**")
             st.write(f"🧮 Maximum laps completed: **{max_voltas} laps**")
             st.write(f"⚠️ Only drivers with **at least {min_voltas_necessarias} laps completed** will be considered in the analysis.")
+            if "Crossing Seconds" not in sessao.columns:
+                 st.warning("⚠️ This session file does not contain crossing time data.")
+
 
             # List of columns that SHOULD be numerics
             colunas_temporais = ["Lap Tm (S)", "S1 Tm", "S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
