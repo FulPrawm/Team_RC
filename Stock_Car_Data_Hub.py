@@ -7,26 +7,25 @@ from Data.Y25.Stock_Car_2025_Practice_Data import show as show_practice_2025
 
 st.title("Race Analysis System")
 
-# ===============================
-# Year Selection
-# ===============================
+# ======================================
+# Sidebar Configuration Panel
+# ======================================
 
-year_options = ["Select a year...", "2025", "2026"]
-selected_year = st.sidebar.selectbox("Choose the year:", year_options)
+with st.sidebar:
+    st.header("Session Configuration")
 
-# ===============================
-# Session Selection
-# ===============================
+    year_options = ["Select a year...", "2025", "2026"]
+    selected_year = st.selectbox("Choose the year:", year_options)
 
-session_options = ["Select a session...", "Race Data", "Practice Data"]
-selected_session = st.sidebar.selectbox("Choose the session:", session_options)
+    session_options = ["Select a session...", "Race Data", "Practice Data"]
+    selected_session = st.selectbox("Choose the session:", session_options)
 
-# ===============================
-# Page Logic
-# ===============================
+# ======================================
+# Navigation Logic
+# ======================================
 
 if selected_year == "Select a year...":
-    st.info("Please select a year to continue.")
+    st.info("Please select a year to begin the analysis.")
 
 elif selected_session == "Select a session...":
     st.warning("Please select a session type.")
@@ -40,8 +39,8 @@ else:
 
     elif selected_year == "2026":
         if selected_session == "Race Data":
-            st.info("Race 2026 not implemented yet.")
+            st.info("Race 2026 is not implemented yet.")
             # show_race_2026()
         elif selected_session == "Practice Data":
-            st.info("Practice 2026 not implemented yet.")
+            st.info("Practice 2026 is not implemented yet.")
             # show_practice_2026()
