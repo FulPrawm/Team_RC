@@ -77,13 +77,13 @@ def show():
                 sessao = sessao.merge(winner_times, on="Lap", how="left")
                 sessao["Gap to Winner"] = sessao["Cumulative Crossing"] - sessao["Winner Crossing"]
 
-            # === GAP TO LEADER CREATION ===
-            if "Crossing Time" in sessao.columns:
-                # Crossing in seconds
-                sessao["Crossing Seconds"] = pd.to_timedelta(sessao["Crossing Time"]).dt.total_seconds()
-            
-                # Leader reference time at each lap (minimum crossing time of that lap)
-                leader_times = sessao.groupby("Lap")["Crossing Seconds"].transform("min")
+                # === GAP TO LEADER CREATION ===
+                if "Crossing Time" in sessao.columns:
+                    # Crossing in seconds
+                    sessao["Crossing Seconds"] = pd.to_timedelta(sessao["Crossing Time"]).dt.total_seconds()
+                
+                    # Leader reference time at each lap (minimum crossing time of that lap)
+                    leader_times = sessao.groupby("Lap")["Crossing Seconds"].transform("min")
             
             # Gap to leader at that lap
             sessao["Gap to Leader"] = sessao["Crossing Seconds"] - leader_times
