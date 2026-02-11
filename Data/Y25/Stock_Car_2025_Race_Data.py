@@ -85,8 +85,8 @@ def show():
                     # Leader reference time at each lap (minimum crossing time of that lap)
                     leader_times = sessao.groupby("Lap")["Crossing Seconds"].transform("min")
             
-            # Gap to leader at that lap
-            sessao["Gap to Leader"] = sessao["Crossing Seconds"] - leader_times
+                # Gap to leader at that lap
+                sessao["Gap to Leader"] = sessao["Crossing Seconds"] - leader_times
 
             # Dictionary relating each driver with each team
             def Teams(x):
