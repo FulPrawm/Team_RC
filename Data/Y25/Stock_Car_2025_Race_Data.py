@@ -58,24 +58,24 @@ def show():
         
             #Creating another new column to calculate Gap to Leader
             if "Crossing Time" in sessao.columns:
-            # Convert to seconds
-            sessao["Crossing Seconds"] = pd.to_timedelta(sessao["Crossing Time"]).dt.total_seconds()
-        
-            # Calculate cumulative crossing
-            sessao["Cumulative Crossing"] = sessao.groupby("Car_ID")["Crossing Seconds"].cummax()
-        
-            # Find winner (max laps, then lowest crossing time)
-            laps_per_car = sessao.groupby("Car_ID")["Lap"].max()
-            max_laps = laps_per_car.max()
-            candidates = laps_per_car[laps_per_car == max_laps].index
-            winner = sessao[sessao["Car_ID"].isin(candidates)].groupby("Car_ID")["Cumulative Crossing"].max().idxmin()
-        
-            # Calculate gap to winner
-            winner_times = sessao[sessao["Car_ID"] == winner][["Lap", "Cumulative Crossing"]].rename(
-                columns={"Cumulative Crossing": "Winner Crossing"}
-            )
-            sessao = sessao.merge(winner_times, on="Lap", how="left")
-            sessao["Gap to Winner"] = sessao["Cumulative Crossing"] - sessao["Winner Crossing"]
+                # Convert to seconds
+                sessao["Crossing Seconds"] = pd.to_timedelta(sessao["Crossing Time"]).dt.total_seconds()
+            
+                # Calculate cumulative crossing
+                sessao["Cumulative Crossing"] = sessao.groupby("Car_ID")["Crossing Seconds"].cummax()
+            
+                # Find winner (max laps, then lowest crossing time)
+                laps_per_car = sessao.groupby("Car_ID")["Lap"].max()
+                max_laps = laps_per_car.max()
+                candidates = laps_per_car[laps_per_car == max_laps].index
+                winner = sessao[sessao["Car_ID"].isin(candidates)].groupby("Car_ID")["Cumulative Crossing"].max().idxmin()
+            
+                # Calculate gap to winner
+                winner_times = sessao[sessao["Car_ID"] == winner][["Lap", "Cumulative Crossing"]].rename(
+                    columns={"Cumulative Crossing": "Winner Crossing"}
+                )
+                sessao = sessao.merge(winner_times, on="Lap", how="left")
+                sessao["Gap to Winner"] = sessao["Cumulative Crossing"] - sessao["Winner Crossing"]
 
             # === GAP TO LEADER CREATION ===
             if "Crossing Time" in sessao.columns:
