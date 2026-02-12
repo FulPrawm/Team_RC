@@ -23,7 +23,7 @@ def show():
 
 
     # Path to where the round folders are
-    PASTA_ETAPAS = "Data/Y25/Excel_Files/Races"
+    PASTA_ETAPAS = "Excel_Files/Races"
     # List of every round (folders inside "resultados")
     etapas_disponiveis = [p for p in os.listdir(PASTA_ETAPAS) if os.path.isdir(os.path.join(PASTA_ETAPAS, p))]
     st.subheader("Round and Session Selector")
