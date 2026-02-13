@@ -10,9 +10,6 @@ import os
 from sklearn.linear_model import LinearRegression
 import plotly.graph_objects as go
 from pathlib import Path
-BASE_DIR = Path(__file__).resolve().parent
-
-
 def show():
     # Ignoring warnings - for aesthetic purposes
     import warnings
@@ -26,6 +23,7 @@ def show():
 
 
     # Path to where the round folders are
+    BASE_DIR = Path(__file__).resolve().parent
     PASTA_ETAPAS = BASE_DIR / "Excel_Files" / "Races"
     # List of every round (folders inside "resultados")
     etapas_disponiveis = [p for p in os.listdir(PASTA_ETAPAS) if os.path.isdir(os.path.join(PASTA_ETAPAS, p))]
