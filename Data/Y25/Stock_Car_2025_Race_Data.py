@@ -26,6 +26,8 @@ def show():
     BASE_DIR = Path(__file__).resolve().parent
     PASTA_ETAPAS = BASE_DIR / "Excel_Files" / "Races"
     # List of every round (folders inside "resultados")
+    st.write("PASTA_ETAPAS:", PASTA_ETAPAS)
+    st.write("Existe?", PASTA_ETAPAS.exists())
     etapas_disponiveis = [p for p in os.listdir(PASTA_ETAPAS) if os.path.isdir(os.path.join(PASTA_ETAPAS, p))]
     st.subheader("Round and Session Selector")
     etapas_opcoes = ["Select a round..."] + sorted(etapas_disponiveis)
