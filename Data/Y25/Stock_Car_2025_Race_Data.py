@@ -282,14 +282,14 @@ def show():
                 st.dataframe(tabela1, hide_index=True, column_config={"": None})
 
                 #Consistency table by each driver/car
-                st.subheader("Consistency (Standard Deviation)")
+                st.subheader("Consistency by driver (Standard Deviation)")
                 tabela_std = (
                     sessao_filtrado[analise_carros]
                     .groupby(by=['Driver', "Team", "Manufacturer"])
                     .std(numeric_only=True)
                     .reset_index()
                     .style
-                    .background_gradient(cmap='viridis')  # altered the colormap
+                    .background_gradient(cmap='RdYlGn_r')
                     .format(precision=3)
                     .apply(highlight_driver, subset=['Driver'])
                     .apply(highlight_team, subset=['Team'])
