@@ -273,7 +273,7 @@ def show():
                     .groupby(by=['Driver', "Team", "Manufacturer"])
                     .mean(numeric_only=True)
                     .reset_index()   # <-- transforma índice em colunas normais
-                    .style.background_gradient(cmap='coolwarm')
+                    .style.background_gradient(cmap='RdYlGn_r')
                     .format(precision=3)
                     .apply(highlight_driver, subset=['Driver'])
                     .apply(highlight_team, subset=['Team'])
@@ -305,7 +305,7 @@ def show():
                     .groupby(by=["Team", "Manufacturer"])
                     .mean(numeric_only=True)
                     .reset_index()  # 🔑
-                    .style.background_gradient(cmap='coolwarm')
+                    .style.background_gradient(cmap='RdYlGn_r')
                     .format(precision=3)
                     .apply(highlight_team, subset=["Team"])
                     .apply(highlight_manufacturer, subset=["Manufacturer"])
@@ -361,7 +361,7 @@ def show():
                 # Add a column showing the top 2 car IDs
                 manufacturer_table["Top 2 Cars"] = manufacturer_table["Manufacturer"].map(top2_cars_dict)
                 # Apply styling
-                manufacturer_table = manufacturer_table.style.background_gradient(cmap="coolwarm")\
+                manufacturer_table = manufacturer_table.style.background_gradient(cmap="RdYlGn_r")\
                                                         .format(precision=3)\
                                                         .apply(highlight_manufacturer, subset=["Manufacturer"])
                 
