@@ -281,6 +281,7 @@ def show():
                 )
                 st.dataframe(tabela1, hide_index=True, column_config={"": None})
 
+                #Consistency table by each driver/car
                 st.subheader("Consistency (Standard Deviation)")
                 tabela_std = (
                     sessao_filtrado[analise_carros]
@@ -294,8 +295,7 @@ def show():
                     .apply(highlight_team, subset=['Team'])
                     .apply(highlight_manufacturer, subset=['Manufacturer'])
                 )
-
-               st.dataframe(tabela_std, hide_index=True)
+                st.dataframe(tabela_std, hide_index=True)
 
             
                 # Ordering by each team
