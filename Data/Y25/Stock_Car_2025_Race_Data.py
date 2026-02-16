@@ -268,18 +268,27 @@ def show():
             if option == "Chart":
                 # Ordering by each car
                 st.subheader("Table ordered by Car")
+
                 tabela1 = (
                     sessao_filtrado[analise_carros]
                     .groupby(by=['Driver', "Team", "Manufacturer"])
                     .mean(numeric_only=True)
-                    .reset_index()   # <-- transforma índice em colunas normais
-                    .style.background_gradient(cmap='RdYlGn_r')
+                    .reset_index()
+                )
+
+                # Criando estilo separado
+                tabela1_styled = (
+                    tabela1
+                    .style
+                    .background_gradient(cmap='RdYlGn_r')  # cmap que você quer
                     .format(precision=3)
                     .apply(highlight_driver, subset=['Driver'])
                     .apply(highlight_team, subset=['Team'])
                     .apply(highlight_manufacturer, subset=['Manufacturer'])
                 )
-                st.dataframe(tabela1, hide_index=True, column_config={"": None})
+
+                st.dataframe(tabela1_styled, hide_index=True, column_config={"": None})
+
 
                 #Consistency table by each driver/car
                 st.subheader("Consistency by driver (Standard Deviation)")
