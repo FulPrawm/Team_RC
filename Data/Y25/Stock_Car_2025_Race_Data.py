@@ -280,6 +280,23 @@ def show():
                     .apply(highlight_manufacturer, subset=['Manufacturer'])
                 )
                 st.dataframe(tabela1, hide_index=True, column_config={"": None})
+
+                st.subheader("Consistency (Standard Deviation)")
+                tabela_std = (
+                    sessao_filtrado[analise_carros]
+                    .groupby(by=['Driver', "Team", "Manufacturer"])
+                    .std(numeric_only=True)
+                    .reset_index()
+                    .style
+                    .background_gradient(cmap='viridis')  # altered the colormap
+                    .format(precision=3)
+                    .apply(highlight_driver, subset=['Driver'])
+                    .apply(highlight_team, subset=['Team'])
+                    .apply(highlight_manufacturer, subset=['Manufacturer'])
+                )
+
+               st.dataframe(tabela_std, hide_index=True)
+
             
                 # Ordering by each team
                 st.subheader("Table ordered by Team")
