@@ -3,6 +3,9 @@ import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
 
+st.write("Página carregada")
+st.write(df.head())
+
 IMG_WIDTH = 1076
 IMG_HEIGHT = 694
 
