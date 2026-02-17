@@ -44,7 +44,8 @@ def show():
     # 🔹 IMAGEM DA PISTA
     fig.add_layout_image(
         dict(
-            source="assets/pista.png",  # coloque sua imagem aqui
+            IMG_PATH = BASE_DIR.parent / "assets" / "pista.png",
+            source=str(IMG_PATH),
             xref="x",
             yref="y",
             x=0,
