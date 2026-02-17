@@ -10,6 +10,9 @@ st.write("Página carregada")
 
 BASE_DIR = Path(__file__).resolve().parent
 df = pd.read_excel(BASE_DIR / "ET12_R2.xlsx")
+df["Crossing Time"] = pd.to_timedelta(df["Crossing Time"])
+df["Crossing Time (s)"] = df["Crossing Time"].dt.total_seconds()
+
 
 st.write(df.head())
 
@@ -32,7 +35,7 @@ def show():
     race_time = st.slider(
         "Tempo de Corrida (s)",
         0.0,
-        float(df["Crossing Time"].max()),
+        float(df["Crossing Time (s)"].max()),
         step=0.5
     )
 
