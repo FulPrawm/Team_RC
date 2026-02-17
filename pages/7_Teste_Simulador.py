@@ -83,7 +83,7 @@ def create_figure(race_time):
 # ----------------------------
 # STREAMLIT - CONTROLES
 # ----------------------------
-st.title("🏁 Race Replay - Autoplay com Controle")
+st.title("🏁 25ET12R2 Race Replay")
 
 max_time = float(df["Crossing Time (s)"].max())
 placeholder = st.empty()  # para atualizar o gráfico
@@ -124,8 +124,11 @@ if st.session_state.playing:
     while st.session_state.race_time <= max_time:
         fig = create_figure(st.session_state.race_time)
         placeholder.plotly_chart(fig, use_container_width=True)
-        st.session_state.race_time += 1 * st.session_state.speed
-        time.sleep(1 / st.session_state.speed)
+        update_rate = 0.1  # 0.1s = 10 updates por segundo
+
+        st.session_state.race_time += update_rate * st.session_state.speed
+        time.sleep(update_rate)
+
         # Interrompe se o usuário pausou
         if not st.session_state.playing:
             break
