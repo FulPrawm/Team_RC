@@ -77,7 +77,7 @@ def create_figure(race_time):
         ))
     fig.update_xaxes(range=[-1.2, 1.2], visible=False, scaleanchor="y")
     fig.update_yaxes(range=[-1.2, 1.2], visible=False)
-    fig.update_layout(margin=dict(l=0,r=0,t=0,b=0), plot_bgcolor="white")
+    fig.update_layout(margin=dict(l=0,r=0,t=0,b=0), plot_bgcolor="black")
     return fig
 
 # ----------------------------
