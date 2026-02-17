@@ -60,12 +60,12 @@ def show():
 
         car_data = df[df["Car_ID"] == car]
 
-        lap_row = car_data[car_data["Crossing Time"] >= race_time].head(1)
+        lap_row = car_data[car_data["Crossing Time (s)"] >= race_time].head(1)
 
         if not lap_row.empty:
 
             lap_time = lap_row["Lap Tm (S)"].values[0]
-            crossing = lap_row["Crossing Time"].values[0]
+            crossing = lap_row["Crossing Time (s)"].values[0]
             lap_start = crossing - lap_time
 
             time_in_lap = race_time - lap_start
