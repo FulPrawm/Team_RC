@@ -4,6 +4,7 @@ import numpy as np
 import plotly.graph_objects as go
 import plotly.express as px
 from pathlib import Path
+import time
 
 # ----------------------------
 # CARREGANDO DADOS
@@ -34,21 +35,12 @@ def get_sector(progress):
     return SECTORS[sector_index]
 
 # ----------------------------
-# FUNÇÃO PRINCIPAL
+# FUNÇÃO PARA GERAR FIGURA
 # ----------------------------
-def show():
-    st.title("🏁 Race Replay - Círculo Setorizado")
-
-    race_time = st.slider(
-        "Tempo de Corrida (s)",
-        0.0,
-        float(df["Crossing Time (s)"].max()),
-        step=0.5
-    )
-
+def create_figure(race_time):
     fig = go.Figure()
 
-    # 🔹 DESENHAR SETORES DO CÍRCULO
+    # Desenhar setores
     for i, color in enumerate(SECTOR_COLORS):
         theta = np.linspace(2*np.pi*i/len(SECTORS), 2*np.pi*(i+1)/len(SECTORS), 100)
         x = CIRCLE_RADIUS * np.cos(theta)
@@ -64,25 +56,22 @@ def show():
             hoverinfo="skip"
         ))
 
-    # 🔹 POSIÇÃO DOS CARROS
+    # Posicionar carros
     colors = px.colors.qualitative.Dark24
     car_list = df["Car_ID"].unique()
     
     for i, car in enumerate(car_list):
         car_data = df[df["Car_ID"] == car].sort_values("Crossing Time (s)")
 
-        # Primeira volta cujo crossing ainda não aconteceu
+        # Volta atual ou última
         lap_row = car_data[car_data["Crossing Time (s)"] >= race_time].head(1)
-
         if lap_row.empty:
-            # Se já terminou todas as voltas, pega a última
             lap_row = car_data.tail(1)
 
         lap_time = lap_row["Lap Tm (S)"].values[0]
         crossing = lap_row["Crossing Time (s)"].values[0]
         lap_start = crossing - lap_time
 
-        # progresso dentro da volta atual
         time_in_lap = np.clip(race_time - lap_start, 0, lap_time)
         progress = time_in_lap / lap_time
 
@@ -99,14 +88,28 @@ def show():
             showlegend=False
         ))
 
-    # 🔹 LAYOUT
     fig.update_xaxes(range=[-1.2, 1.2], visible=False, scaleanchor="y")
     fig.update_yaxes(range=[-1.2, 1.2], visible=False)
-    fig.update_layout(
-        margin=dict(l=0, r=0, t=0, b=0),
-        plot_bgcolor="white",
-    )
+    fig.update_layout(margin=dict(l=0,r=0,t=0,b=0), plot_bgcolor="white")
+    return fig
 
-    st.plotly_chart(fig, use_container_width=True)
+# ----------------------------
+# AUTOPLAY
+# ----------------------------
+st.title("🏁 Race Replay - Autoplay")
 
-show()
+max_time = float(df["Crossing Time (s)"].max())
+placeholder = st.empty()  # container para atualizar o gráfico
+
+race_time = 0.0
+step = 1.0  # 1 segundo por atualização
+
+# Botão para iniciar autoplay
+start_button = st.button("▶️ Start Autoplay")
+
+if start_button:
+    while race_time <= max_time:
+        fig = create_figure(race_time)
+        placeholder.plotly_chart(fig, use_container_width=True)
+        race_time += step
+        time.sleep(1)  # atualiza a cada 1 segundo
