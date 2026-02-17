@@ -13,13 +13,11 @@ df = pd.read_excel(BASE_DIR / "ET12_R2.xlsx")
 
 # Converter Crossing Time para datetime
 df["Crossing Time DT"] = pd.to_datetime(df["Crossing Time"], format="%H:%M:%S.%f")
-
-# Converter para segundos desde o início da corrida
 start_time = df["Crossing Time DT"].min()
 df["Crossing Time (s)"] = (df["Crossing Time DT"] - start_time).dt.total_seconds()
 
 # ----------------------------
-# CONFIGURAÇÃO DO CÍRCULO (Pista)
+# CONFIGURAÇÃO DO CÍRCULO
 # ----------------------------
 CIRCLE_RADIUS = 1
 SECTORS = ["S1", "S2", "S3"]
@@ -72,31 +70,34 @@ def show():
     
     for i, car in enumerate(car_list):
         car_data = df[df["Car_ID"] == car].sort_values("Crossing Time (s)")
-        
-        # Pega a última volta que já começou
-        lap_row = car_data[car_data["Crossing Time (s)"] <= race_time].tail(1)
 
-        if not lap_row.empty:
-            lap_time = lap_row["Lap Tm (S)"].values[0]
-            crossing = lap_row["Crossing Time (s)"].values[0]
-            lap_start = crossing - lap_time
+        # Primeira volta cujo crossing ainda não aconteceu
+        lap_row = car_data[car_data["Crossing Time (s)"] >= race_time].head(1)
 
-            # Progresso na volta
-            time_in_lap = race_time - lap_start
-            progress = np.clip(time_in_lap / lap_time, 0, 1)
+        if lap_row.empty:
+            # Se já terminou todas as voltas, pega a última
+            lap_row = car_data.tail(1)
 
-            x, y = get_circle_position(progress)
-            sector = get_sector(progress)
+        lap_time = lap_row["Lap Tm (S)"].values[0]
+        crossing = lap_row["Crossing Time (s)"].values[0]
+        lap_start = crossing - lap_time
 
-            fig.add_trace(go.Scatter(
-                x=[x],
-                y=[y],
-                mode="markers+text",
-                text=[f"{car}\n{sector}"],
-                textposition="top center",
-                marker=dict(size=14, color=colors[i % len(colors)]),
-                showlegend=False
-            ))
+        # progresso dentro da volta atual
+        time_in_lap = np.clip(race_time - lap_start, 0, lap_time)
+        progress = time_in_lap / lap_time
+
+        x, y = get_circle_position(progress)
+        sector = get_sector(progress)
+
+        fig.add_trace(go.Scatter(
+            x=[x],
+            y=[y],
+            mode="markers+text",
+            text=[f"{car}\n{sector}"],
+            textposition="top center",
+            marker=dict(size=14, color=colors[i % len(colors)]),
+            showlegend=False
+        ))
 
     # 🔹 LAYOUT
     fig.update_xaxes(range=[-1.2, 1.2], visible=False, scaleanchor="y")
@@ -109,4 +110,3 @@ def show():
     st.plotly_chart(fig, use_container_width=True)
 
 show()
-
