@@ -10,6 +10,7 @@ st.write("Página carregada")
 
 BASE_DIR = Path(__file__).resolve().parent
 df = pd.read_excel(BASE_DIR / "ET12_R2.xlsx")
+IMG_PATH = BASE_DIR.parent / "assets" / "pista.png"
 df["Crossing Time"] = pd.to_timedelta(df["Crossing Time"])
 df["Crossing Time (s)"] = df["Crossing Time"].dt.total_seconds()
 
@@ -44,7 +45,6 @@ def show():
     # 🔹 IMAGEM DA PISTA
     fig.add_layout_image(
         dict(
-            IMG_PATH = BASE_DIR.parent / "assets" / "pista.png",
             source=str(IMG_PATH),
             xref="x",
             yref="y",
