@@ -2,9 +2,17 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
+from pathlib import Path
+import streamlit as st
+import pandas as pd
 
 st.write("Página carregada")
+
+BASE_DIR = Path(__file__).resolve().parent
+df = pd.read_excel(BASE_DIR / "ET12_R2.xlsx")
+
 st.write(df.head())
+
 
 IMG_WIDTH = 1076
 IMG_HEIGHT = 694
@@ -20,8 +28,6 @@ def get_position(progress):
 def show():
 
     st.title("🏁 Race Replay")
-
-    df = pd.read_excel("ET12_R2.xlsx")
 
     race_time = st.slider(
         "Tempo de Corrida (s)",
