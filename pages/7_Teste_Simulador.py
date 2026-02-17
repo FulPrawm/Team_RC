@@ -11,9 +11,12 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent
 df = pd.read_excel(BASE_DIR / "ET12_R2.xlsx")
 
-# Converter Crossing Time para timedelta/segundos
-df["Crossing Time"] = pd.to_timedelta(df["Crossing Time"])
-df["Crossing Time (s)"] = df["Crossing Time"].dt.total_seconds()
+# Converter Crossing Time para datetime
+df["Crossing Time DT"] = pd.to_datetime(df["Crossing Time"], format="%H:%M:%S.%f")
+
+# Converter para segundos desde o início da corrida
+start_time = df["Crossing Time DT"].min()
+df["Crossing Time (s)"] = (df["Crossing Time DT"] - start_time).dt.total_seconds()
 
 # ----------------------------
 # CONFIGURAÇÃO DO CÍRCULO (Pista)
@@ -23,19 +26,12 @@ SECTORS = ["S1", "S2", "S3"]
 SECTOR_COLORS = ["lightblue", "lightgreen", "lightcoral"]
 
 def get_circle_position(progress):
-    """
-    progress: 0 a 1 -> posição do carro na volta
-    retorna x, y no círculo unitário
-    """
     angle = 2 * np.pi * progress
     x = CIRCLE_RADIUS * np.cos(angle)
     y = CIRCLE_RADIUS * np.sin(angle)
     return x, y
 
 def get_sector(progress):
-    """
-    Retorna o setor atual baseado no progresso da volta
-    """
     sector_index = int(progress * len(SECTORS)) % len(SECTORS)
     return SECTORS[sector_index]
 
@@ -113,3 +109,4 @@ def show():
     st.plotly_chart(fig, use_container_width=True)
 
 show()
+
