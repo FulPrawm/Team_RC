@@ -292,47 +292,37 @@ def show():
 
         
             if option == "Chart":
-                # 1️⃣ Calculate mean of clean laps per driver
-                mean_clean_laps_driver = (
-                    sessao_filtrado[sessao_filtrado["Lap Traffic?"] == "No"]
-                    .groupby("Driver")["Lap Tm (S)"]
-                    .mean()
-                    .reset_index()
-                    .rename(columns={"Lap Tm (S)": "Mean Clean Lap"})
-                )
+                # Ordering by each car
+                st.subheader("Table ordered by Car")
 
-                # 2️⃣ Calculate overall mean of all laps (as before)
-                table_by_car = (
+                # Calculate % of clean laps per driver
+                clean_laps_percent = sessao_filtrado.groupby('Driver')['Lap Traffic?'].apply(
+                    lambda x: (x == "No").sum() / len(x) * 100
+                ).reset_index().rename(columns={'Lap Traffic?': '% Clean Laps'})
+
+                # Base table with averages of numeric columns
+                tabela1 = (
                     sessao_filtrado[analise_carros]
                     .groupby(by=['Driver', "Team", "Manufacturer"])
                     .mean(numeric_only=True)
                     .reset_index()
                 )
 
-                # 3️⃣ Merge the clean lap mean column
-                table_by_car = table_by_car.merge(mean_clean_laps_driver, on="Driver", how="left")
+                # Merge the % clean laps into tabela1
+                tabela1 = tabela1.merge(clean_laps_percent, on='Driver', how='left')
 
-                # 4️⃣ Calculate % of clean laps
-                total_laps = sessao_filtrado.groupby("Driver")["Lap"].count().reset_index().rename(columns={"Lap": "Total Laps"})
-                clean_laps = sessao_filtrado[sessao_filtrado["Lap Traffic?"] == "No"].groupby("Driver")["Lap"].count().reset_index().rename(columns={"Lap": "Clean Laps"})
-                laps_pct = pd.merge(total_laps, clean_laps, on="Driver", how="left")
-                laps_pct["% Clean Laps"] = (laps_pct["Clean Laps"] / laps_pct["Total Laps"] * 100).round(1)
-
-                # Merge the % clean laps into main table
-                table_by_car = table_by_car.merge(laps_pct[["Driver", "% Clean Laps"]], on="Driver", how="left")
-
-                # 5️⃣ Apply styling
-                table_by_car_styled = (
-                    table_by_car
+                # Creating a separate style
+                tabela1_styled = (
+                    tabela1
                     .style
                     .background_gradient(cmap='RdYlGn_r')
-                    .format(precision=3)
+                    .format(precision=2)
                     .apply(highlight_driver, subset=['Driver'])
                     .apply(highlight_team, subset=['Team'])
                     .apply(highlight_manufacturer, subset=['Manufacturer'])
                 )
 
-                st.dataframe(table_by_car_styled, hide_index=True, column_config={"": None})
+                st.dataframe(tabela1_styled, hide_index=True, column_config={"": None})
 
                 #Consistency table by each driver/car
                 st.subheader("Consistency by driver (Standard Deviation)")
