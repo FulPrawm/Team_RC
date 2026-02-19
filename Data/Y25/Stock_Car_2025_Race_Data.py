@@ -292,35 +292,22 @@ def show():
 
         
             if option == "Chart":
-                # Base table with averages of numeric columns from the filtered session
+                st.subheader("Table ordered by Car")
                 tabela1 = (
-                    sessao_filtrado[analise_carros]  # analise_carros não precisa mudar
+                    sessao_filtrado[analise_carros]  # <-- seleciona só as colunas que você quer
                     .groupby(by=['Driver', "Team", "Manufacturer"])
                     .mean(numeric_only=True)
                     .reset_index()
                 )
 
-                # Calculate % of clean laps per driver using the full session
-                clean_laps_percent = sessao.groupby('Driver')['Lap Traffic?'].apply(
-                    lambda x: (x == "No").sum() / len(x) * 100
-                ).reset_index().rename(columns={'Lap Traffic?': '% Clean Laps'})
-
-                # Merge the % clean laps into tabela1
-                tabela1 = tabela1.merge(clean_laps_percent, on='Driver', how='left')
-
-                # Now include the new column in the style
-                tabela1_styled = (
-                    tabela1
-                    .style
-                    .background_gradient(cmap='RdYlGn_r')
-                    .format(precision=2)
-                    .apply(highlight_driver, subset=['Driver'])
-                    .apply(highlight_team, subset=['Team'])
-                    .apply(highlight_manufacturer, subset=['Manufacturer'])
-                )
-
-                st.subheader("Table ordered by Car")
-                st.dataframe(tabela1_styled, hide_index=True)
+                # Optional: add % clean laps if you added it
+                if 'Lap Traffic?' in sessao_filtrado.columns:
+                    clean_laps_pct = (
+                        sessao_filtrado.groupby(['Driver', "Team", "Manufacturer"])
+                        .apply(lambda df: (df['Lap Traffic?'] == "No").mean() * 100)
+                        .reset_index(name="% Clean Laps")
+                    )
+                    tabela1 = tabela1.merge(clean_laps_pct, on=['Driver', "Team", "Manufacturer"])
 
 
                 #Consistency table by each driver/car
