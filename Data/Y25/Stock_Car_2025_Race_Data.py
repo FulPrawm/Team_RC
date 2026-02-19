@@ -785,24 +785,7 @@ def show():
                         st.plotly_chart(fig, use_container_width=True)
 
                 # Block 2 — por Car_ID (como rótulo) em tabs
-
-                # Lista global de drivers
-                drivers_unicos = sorted(sessao_filtrado["Driver"].unique())
-
-                drivers_selecionados = st.multiselect(
-                    "Selecione os pilotos:",
-                    options=drivers_unicos,
-                    default=drivers_unicos
-                )
-
-                # Filtra uma vez só
-                df_filtrado_global = sessao_filtrado[
-                    sessao_filtrado["Driver"].isin(drivers_selecionados)
-                ]
-
-
                 tabs_box = st.tabs(["Lap", "S1", "S2", "S3", "SPT"])
-
                 colunas_boxplot = {
                     "Lap": "Lap Tm (S)",
                     "S1": "S1 Tm",
@@ -810,19 +793,20 @@ def show():
                     "S3": "S3 Tm",
                     "SPT": "SPT"
                 }
-
                 for i, (tab_nome, coluna) in enumerate(colunas_boxplot.items()):
                     with tabs_box[i]:
+                        df_plot = sessao_filtrado.copy()
+                        
+                        # Pega lista de drivers em ordem alfabética
+                        drivers_unicos = sorted(df_plot["Driver"].unique())
 
                         fig = px.box(
-                            df_filtrado_global,
+                            df_plot,
                             x="Driver",
                             y=coluna,
                             points="all",
                             color="Driver",
-                            category_orders={
-                                "Driver": sorted(df_filtrado_global["Driver"].unique())
-                            },
+                            category_orders={"Driver": drivers_unicos},
                         )
 
                         fig.update_layout(
