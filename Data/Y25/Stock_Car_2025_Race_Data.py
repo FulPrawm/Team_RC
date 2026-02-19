@@ -784,53 +784,51 @@ def show():
                         fig.update_layout(showlegend=False)
                         st.plotly_chart(fig, use_container_width=True)
 
-                # Block 2 — por Car_ID (como rótulo) em tabs
-                tabs_box = st.tabs(["Lap", "S1", "S2", "S3", "SPT"])
-                colunas_boxplot = {
-                    "Lap": "Lap Tm (S)",
-                    "S1": "S1 Tm",
-                    "S2": "S2 Tm",
-                    "S3": "S3 Tm",
-                    "SPT": "SPT"
-                }
+                    # Block 2 — por Car_ID (como rótulo) em tabs
+                    tabs_box = st.tabs(["Lap", "S1", "S2", "S3", "SPT"])
+                    colunas_boxplot = {
+                        "Lap": "Lap Tm (S)",
+                        "S1": "S1 Tm",
+                        "S2": "S2 Tm",
+                        "S3": "S3 Tm",
+                        "SPT": "SPT"
+                    }
 
-                # Separar cores só para colorir as caixas
-                colors_map = {driver: color for driver, (color, _) in colors_driver.items()}
+                    # Separar cores só para colorir as caixas
+                    colors_map = {driver: color for driver, (color, _) in colors_driver.items()}
 
-                for i, (tab_nome, coluna) in enumerate(colunas_boxplot.items()):
-                    with tabs_box[i]:
-                        df_plot = sessao_filtrado.copy()
-                        
-                        drivers_unicos = sorted(df_plot["Driver"].unique())
+                    for i, (tab_nome, coluna) in enumerate(colunas_boxplot.items()):
+                        with tabs_box[i]:
+                            df_plot = sessao_filtrado.copy()
+                            
+                            drivers_unicos = sorted(df_plot["Driver"].unique())
 
-                        fig = px.box(
-                            df_plot,
-                            x="Driver",
-                            y=coluna,
-                            points="all",
-                            color="Driver",
-                            category_orders={"Driver": drivers_unicos},
-                            color_discrete_map=colors_map
-                        )
+                            fig = px.box(
+                                df_plot,
+                                x="Driver",
+                                y=coluna,
+                                points="all",
+                                color="Driver",
+                                category_orders={"Driver": drivers_unicos},
+                                color_discrete_map=colors_map
+                            )
 
-                        fig.update_layout(
-                            yaxis_title=coluna,
-                            title=f"Boxplot - {coluna}",
-                            showlegend=False
-                        )
+                            fig.update_layout(
+                                yaxis_title=coluna,
+                                title=f"Boxplot - {coluna}",
+                                showlegend=False
+                            )
 
-                        # Pintar nomes do eixo X por piloto
-                        fig.update_xaxes(
-                            tickvals=drivers_unicos,
-                            ticktext=[
-                                f"<span style='color:{colors_driver[d][1]}'>{d}</span>" if d in colors_driver else d
-                                for d in drivers_unicos
-                            ]
-                        )
+                            # Pintar nomes do eixo X por piloto
+                            fig.update_xaxes(
+                                tickvals=drivers_unicos,
+                                ticktext=[
+                                    f"<span style='color:{colors_driver[d][1]}'>{d}</span>" if d in colors_driver else d
+                                    for d in drivers_unicos
+                                ]
+                            )
 
-                        st.plotly_chart(fig, use_container_width=True)
-
-
+                            st.plotly_chart(fig, use_container_width=True)
 
 
             elif option == 'All Laps':
