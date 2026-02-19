@@ -1,4 +1,4 @@
- # Importando as bibliotecas
+# Importando as bibliotecas
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -846,29 +846,28 @@ def show():
 
 
             elif option == 'All Laps':
-                alllaps10 = sessao[sessao['Car_ID'] == 10]
-                st.write("Ricardo Zonta")
-                st.dataframe(alllaps10)
-            
-                alllaps11 = sessao[sessao['Car_ID'] == 11]
-                st.write("Gaetano Di Mauro")
-                st.dataframe(alllaps11)
-            
-                alllaps44 = sessao[sessao['Car_ID'] == 44]
-                st.write("Bruno Baptista")
-                st.dataframe(alllaps44)
-            
-                alllaps88 = sessao[sessao['Car_ID'] == 88]
-                st.write("Felipe Fraga")
-                st.dataframe(alllaps88)
+                # Lista de Car_IDs que você quer exibir
+                carros_desejados = [10, 11, 44, 88, 31, 38]
 
-                alllaps31 = sessao[sessao['Car_ID'] == 31]
-                st.write("Marcos Regadas")
-                st.dataframe(alllaps31)
+                # Dicionário para nomes dos drivers
+                nomes_carros = {
+                    10: "Ricardo Zonta",
+                    11: "Gaetano Di Mauro",
+                    44: "Bruno Baptista",
+                    88: "Felipe Fraga",
+                    31: "Marcos Regadas",
+                    38: "Zezinho Muggiati"
+                }
 
-                alllaps38 = sessao[sessao['Car_ID'] == 38]
-                st.write("Zezinho Muggiati")
-                st.dataframe(alllaps38) 
+                for carro in carros_desejados:
+                    df_car = sessao[sessao['Car_ID'] == carro].copy()
+                    st.write(nomes_carros[carro])
+                    
+                    # Garantir que a coluna 'Lap Traffic?' apareça
+                    if 'Lap Traffic?' not in df_car.columns:
+                        df_car['Lap Traffic?'] = "No"
+                    
+                    st.dataframe(df_car)
 
         else:
             st.warning("Please, select a race.")
