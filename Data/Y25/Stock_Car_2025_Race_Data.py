@@ -295,12 +295,12 @@ def show():
                 # Ordering by each car
                 st.subheader("Table ordered by Car")
 
-                # Calculate % of clean laps per driver
-                clean_laps_percent = sessao_filtrado.groupby('Driver')['Lap Traffic?'].apply(
+                # Calculate % of clean laps per driver using the full session (not filtered)
+                clean_laps_percent = sessao.groupby('Driver')['Lap Traffic?'].apply(
                     lambda x: (x == "No").sum() / len(x) * 100
                 ).reset_index().rename(columns={'Lap Traffic?': '% Clean Laps'})
 
-                # Base table with averages of numeric columns
+                # Base table with averages of numeric columns from the filtered session
                 tabela1 = (
                     sessao_filtrado[analise_carros]
                     .groupby(by=['Driver', "Team", "Manufacturer"])
