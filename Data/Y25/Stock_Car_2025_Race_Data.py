@@ -773,7 +773,7 @@ def show():
                 
                 for tab, var in zip(tabs_manuf, [col for col in analise_Manufacturer if col != "Manufacturer"]):
                     with tab:
-                        fig = px.box(
+                        fig1 = px.box(
                             sessao_filtrado,
                             x="Manufacturer",
                             y=var,
@@ -781,8 +781,8 @@ def show():
                             color="Manufacturer",
                             title=f"{var} Distribution by Manufacturer"
                         )
-                        fig.update_layout(showlegend=False)
-                        st.plotly_chart(fig, use_container_width=True)
+                        fig1.update_layout(showlegend=False)
+                        st.plotly_chart(fig1, use_container_width=True)
 
                     # Block 2 — por Car_ID (como rótulo) em tabs
                     tabs_box = st.tabs(["Lap", "S1", "S2", "S3", "SPT"])
@@ -800,7 +800,7 @@ def show():
                             # Pega lista de drivers em ordem alfabética
                             drivers_unicos = sorted(df_plot["Driver"].unique())
 
-                            fig = px.box(
+                            fig2 = px.box(
                                 df_plot,
                                 x="Driver",
                                 y=coluna,
@@ -809,13 +809,13 @@ def show():
                                 category_orders={"Driver": drivers_unicos},
                             )
 
-                            fig.update_layout(
+                            fig2.update_layout(
                                 yaxis_title=coluna,
                                 title=f"Boxplot - {coluna}",
                                 showlegend=False
                             )
 
-                            st.plotly_chart(fig, use_container_width=True)
+                            st.plotly_chart(fig2, use_container_width=True)
 
 
 
