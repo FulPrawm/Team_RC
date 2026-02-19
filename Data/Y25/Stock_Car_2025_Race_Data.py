@@ -793,14 +793,11 @@ def show():
                         "S3": "S3 Tm",
                         "SPT": "SPT"
                     }
-
-                    # Separar cores só para colorir as caixas
-                    colors_map = {driver: color for driver, (color, _) in colors_driver.items()}
-
                     for i, (tab_nome, coluna) in enumerate(colunas_boxplot.items()):
                         with tabs_box[i]:
                             df_plot = sessao_filtrado.copy()
                             
+                            # Pega lista de drivers em ordem alfabética
                             drivers_unicos = sorted(df_plot["Driver"].unique())
 
                             fig = px.box(
@@ -810,7 +807,6 @@ def show():
                                 points="all",
                                 color="Driver",
                                 category_orders={"Driver": drivers_unicos},
-                                color_discrete_map=colors_map
                             )
 
                             fig.update_layout(
@@ -819,16 +815,8 @@ def show():
                                 showlegend=False
                             )
 
-                            # Pintar nomes do eixo X por piloto
-                            fig.update_xaxes(
-                                tickvals=drivers_unicos,
-                                ticktext=[
-                                    f"<span style='color:{colors_driver[d][1]}'>{d}</span>" if d in colors_driver else d
-                                    for d in drivers_unicos
-                                ]
-                            )
-
                             st.plotly_chart(fig, use_container_width=True)
+
 
 
             elif option == 'All Laps':
