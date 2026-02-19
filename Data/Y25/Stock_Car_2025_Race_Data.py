@@ -292,29 +292,47 @@ def show():
 
         
             if option == "Chart":
-                # Ordering by each car
-                st.subheader("Table ordered by Car")
+                # 1️⃣ Calculate mean of clean laps per driver
+                mean_clean_laps_driver = (
+                    sessao_filtrado[sessao_filtrado["Lap Traffic?"] == "No"]
+                    .groupby("Driver")["Lap Tm (S)"]
+                    .mean()
+                    .reset_index()
+                    .rename(columns={"Lap Tm (S)": "Mean Clean Lap"})
+                )
 
-                tabela1 = (
+                # 2️⃣ Calculate overall mean of all laps (as before)
+                table_by_car = (
                     sessao_filtrado[analise_carros]
                     .groupby(by=['Driver', "Team", "Manufacturer"])
                     .mean(numeric_only=True)
                     .reset_index()
                 )
 
-                # Criando estilo separado
-                tabela1_styled = (
-                    tabela1
+                # 3️⃣ Merge the clean lap mean column
+                table_by_car = table_by_car.merge(mean_clean_laps_driver, on="Driver", how="left")
+
+                # 4️⃣ Calculate % of clean laps
+                total_laps = sessao_filtrado.groupby("Driver")["Lap"].count().reset_index().rename(columns={"Lap": "Total Laps"})
+                clean_laps = sessao_filtrado[sessao_filtrado["Lap Traffic?"] == "No"].groupby("Driver")["Lap"].count().reset_index().rename(columns={"Lap": "Clean Laps"})
+                laps_pct = pd.merge(total_laps, clean_laps, on="Driver", how="left")
+                laps_pct["% Clean Laps"] = (laps_pct["Clean Laps"] / laps_pct["Total Laps"] * 100).round(1)
+
+                # Merge the % clean laps into main table
+                table_by_car = table_by_car.merge(laps_pct[["Driver", "% Clean Laps"]], on="Driver", how="left")
+
+                # 5️⃣ Apply styling
+                table_by_car_styled = (
+                    table_by_car
                     .style
-                    .background_gradient(cmap='RdYlGn_r')  # cmap que você quer
+                    .background_gradient(cmap='RdYlGn_r')
                     .format(precision=3)
                     .apply(highlight_driver, subset=['Driver'])
                     .apply(highlight_team, subset=['Team'])
                     .apply(highlight_manufacturer, subset=['Manufacturer'])
                 )
 
-                st.dataframe(tabela1_styled, hide_index=True, column_config={"": None})
-
+                st.dataframe(table_by_car_styled, hide_index=True, column_config={"": None})
 
                 #Consistency table by each driver/car
                 st.subheader("Consistency by driver (Standard Deviation)")
