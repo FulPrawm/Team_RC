@@ -292,22 +292,40 @@ def show():
 
         
             if option == "Chart":
-                st.subheader("Table ordered by Car")
-                tabela1 = (
-                    sessao_filtrado[analise_carros]  # <-- seleciona só as colunas que você quer
-                    .groupby(by=['Driver', "Team", "Manufacturer"])
-                    .mean(numeric_only=True)
-                    .reset_index()
+                # Calculate table
+                table_car = sessao_filtrado.groupby(['Driver', 'Team', 'Manufacturer']).agg({
+                    "Lap Tm (S)": "mean",
+                    "S1 Tm": "mean",
+                    "S2 Tm": "mean",
+                    "S3 Tm": "mean",
+                    "SPT": "mean",
+                    # You can add more numeric columns here if needed
+                }).reset_index()
+
+                # Add % clean laps
+                clean_laps_pct = (
+                    sessao_filtrado.groupby(['Driver', 'Team', 'Manufacturer'])
+                    .apply(lambda df: (df['Lap Traffic?'] == "No").mean() * 100)
+                    .reset_index(name="% Clean Laps")
                 )
 
-                # Optional: add % clean laps if you added it
-                if 'Lap Traffic?' in sessao_filtrado.columns:
-                    clean_laps_pct = (
-                        sessao_filtrado.groupby(['Driver', "Team", "Manufacturer"])
-                        .apply(lambda df: (df['Lap Traffic?'] == "No").mean() * 100)
-                        .reset_index(name="% Clean Laps")
-                    )
-                    tabela1 = tabela1.merge(clean_laps_pct, on=['Driver', "Team", "Manufacturer"])
+                # Merge with main table
+                table_car = table_car.merge(clean_laps_pct, on=['Driver', 'Team', 'Manufacturer'])
+
+                # Display styled table
+                table_car_styled = (
+                    table_car
+                    .style
+                    .background_gradient(cmap='RdYlGn_r')
+                    .format(precision=2)
+                    .apply(highlight_driver, subset=['Driver'])
+                    .apply(highlight_team, subset=['Team'])
+                    .apply(highlight_manufacturer, subset=['Manufacturer'])
+                )
+
+                st.subheader("Table ordered by Car")
+                st.dataframe(table_car_styled, hide_index=True)
+
 
 
                 #Consistency table by each driver/car
