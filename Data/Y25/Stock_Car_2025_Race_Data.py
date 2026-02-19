@@ -794,14 +794,13 @@ def show():
                     "SPT": "SPT"
                 }
 
-                # Criar dicionário só com cores (sem o texto)
-                colors_map = {driver: color for driver, (color, text_color) in colors_driver.items()}
+                # Separar cores só para colorir as caixas
+                colors_map = {driver: color for driver, (color, _) in colors_driver.items()}
 
                 for i, (tab_nome, coluna) in enumerate(colunas_boxplot.items()):
                     with tabs_box[i]:
                         df_plot = sessao_filtrado.copy()
                         
-                        # Pega lista de drivers em ordem alfabética
                         drivers_unicos = sorted(df_plot["Driver"].unique())
 
                         fig = px.box(
@@ -811,7 +810,7 @@ def show():
                             points="all",
                             color="Driver",
                             category_orders={"Driver": drivers_unicos},
-                            color_discrete_map=colors_map  # <--- usa seu dicionário
+                            color_discrete_map=colors_map
                         )
 
                         fig.update_layout(
@@ -820,14 +819,17 @@ def show():
                             showlegend=False
                         )
 
-                        # Opcional: pintar os nomes do eixo X com contraste
-                        for i, tick in enumerate(fig.layout.xaxis.ticktext):
-                            driver_name = tick
-                            if driver_name in colors_driver:
-                                _, text_color = colors_driver[driver_name]
-                                fig.layout.xaxis.tickfont.color = text_color
+                        # Pintar nomes do eixo X por piloto
+                        fig.update_xaxes(
+                            tickvals=drivers_unicos,
+                            ticktext=[
+                                f"<span style='color:{colors_driver[d][1]}'>{d}</span>" if d in colors_driver else d
+                                for d in drivers_unicos
+                            ]
+                        )
 
                         st.plotly_chart(fig, use_container_width=True)
+
 
 
 
