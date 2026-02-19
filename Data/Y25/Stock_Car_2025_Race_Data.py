@@ -56,32 +56,6 @@ def show():
             #Creating a new column for the fastest lap difference
             sessao['Fast Lap Diff'] = sessao['Lap Tm (S)'] - fastest_lap_global
 
-            # =========================
-            # Detect Traffic on Laps
-            # =========================
-
-            # Initialize the column as "No" (clean lap)
-            sessao['Lap Traffic?'] = "No"
-
-            # Traffic threshold in seconds
-            traffic_threshold = 3.0
-
-            # Ensure session is sorted by Lap and Crossing Seconds
-            sessao = sessao.sort_values(['Lap', 'Crossing Seconds'])
-
-            # Loop through each lap
-            for lap in sessao['Lap'].unique():
-                lap_df = sessao[sessao['Lap'] == lap].copy()
-                
-                for idx, row in lap_df.iterrows():
-                    # Cars ahead
-                    cars_ahead = lap_df[lap_df['Crossing Seconds'] < row['Crossing Seconds']]
-                    
-                    if not cars_ahead.empty:
-                        gap = row['Crossing Seconds'] - cars_ahead['Crossing Seconds'].max()
-                        if gap < traffic_threshold:
-                            sessao.at[idx, 'Lap Traffic?'] = "Yes"
-
         
             #Creating another new column to calculate Gap to Leader
             if "Crossing Time" in sessao.columns:
@@ -114,6 +88,32 @@ def show():
             
                 # Gap to leader at that lap
                 sessao["Gap to Leader"] = sessao["Crossing Seconds"] - leader_times
+
+                # =========================
+                # Detect Traffic on Laps
+                # =========================
+
+                # Initialize the column as "No" (clean lap)
+                sessao['Lap Traffic?'] = "No"
+
+                # Traffic threshold in seconds
+                traffic_threshold = 3.0
+
+                # Ensure session is sorted by Lap and Crossing Seconds
+                sessao = sessao.sort_values(['Lap', 'Crossing Seconds'])
+
+                # Loop through each lap
+                for lap in sessao['Lap'].unique():
+                    lap_df = sessao[sessao['Lap'] == lap].copy()
+                    
+                    for idx, row in lap_df.iterrows():
+                        # Cars ahead
+                        cars_ahead = lap_df[lap_df['Crossing Seconds'] < row['Crossing Seconds']]
+                        
+                        if not cars_ahead.empty:
+                            gap = row['Crossing Seconds'] - cars_ahead['Crossing Seconds'].max()
+                            if gap < traffic_threshold:
+                                sessao.at[idx, 'Lap Traffic?'] = "Yes"
 
             # Dictionary relating each driver with each team
             def Teams(x):
@@ -231,9 +231,9 @@ def show():
             analise_carros = ['Driver',"Manufacturer", "Team", "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
             analise_Manufacturer = ['Manufacturer', "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
 
-            # Melhor volta da sessão
+            # Best Lap of the Session
             melhor_volta = sessao["Lap Tm (S)"].min()        
-            # Slider para o usuário escolher a porcentagem do filtro
+            # Slider for the user to change the filter
             percentual = st.slider(
                 "Select lap time filter percentage (%)",
                 min_value=0.0,
