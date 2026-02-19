@@ -784,8 +784,9 @@ def show():
                         fig.update_layout(showlegend=False)
                         st.plotly_chart(fig, use_container_width=True)
 
-                    # Block 2 — por Car_ID (como rótulo) em tabs
+                # Block 2 — por Car_ID (como rótulo) em tabs
                 tabs_box = st.tabs(["Lap", "S1", "S2", "S3", "SPT"])
+
                 colunas_boxplot = {
                     "Lap": "Lap Tm (S)",
                     "S1": "S1 Tm",
@@ -793,13 +794,23 @@ def show():
                     "S3": "S3 Tm",
                     "SPT": "SPT"
                 }
+
                 for i, (tab_nome, coluna) in enumerate(colunas_boxplot.items()):
                     with tabs_box[i]:
                         df_plot = sessao_filtrado.copy()
-                        
-                        # Pega lista de drivers em ordem alfabética
+
+                        # 🔥 Seleção de pilotos
                         drivers_unicos = sorted(df_plot["Driver"].unique())
-                
+
+                        drivers_selecionados = st.multiselect(
+                            "Selecione os pilotos:",
+                            options=drivers_unicos,
+                            default=drivers_unicos,
+                            key=f"box_{coluna}"
+                        )
+
+                        df_plot = df_plot[df_plot["Driver"].isin(drivers_selecionados)]
+
                         fig = px.box(
                             df_plot,
                             x="Driver",
@@ -808,15 +819,15 @@ def show():
                             color="Driver",
                             category_orders={"Driver": drivers_unicos},
                         )
-                
+
                         fig.update_layout(
                             yaxis_title=coluna,
                             title=f"Boxplot - {coluna}",
                             showlegend=False
                         )
-                
+
                         st.plotly_chart(fig, use_container_width=True)
-            
+
             elif option == 'All Laps':
                 alllaps10 = sessao[sessao['Car_ID'] == 10]
                 st.write("Ricardo Zonta")
