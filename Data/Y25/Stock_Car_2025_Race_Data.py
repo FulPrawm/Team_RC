@@ -424,6 +424,7 @@ def show():
                 #Lap Progression
                 with tabs[0]:
                     graf1 = px.line(sessao_filtrado, x="Lap", y= "Lap Tm (S)", color="Driver", title='Lap Time Progression')
+                    graf1.update_layout(showlegend=False)
                     st.plotly_chart(graf1)
             
                 #S1 Progression
