@@ -292,26 +292,23 @@ def show():
 
         
             if option == "Chart":
-                # Ordering by each car
-                st.subheader("Table ordered by Car")
-
-                # Calculate % of clean laps per driver using the full session (not filtered)
-                clean_laps_percent = sessao.groupby('Driver')['Lap Traffic?'].apply(
-                    lambda x: (x == "No").sum() / len(x) * 100
-                ).reset_index().rename(columns={'Lap Traffic?': '% Clean Laps'})
-
                 # Base table with averages of numeric columns from the filtered session
                 tabela1 = (
-                    sessao_filtrado[analise_carros]
+                    sessao_filtrado[analise_carros]  # analise_carros não precisa mudar
                     .groupby(by=['Driver', "Team", "Manufacturer"])
                     .mean(numeric_only=True)
                     .reset_index()
                 )
 
+                # Calculate % of clean laps per driver using the full session
+                clean_laps_percent = sessao.groupby('Driver')['Lap Traffic?'].apply(
+                    lambda x: (x == "No").sum() / len(x) * 100
+                ).reset_index().rename(columns={'Lap Traffic?': '% Clean Laps'})
+
                 # Merge the % clean laps into tabela1
                 tabela1 = tabela1.merge(clean_laps_percent, on='Driver', how='left')
 
-                # Creating a separate style
+                # Now include the new column in the style
                 tabela1_styled = (
                     tabela1
                     .style
@@ -322,7 +319,9 @@ def show():
                     .apply(highlight_manufacturer, subset=['Manufacturer'])
                 )
 
-                st.dataframe(tabela1_styled, hide_index=True, column_config={"": None})
+                st.subheader("Table ordered by Car")
+                st.dataframe(tabela1_styled, hide_index=True)
+
 
                 #Consistency table by each driver/car
                 st.subheader("Consistency by driver (Standard Deviation)")
