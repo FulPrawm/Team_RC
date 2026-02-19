@@ -227,9 +227,9 @@ def show():
 
 
             # Creating a list to be used on the table graphs
-            analise_Team = ["Team", "Manufacturer", "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
-            analise_carros = ['Driver',"Manufacturer", "Team", "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
-            analise_Manufacturer = ['Manufacturer', "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT", "Avg Speed"]
+            analise_Team = ["Team", "Manufacturer", "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT",]
+            analise_carros = ['Driver',"Manufacturer", "Team", "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT"]
+            analise_Manufacturer = ['Manufacturer', "Lap Tm (S)", "S1 Tm","S2 Tm", "S3 Tm", "SPT",]
 
             # Best Lap of the Session
             melhor_volta = sessao["Lap Tm (S)"].min()        
