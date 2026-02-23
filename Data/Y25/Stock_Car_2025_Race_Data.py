@@ -10,12 +10,9 @@ import os
 from sklearn.linear_model import LinearRegression
 import plotly.graph_objects as go
 from pathlib import Path
+
+
 def show():
-    # Ignoring warnings - for aesthetic purposes
-    import warnings
-    warnings.filterwarnings('ignore')
-
-
     #header
     st.image('header.png')
     #title
@@ -25,7 +22,6 @@ def show():
     # Path to where the round folders are
     BASE_DIR = Path(__file__).resolve().parent
     PASTA_ETAPAS = BASE_DIR / "Excel_Files" / "Races"
-    # List of every round (folders inside "resultados")
     etapas_disponiveis = [p for p in os.listdir(PASTA_ETAPAS) if os.path.isdir(os.path.join(PASTA_ETAPAS, p))]
     st.subheader("Round and Session Selector")
     etapas_opcoes = ["Select a round..."] + sorted(etapas_disponiveis)
@@ -42,78 +38,59 @@ def show():
             corrida_escolhida = corrida_arquivo  # manter compatibilidade
             caminho_corrida = os.path.join(pasta_etapa, corrida_arquivo)
         
-            # ✅ EVERYTHING below stays inside this box
-        
+            #EVERYTHING below stays inside this box
             sessao = pd.read_excel(caminho_corrida)
             # Not limiting the number of rows that can be visualized
             pd.set_option('display.max_rows', None)
-
-        
             #Creating a new column for Last Lap Difference
             sessao['Last Lap Diff'] = sessao.groupby('Car_ID')['Lap Tm (S)'].diff()
             #Calculating the fastest time for each driver
             fastest_lap_global = sessao.groupby('Car_ID')['Lap Tm (S)'].transform('min')
             #Creating a new column for the fastest lap difference
             sessao['Fast Lap Diff'] = sessao['Lap Tm (S)'] - fastest_lap_global
-
-        
             #Creating another new column to calculate Gap to Leader
             if "Crossing Time" in sessao.columns:
                 # Convert to seconds
                 sessao["Crossing Seconds"] = pd.to_timedelta(sessao["Crossing Time"]).dt.total_seconds()
-            
                 # Calculate cumulative crossing
                 sessao["Cumulative Crossing"] = sessao.groupby("Car_ID")["Crossing Seconds"].cummax()
-            
                 # Find winner (max laps, then lowest crossing time)
                 laps_per_car = sessao.groupby("Car_ID")["Lap"].max()
                 max_laps = laps_per_car.max()
                 candidates = laps_per_car[laps_per_car == max_laps].index
                 winner = sessao[sessao["Car_ID"].isin(candidates)].groupby("Car_ID")["Cumulative Crossing"].max().idxmin()
-            
                 # Calculate gap to winner
                 winner_times = sessao[sessao["Car_ID"] == winner][["Lap", "Cumulative Crossing"]].rename(
                     columns={"Cumulative Crossing": "Winner Crossing"}
                 )
                 sessao = sessao.merge(winner_times, on="Lap", how="left")
                 sessao["Gap to Winner"] = sessao["Cumulative Crossing"] - sessao["Winner Crossing"]
-
-                # === GAP TO LEADER CREATION ===
+                #Gap to Leader Creation
                 if "Crossing Time" in sessao.columns:
                     # Crossing in seconds
                     sessao["Crossing Seconds"] = pd.to_timedelta(sessao["Crossing Time"]).dt.total_seconds()
-                
                     # Leader reference time at each lap (minimum crossing time of that lap)
                     leader_times = sessao.groupby("Lap")["Crossing Seconds"].transform("min")
-            
                 # Gap to leader at that lap
                 sessao["Gap to Leader"] = sessao["Crossing Seconds"] - leader_times
-
-                # =========================
                 # Detect Traffic on Laps
-                # =========================
-
                 # Initialize the column as "No" (clean lap)
                 sessao['Lap Traffic?'] = "No"
-
                 # Traffic threshold in seconds
                 traffic_threshold = 3.0
-
                 # Ensure session is sorted by Lap and Crossing Seconds
                 sessao = sessao.sort_values(['Lap', 'Crossing Seconds'])
-
                 # Loop through each lap
                 for lap in sessao['Lap'].unique():
                     lap_df = sessao[sessao['Lap'] == lap].copy()
-                    
                     for idx, row in lap_df.iterrows():
                         # Cars ahead
                         cars_ahead = lap_df[lap_df['Crossing Seconds'] < row['Crossing Seconds']]
-                        
                         if not cars_ahead.empty:
                             gap = row['Crossing Seconds'] - cars_ahead['Crossing Seconds'].max()
                             if gap < traffic_threshold:
                                 sessao.at[idx, 'Lap Traffic?'] = "Yes"
+
 
             # Dictionary relating each driver with each team
             def Teams(x):
@@ -139,6 +116,7 @@ def show():
                 return Teams_dict.get(x, None)
             # Creating a new column for what team each driver races
             sessao['Team'] = sessao['Car_ID'].apply(Teams)
+
 
                 # Creating 3 manufacturer groups
             carros_toyota = [301, 4, 30, 111, 38, 81, 5, 7, 9, 21, 72]
@@ -168,6 +146,7 @@ def show():
             } 
             # Creating a new column for what Manufacturer each team races
             sessao['Manufacturer'] = sessao['Team'].map(Team_para_Manufacturer)
+
 
             #Last Dictionary relating each car to their drivers
             drivers_dict = {
@@ -292,26 +271,35 @@ def show():
 
         
             if option == "Chart":
-                
-                st.subheader("Table ordered by Car")
+                # Base table with averages of numeric columns from the filtered session
                 tabela1 = (
-                    sessao_filtrado[analise_carros]  # <-- seleciona só as colunas que você quer
+                    sessao_filtrado[analise_carros]  # analise_carros não precisa mudar
                     .groupby(by=['Driver', "Team", "Manufacturer"])
                     .mean(numeric_only=True)
                     .reset_index()
                 )
 
-                # Optional: add % clean laps if you added it
-                if 'Lap Traffic?' in sessao_filtrado.columns:
-                    clean_laps_pct = (
-                        sessao_filtrado.groupby(['Driver', "Team", "Manufacturer"])
-                        .apply(lambda df: (df['Lap Traffic?'] == "No").mean() * 100)
-                        .reset_index(name="% Clean Laps")
-                    )
-                    tabela1 = tabela1.merge(clean_laps_pct, on=['Driver', "Team", "Manufacturer"])
+                # Calculate % of clean laps per driver using the full session
+                clean_laps_percent = sessao.groupby('Driver')['Lap Traffic?'].apply(
+                    lambda x: (x == "No").sum() / len(x) * 100
+                ).reset_index().rename(columns={'Lap Traffic?': '% Clean Laps'})
 
+                # Merge the % clean laps into tabela1
+                tabela1 = tabela1.merge(clean_laps_percent, on='Driver', how='left')
 
+                # Now include the new column in the style
+                tabela1_styled = (
+                    tabela1
+                    .style
+                    .background_gradient(cmap='RdYlGn_r')
+                    .format(precision=2)
+                    .apply(highlight_driver, subset=['Driver'])
+                    .apply(highlight_team, subset=['Team'])
+                    .apply(highlight_manufacturer, subset=['Manufacturer'])
+                )
 
+                st.subheader("Table ordered by Car")
+                st.dataframe(tabela1_styled, hide_index=True)
 
                 #Consistency table by each driver/car
                 st.subheader("Consistency by driver (Standard Deviation)")
