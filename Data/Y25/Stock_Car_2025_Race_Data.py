@@ -389,6 +389,29 @@ def show():
                 st.dataframe(manufacturer_table, hide_index=True)
 
 
+                # RACE LAP TIME TABLE (HEATMAP PER DRIVER)
+                st.subheader("Race Lap Time Table")
+                #Create pivot table (Driver x Lap)
+                lap_table = (
+                    sessao_filtrado
+                    .pivot(index="Driver", columns="Lap", values="Lap Tm (S)")
+                )
+                #Sort laps in ascending order
+                lap_table = lap_table.sort_index(axis=1)
+                #Rename columns to improve visualization (Lap 1, Lap 2, ...)
+                lap_table.columns = [f"Lap {int(col)}" for col in lap_table.columns]
+                #Apply background gradient per row (each driver independently)
+                #axis=1 means the color scale is calculated horizontally per driver
+                lap_table_styled = (
+                    lap_table
+                    .style
+                    .background_gradient(cmap="RdYlGn_r", axis=1)
+                    .format(precision=2)
+                )
+                #Display table in Streamlit
+                st.dataframe(lap_table_styled, use_container_width=True)
+
+
                 # === CLASSIFICATION TABLE (Gap to Leader) - single table with Car & Gap columns ===
                 if "Gap to Leader" in sessao.columns:
                     # Determine position at each lap
