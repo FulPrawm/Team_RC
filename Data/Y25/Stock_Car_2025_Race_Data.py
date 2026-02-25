@@ -389,30 +389,31 @@ def show():
                 st.dataframe(manufacturer_table, hide_index=True)
 
 
-                # RACE LAP TIME TABLE (HEATMAP PER DRIVER)
+                #RACE LAP TIME TABLE (FILTERED LAPS ONLY)
                 st.subheader("Race Lap Time Table")
-                #Create pivot table (Driver x Lap)
+                # 1️⃣ Create pivot table (Driver x Lap) using filtered session
                 lap_table = (
                     sessao_filtrado
                     .pivot(index="Driver", columns="Lap", values="Lap Tm (S)")
                 )
+                #Remove laps that are not present for ALL drivers
+                # axis=1 → remove columns (laps)
+                lap_table = lap_table.dropna(axis=1)
                 #Sort laps in ascending order
                 lap_table = lap_table.sort_index(axis=1)
-                #Rename columns to improve visualization (Lap 1, Lap 2, ...)
+                #Rename columns for better visualization
                 lap_table.columns = [f"Lap {int(col)}" for col in lap_table.columns]
-                #Apply background gradient per row (each driver independently)
-                #axis=1 means the color scale is calculated horizontally per driver
+                #Apply background gradient per driver (row-wise)
                 lap_table_styled = (
                     lap_table
                     .style
                     .background_gradient(cmap="RdYlGn_r", axis=1)
                     .format(precision=2)
                 )
-                #Display table in Streamlit
                 st.dataframe(lap_table_styled, use_container_width=True)
 
 
-                # === CLASSIFICATION TABLE (Gap to Leader) - single table with Car & Gap columns ===
+                #CLASSIFICATION TABLE (Gap to Leader)
                 if "Gap to Leader" in sessao.columns:
                     # Determine position at each lap
                     sessao["Position"] = sessao.groupby("Lap")["Gap to Leader"].rank(method="first").astype(int)
