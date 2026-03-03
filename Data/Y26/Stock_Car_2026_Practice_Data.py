@@ -77,17 +77,17 @@ def show():
                     293: 'Car Racing', 301: 'Car Racing',
                     85: 'Cavaleiro Sports', 90: 'Cavaleiro Sports',
                     81: 'Crown Racing', 95: 'Crown Racing',
-                    27: 'Eurofarma RC', 73: 'Eurofarma RC',
-                    27: 'Full Time GR', 73: 'Full Time GR',
-                    27: 'Mercado Livre Racing', 73: 'Mercado Livre Racing',
-                    27: 'RTR Racing Team', 73: 'RTR Racing Team',
-                    27: 'Scuderia Bandeiras', 73: 'Scuderia Bandeiras',
-                    27: 'Scuderia Bandeiras Sports', 73: 'Scuderia Bandeiras Sports',
-                    27: 'Scudeira Chiarelli', 73: 'Scuderia Chiarelli',
-                    27: 'Sterling Racing', 73: 'Sterling Racing',
-                    27: 'Team RC', 73: 'Team RC',
-                    27: 'TMG Racing', 73: 'TMG Racing',
-                    27: 'Mercado Livre Racing Team', 27: 'RTR Sports Team' 
+                    1: 'Eurofarma RC', 11: 'Eurofarma RC',
+                    10: 'Full Time GR', 80: 'Full Time GR',
+                    21: 'Mercado Livre Racing', 30: 'Mercado Livre Racing',
+                    97: 'RTR Racing Team', 666: 'RTR Racing Team',
+                    8: 'Scuderia Bandeiras', 33: 'Scuderia Bandeiras',
+                    51: 'Scuderia Bandeiras Sports', 111: 'Scuderia Bandeiras Sports',
+                    0: 'Scudeira Chiarelli', 22: 'Scuderia Chiarelli',
+                    121: 'Sterling Racing', 444: 'Sterling Racing',
+                    7: 'Team RC', 38: 'Team RC',
+                    4: 'TMG Racing', 39: 'TMG Racing',
+                    6: 'Mercado Livre Racing Team', 24: 'RTR Sports Team' 
                 }
                 return Teams_dict.get(x, None)
             # Creating a new column called "Team" and applying the function "Teams"
@@ -95,37 +95,25 @@ def show():
 
             # Dictionary relating each team with each manufacturer
             team_to_manufacturer = {
-            "Eurofarma RC": "Mitsubishi", "Blau Motorsport": "Mitsubishi",
-            "Car Racing Sterling": "Toyota", "Ipiranga Racing": "Toyota",
-            "Amattheis Vogel": "Chevrolet", "RCM Motorsport": "Mitsubishi",
-            "TMG Racing": "Chevrolet", "Crown Racing": "Toyota",
-            "Cavaleiro Sports": "Chevrolet", "FT Cavaleiro": "Toyota",
-            "Scuderia Bandeiras": "Chevrolet", "Scuderia Bandeiras Sports": "Mitsubishi",
-            "Car Racing KTF": "Mitsubishi", "FT Gazoo Racing": "Toyota",
-            "Scuderia Chiarelli": "Chevrolet", "A. Mattheis Motorsport": "Chevrolet"
+            "A. Mattheis TMG": "Toyota", "Car Racing": "Toyota", "Crown Racing": "Toyota", "Full Time GR": "Toyota",
+            "Mercado Livre Racing": "Toyota", "Mercado Livre Racing Team": "Toyota", "RTR Racing Team": "Toyota",
+            "A. Mattheis Vogel": "Chevrolet", "Cavaleiro Sports": "Chevrolet", "Scuderia Bandeiras": "Chevrolet",
+            "Scuderia Chiarelli": "Chevrolet", "TMG Racing": "Chevrolet",
+            "Blau Motorsport": "Mitsubishi", "Eurofarma RC": "Mitsubishi", "RTR Sports Team": "Mitsubishi",
+            "Scuderia Bandeiras Sports": "Mitsubishi", "Sterling Racing": "Mitsubishi", "Team RC": "Mitsubishi"
             } 
             # Creating a new column for what Manufacturer each team races
             sessao['Manufacturer'] = sessao['Team'].map(team_to_manufacturer)
         
             #Last Dictionary relating each car to their drivers
             drivers_dict = {
-            18: 'Allam Khodair', 29: 'Daniel Serra',
-            38: 'Zezinho Muggiati', 301: 'Rafael Reis',
-            21: 'Thiago Camilo', 30: 'Cesar Ramos',
-            12: 'Lucas Foresti', 83: 'Gabriel Casagrande',
-            10: 'Ricardo Zonta', 44: 'Bruno Baptista',
-            8: 'Rafael Suzuki', 19: 'Felipe Massa', 70: 'Rafael Suzuki',
-            11: 'Gaetano Di Mauro', 88: 'Felipe Fraga',
-            4: 'Julio Campos', 81: 'Arthur Leist',
-            85: 'Guilherme Salas', 90: 'Ricardo Mauricio',
-            5: 'Denis Navarro', 111: 'Rubens Barrichello',
-            73: 'Enzo Elias', 51: 'Átila Abreu',
-            444: 'Vicente Orige', 33: 'Nelsinho Piquet',
-            121: 'Felipe Baptista', 101: 'Gianluca Petecof',
-            7: 'JP Oliveira', 9: 'Arthur Gama',
-            95: 'Lucas Kohl', 0: 'Cacá Bueno',
-            6: 'Hélio Castroneves', 72: 'Antonella Bassani',
-            31: 'Marcos Regadas', 77: 'Christian Fittipaldi'
+            0: 'Cacá Bueno', 1: 'Felipe Fraga',
+            4: 'Julio Campos', 6: 'Hélio Castroneves',
+            7: 'Sérgio Sette Câmara', 8: 'Rafael Suzuki',
+            10: 'Ricardo Zonta', 11: 'Gaetano Di Mauro',
+            12: 'Lucas Foresti', 18: 'Allam Khodair',
+            19: 'Felipe Massa', 21: 'Thiago Camilo',
+            22: 'André Moraes',  24: 'Pipe Bartz' 
             }
             sessao['Driver'] = sessao['Car_ID'].map(drivers_dict)
 
