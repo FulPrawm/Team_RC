@@ -113,18 +113,26 @@ def show():
             10: 'Ricardo Zonta', 11: 'Gaetano Di Mauro',
             12: 'Lucas Foresti', 18: 'Allam Khodair',
             19: 'Felipe Massa', 21: 'Thiago Camilo',
-            22: 'André Moraes',  24: 'Pipe Bartz' 
+            22: 'André Moraes',  24: 'Pipe Bartz',
+            27: 'Renan Guerra', 29: 'Daniel Serra',
+            30: 'Cesar Ramos', 33: 'Nelson Piquet Jr', 
+            38: 'Zezinho Muggiatti', 51: 'Átila Abreu', 
+            73: 'Enzo Elias', 80: 'Alfredinho Ibiapina',
+            81: 'Arthur Leist', 83: 'Gabriel Casagrande', 
+            85: 'Guilherme Salas', 90: 'Ricardo Mauricio', 
+            95: 'Lucas Kohl', 97: 'Bruna Tomaselli', 
+            111: 'Rubens Barrichello', 121: 'Felipe Baptista',
+            293: 'Léo Reis', 301: 'Rafa Reis', 
+            444: 'Vicente Orige', 666: 'Tatiana Calderón'
             }
             sessao['Driver'] = sessao['Car_ID'].map(drivers_dict)
 
 
             # Personalized colors with text contrast
             colors_driver = {
-                "Ricardo Zonta": ("red", "white"),
                 "Gaetano Di Mauro": ("lightblue", "black"),
-                "Bruno Baptista": ("gray", "white"),
+                "Sérgio Sette Câmara": ("gray", "white"),
                 "Felipe Fraga": ("yellow", "black"),
-                "Marcos Regadas": ("gray", "white"),
                 "Zezinho Muggiati": ("#0057B8", "white")
             }
             colors_team = {
@@ -302,11 +310,9 @@ def show():
                 
                 # Dicionário de cores — agora por Driver
                 cores_personalizadas = {
-                    "Ricardo Zonta": "red",
                     "Gaetano Di Mauro": "blue",
-                    "Bruno Baptista": "gray",
+                    "Sérgio Sette Câmara": "gray",
                     "Felipe Fraga": "yellow",
-                    "Marcos Regadas": "gray",
                     "Zezinho Muggiati": "#0057B8"
                 }
                 
@@ -413,7 +419,7 @@ def show():
                 )
                 
                 # Criar dicionário de cores
-                driver_colors = {10: "red", 11: "blue", 44: "gray", 88: "yellow", 31:"gray", 38:"#0057B8"}
+                driver_colors = {11: "blue", 7: "gray", 88: "yellow", 38:"#0057B8"}
                 color_map = {}
                 
                 for driver in df_radar["Driver"].unique():
@@ -498,25 +504,17 @@ def show():
             
             elif option == 'All Laps':
             
-                alllaps10 = sessao[sessao['Car_ID'] == 10]
-                st.write("Ricardo Zonta")
-                st.dataframe(alllaps10)
-            
                 alllaps11 = sessao[sessao['Car_ID'] == 11]
                 st.write("Gaetano Di Mauro")
                 st.dataframe(alllaps11)
             
-                alllaps44 = sessao[sessao['Car_ID'] == 44]
-                st.write("Bruno Baptista")
+                alllaps44 = sessao[sessao['Car_ID'] == 7]
+                st.write("Sérgio Sette Câmara")
                 st.dataframe(alllaps44)
             
                 alllaps88 = sessao[sessao['Car_ID'] == 88]
                 st.write("Felipe Fraga")
                 st.dataframe(alllaps88)
-
-                alllaps31 = sessao[sessao['Car_ID'] == 31]
-                st.write("Marcos Regadas")
-                st.dataframe(alllaps31)
 
                 alllaps38 = sessao[sessao['Car_ID'] == 38]
                 st.write("Zezinho Mugiatti")
