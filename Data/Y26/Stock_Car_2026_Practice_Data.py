@@ -116,7 +116,7 @@ def show():
             22: 'André Moraes',  24: 'Pipe Bartz',
             27: 'Renan Guerra', 29: 'Daniel Serra',
             30: 'Cesar Ramos', 33: 'Nelson Piquet Jr', 
-            38: 'Zezinho Muggiatti', 51: 'Átila Abreu', 
+            38: 'Zezinho Muggiati', 51: 'Átila Abreu', 
             73: 'Enzo Elias', 80: 'Alfredinho Ibiapina',
             81: 'Arthur Leist', 83: 'Gabriel Casagrande', 
             85: 'Guilherme Salas', 90: 'Ricardo Mauricio', 
