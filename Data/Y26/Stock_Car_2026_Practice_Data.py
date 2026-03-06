@@ -137,7 +137,7 @@ def show():
             }
             colors_team = {
                 "Eurofarma RC": ("yellow", "black"),
-                "RCM Motorsport": ("gray", "white")
+                "Team RC": ("gray", "white")
             }
             colors_manufacturer = {
                 "Mitsubishi": ("red", "white")
