@@ -803,30 +803,30 @@ def show():
                         st.plotly_chart(fig, use_container_width=True)
                         
                 st.subheader("Fast Lap vs Previous Lap")
-                    # --- Find fastest lap for each driver (using full session) ---
-                    fastest_idx = sessao.groupby("Driver")["Lap Tm (S)"].idxmin()
-                    fastest_laps = sessao.loc[fastest_idx, ["Driver", "Lap", "Lap Tm (S)"]]
+                # --- Find fastest lap for each driver (using full session) ---
+                fastest_idx = sessao.groupby("Driver")["Lap Tm (S)"].idxmin()
+                fastest_laps = sessao.loc[fastest_idx, ["Driver", "Lap", "Lap Tm (S)"]]
 
-                    # --- Find previous lap ---
-                    prev_laps = []
+                # --- Find previous lap ---
+                prev_laps = []
 
-                    for _, row in fastest_laps.iterrows():
-                        driver = row["Driver"]
-                        lap = row["Lap"]
+                for _, row in fastest_laps.iterrows():
+                    driver = row["Driver"]
+                    lap = row["Lap"]
 
-                        prev_lap = sessao[
-                            (sessao["Driver"] == driver) &
-                            (sessao["Lap"] == lap - 1)
-                        ]
+                    prev_lap = sessao[
+                        (sessao["Driver"] == driver) &
+                        (sessao["Lap"] == lap - 1)
+                    ]
 
-                        if not prev_lap.empty:
-                            prev_time = prev_lap["Lap Tm (S)"].values[0]
+                    if not prev_lap.empty:
+                        prev_time = prev_lap["Lap Tm (S)"].values[0]
 
-                            prev_laps.append({
-                                "Driver": driver,
-                                "Fast Lap": row["Lap Tm (S)"],
-                                "Previous Lap": prev_time
-                            })
+                        prev_laps.append({
+                            "Driver": driver,
+                            "Fast Lap": row["Lap Tm (S)"],
+                            "Previous Lap": prev_time
+                        })
 
                     scatter_df = pd.DataFrame(prev_laps)
 
