@@ -678,11 +678,9 @@ def show():
             
                 # Dicionário de cores dos seus carros
                 cores_personalizadas = {
-                    "Ricardo Zonta": "red",
                     "Gaetano Di Mauro": "blue",
-                    "Bruno Baptista": "gray",
+                    "Sérgio Sette Câmara": "gray",
                     "Felipe Fraga": "yellow",
-                    "Marcos Regadas": "gray",
                     "Zezinho Muggiati": "#0057B8"
                 }
             
