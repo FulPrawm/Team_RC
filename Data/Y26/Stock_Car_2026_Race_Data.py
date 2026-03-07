@@ -95,32 +95,32 @@ def show():
             # Dictionary relating each driver with each team
             def Teams(x):
                 Teams_dict = {
+                    27: 'A. Mattheis TMG', 73: 'A. Mattheis TMG',
+                    12: 'A. Mattheis Vogel', 83: 'A. Mattheis Vogel',
                     18: 'Blau Motorsport', 29: 'Blau Motorsport',
-                    38: 'Car Racing Sterling', 301: 'Car Racing Sterling',
-                    21: 'Ipiranga Racing', 30: 'Ipiranga Racing',
-                    12: 'Amattheis Vogel', 83: 'Amattheis Vogel',
-                    10: 'RCM Motorsport', 44: 'RCM Motorsport',
-                    8: 'TMG Racing', 19: 'TMG Racing', 70: 'TMG Racing',
-                    11: 'Eurofarma RC', 88: 'Eurofarma RC',
-                    4: 'Crown Racing', 81: 'Crown Racing',
+                    293: 'Car Racing', 301: 'Car Racing',
                     85: 'Cavaleiro Sports', 90: 'Cavaleiro Sports',
-                    5: 'FT Cavaleiro', 111: 'FT Cavaleiro',
-                    73: 'Scuderia Bandeiras', 51: 'Scuderia Bandeiras',
-                    444: 'Scuderia Bandeiras Sports', 33: 'Scuderia Bandeiras Sports',
-                    121: 'Car Racing KTF', 101: 'Car Racing KTF',
-                    7: 'FT Gazoo Racing', 9: 'FT Gazoo Racing',
-                    95: 'Scuderia Chiarelli', 0: 'Scuderia Chiarelli',
-                    6: 'A. Mattheis Motorsport', 72: 'FT Gazoo Racing',
-                    31: 'RCM Motorsport'
-                        }
+                    81: 'Crown Racing', 95: 'Crown Racing',
+                    1: 'Eurofarma RC', 11: 'Eurofarma RC',
+                    10: 'Full Time GR', 80: 'Full Time GR',
+                    21: 'Mercado Livre Racing', 30: 'Mercado Livre Racing',
+                    97: 'RTR Racing Team', 25: 'RTR Racing Team',
+                    8: 'Scuderia Bandeiras', 33: 'Scuderia Bandeiras',
+                    51: 'Scuderia Bandeiras Sports', 111: 'Scuderia Bandeiras Sports',
+                    0: 'Scudeira Chiarelli', 22: 'Scuderia Chiarelli',
+                    121: 'Sterling Racing', 444: 'Sterling Racing',
+                    7: 'Team RC', 38: 'Team RC',
+                    4: 'TMG Racing', 39: 'TMG Racing',
+                    6: 'Mercado Livre Racing Team', 24: 'RTR Sports Team' 
+                }
                 return Teams_dict.get(x, None)
             # Creating a new column for what team each driver races
             sessao['Team'] = sessao['Car_ID'].apply(Teams)
 
 
                 # Creating 3 manufacturer groups
-            carros_toyota = [301, 4, 30, 111, 38, 81, 5, 7, 9, 21, 72]
-            carros_mitsubishi = [101, 444, 44, 33, 29, 11, 121, 18, 10, 88, 31]
+            carros_toyota = [6, 10, 21, 27, 30, 73, 80, 81, 95, 97, 293, 301, 25]
+            carros_mitsubishi = [1, 7, 11, 18, 24, 29, 38, 51, 111, 121, 444]
             # Function that verifies if the car is Toyota, if not its Mitsubishi, and if its not either, its Chevrolet
             def brand(x):
                 if x in carros_toyota:
@@ -135,14 +135,12 @@ def show():
     
             # Dictionary relating each team with each manufacturer
             Team_para_Manufacturer = {
-            "Eurofarma RC": "Mitsubishi", "Blau Motorsport": "Mitsubishi",
-            "Car Racing Sterling": "Toyota", "Ipiranga Racing": "Toyota",
-            "Amattheis Vogel": "Chevrolet", "RCM Motorsport": "Mitsubishi",
-            "TMG Racing": "Chevrolet", "Crown Racing": "Toyota",
-            "Cavaleiro Sports": "Chevrolet", "FT Cavaleiro": "Toyota",
-            "Scuderia Bandeiras": "Chevrolet", "Scuderia Bandeiras Sports": "Mitsubishi",
-            "Car Racing KTF": "Mitsubishi", "FT Gazoo Racing": "Toyota",
-            "Scuderia Chiarelli": "Chevrolet", "A. Mattheis Motorsport": "Chevrolet"
+            "A. Mattheis TMG": "Toyota", "Car Racing": "Toyota", "Crown Racing": "Toyota", "Full Time GR": "Toyota",
+            "Mercado Livre Racing": "Toyota", "Mercado Livre Racing Team": "Toyota", "RTR Racing Team": "Toyota",
+            "A. Mattheis Vogel": "Chevrolet", "Cavaleiro Sports": "Chevrolet", "Scuderia Bandeiras": "Chevrolet",
+            "Scuderia Chiarelli": "Chevrolet", "TMG Racing": "Chevrolet",
+            "Blau Motorsport": "Mitsubishi", "Eurofarma RC": "Mitsubishi", "RTR Sports Team": "Mitsubishi",
+            "Scuderia Bandeiras Sports": "Mitsubishi", "Sterling Racing": "Mitsubishi", "Team RC": "Mitsubishi"
             } 
             # Creating a new column for what Manufacturer each team races
             sessao['Manufacturer'] = sessao['Team'].map(Team_para_Manufacturer)
