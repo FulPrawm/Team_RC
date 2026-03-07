@@ -148,34 +148,32 @@ def show():
 
             #Last Dictionary relating each car to their drivers
             drivers_dict = {
-            18: 'Allam Khodair', 29: 'Daniel Serra',
-            38: 'Zezinho Muggiati', 301: 'Rafael Reis',
-            21: 'Thiago Camilo', 30: 'Cesar Ramos',
-            12: 'Lucas Foresti', 83: 'Gabriel Casagrande',
-            10: 'Ricardo Zonta', 44: 'Bruno Baptista',
-            8: 'Rafael Suzuki', 19: 'Felipe Massa', 70: 'Rafael Suzuki',
-            11: 'Gaetano Di Mauro', 88: 'Felipe Fraga',
-            4: 'Julio Campos', 81: 'Arthur Leist',
-            85: 'Guilherme Salas', 90: 'Ricardo Mauricio',
-            5: 'Denis Navarro', 111: 'Rubens Barrichello',
-            73: 'Enzo Elias', 51: 'Átila Abreu',
-            444: 'Vicente Orige', 33: 'Nelsinho Piquet',
-            121: 'Felipe Baptista', 101: 'Gianluca Petecof',
-            7: 'JP Oliveira', 9: 'Arthur Gama',
-            95: 'Lucas Kohl', 0: 'Cacá Bueno',
-            6: 'Hélio Castroneves', 72: 'Antonella Bassani',
-            31: 'Marcos Regadas'
+            0: 'Cacá Bueno', 1: 'Felipe Fraga',
+            4: 'Julio Campos', 6: 'Hélio Castroneves',
+            7: 'Sérgio Sette Câmara', 8: 'Rafael Suzuki',
+            10: 'Ricardo Zonta', 11: 'Gaetano Di Mauro',
+            12: 'Lucas Foresti', 18: 'Allam Khodair',
+            19: 'Felipe Massa', 21: 'Thiago Camilo',
+            22: 'André Moraes',  24: 'Pipe Bartz',
+            27: 'Renan Guerra', 29: 'Daniel Serra',
+            30: 'Cesar Ramos', 33: 'Nelson Piquet Jr', 
+            38: 'Zezinho Muggiati', 51: 'Átila Abreu', 
+            73: 'Enzo Elias', 80: 'Alfredinho Ibiapina',
+            81: 'Arthur Leist', 83: 'Gabriel Casagrande', 
+            85: 'Guilherme Salas', 90: 'Ricardo Mauricio', 
+            95: 'Lucas Kohl', 97: 'Bruna Tomaselli', 
+            111: 'Rubens Barrichello', 121: 'Felipe Baptista',
+            293: 'Léo Reis', 301: 'Rafa Reis', 
+            444: 'Vicente Orige', 25: 'Tatiana Calderón'
             }
             sessao['Driver'] = sessao['Car_ID'].map(drivers_dict)
 
 
             # Personalized colors with text contrast
             colors_driver = {
-                "Ricardo Zonta": ("red", "white"),
                 "Gaetano Di Mauro": ("lightblue", "black"),
-                "Bruno Baptista": ("gray", "white"),
+                "Sérgio Sette Câmara": ("gray", "white"),
                 "Felipe Fraga": ("yellow", "black"),
-                "Marcos Regadas": ("gray", "white"),
                 "Zezinho Muggiati": ("#0057B8", "white")
             }
             colors_team = {
