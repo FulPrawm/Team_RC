@@ -54,7 +54,7 @@ def show():
 
 
             # Creating 3 manufacturer groups
-            carros_toyota = [6, 10, 21, 27, 30, 73, 80, 81, 95, 97, 293, 301, 666]
+            carros_toyota = [6, 10, 21, 27, 30, 73, 80, 81, 95, 97, 293, 301, 25]
             carros_mitsubishi = [1, 7, 11, 18, 24, 29, 38, 51, 111, 121, 444]
             # Function that verifies if the car is Toyota, if not its Mitsubishi, and if its not either, its Chevrolet
             def brand(x):
@@ -80,7 +80,7 @@ def show():
                     1: 'Eurofarma RC', 11: 'Eurofarma RC',
                     10: 'Full Time GR', 80: 'Full Time GR',
                     21: 'Mercado Livre Racing', 30: 'Mercado Livre Racing',
-                    97: 'RTR Racing Team', 666: 'RTR Racing Team',
+                    97: 'RTR Racing Team', 25: 'RTR Racing Team',
                     8: 'Scuderia Bandeiras', 33: 'Scuderia Bandeiras',
                     51: 'Scuderia Bandeiras Sports', 111: 'Scuderia Bandeiras Sports',
                     0: 'Scudeira Chiarelli', 22: 'Scuderia Chiarelli',
@@ -123,7 +123,7 @@ def show():
             95: 'Lucas Kohl', 97: 'Bruna Tomaselli', 
             111: 'Rubens Barrichello', 121: 'Felipe Baptista',
             293: 'Léo Reis', 301: 'Rafa Reis', 
-            444: 'Vicente Orige', 666: 'Tatiana Calderón'
+            444: 'Vicente Orige', 25: 'Tatiana Calderón'
             }
             sessao['Driver'] = sessao['Car_ID'].map(drivers_dict)
 
@@ -395,7 +395,7 @@ def show():
                 st.plotly_chart(fig_heatmap)
                 
                 # ---------- Radar Chart with Absolute Times Normalized ----------
-                selected_cars = [10, 11, 44, 88, 31, 38]
+                selected_cars = [1, 7, 11, 38]
                 selected_drivers = sessao[sessao["Car_ID"].isin(selected_cars)]["Driver"].unique().tolist()
                 drivers_radar = list(set(selected_drivers) | {fastest_driver})
                 
@@ -419,7 +419,7 @@ def show():
                 )
                 
                 # Criar dicionário de cores
-                driver_colors = {11: "blue", 7: "gray", 88: "yellow", 38:"#0057B8"}
+                driver_colors = {11: "blue", 7: "gray", 1: "yellow", 38:"#0057B8"}
                 color_map = {}
                 
                 for driver in df_radar["Driver"].unique():
@@ -512,7 +512,7 @@ def show():
                 st.write("Sérgio Sette Câmara")
                 st.dataframe(alllaps44)
             
-                alllaps88 = sessao[sessao['Car_ID'] == 88]
+                alllaps88 = sessao[sessao['Car_ID'] == 1]
                 st.write("Felipe Fraga")
                 st.dataframe(alllaps88)
 
