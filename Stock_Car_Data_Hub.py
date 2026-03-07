@@ -4,6 +4,9 @@ from Data.Y25.Stock_Car_2025_Practice_Data import show as show_practice_2025
 from Data.Y26.Stock_Car_2026_Race_Data import show as show_race_2026
 from Data.Y26.Stock_Car_2026_Practice_Data import show as show_practice_2026
 
+st.write(os.listdir("Data"))
+st.write(os.listdir("Data/Y25"))
+
 st.title("Race Analysis System")
 
 # ======================================
