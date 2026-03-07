@@ -178,7 +178,7 @@ def show():
             }
             colors_team = {
                 "Eurofarma RC": ("yellow", "black"),
-                "RCM Motorsport": ("gray", "white")
+                "Team RC": ("gray", "white")
             }
             colors_manufacturer = {
                 "Mitsubishi": ("red", "white")
@@ -716,21 +716,18 @@ def show():
                 # Percentual difference with tendency
                 st.header("Percentual difference to the best lap for each driver from this team")
             
-                carros_desejados = [10, 11, 44, 88, 31, 38]
+                carros_desejados = [1, 7, 11, 38]
                 nomes_carros = {
-                    10: "Ricardo Zonta",
                     11: "Gaetano Di Mauro",
-                    44: "Bruno Baptista",
-                    88: "Felipe Fraga",
-                    31: "Marcos Regadas",
+                    7: "Sérgio Sette Câmara",
+                    1: "Felipe Fraga",
                     38: "Zezinho Muggiati"
                 }
             
                 cores_carros = {
-                    10: "red",
                     11: "blue",
-                    44: "gray",
-                    88: "yellow",
+                    7: "gray",
+                    1: "yellow",
                     31: "gray",
                     38: "#0057B8"
                 }
@@ -850,15 +847,13 @@ def show():
 
             elif option == 'All Laps':
                 # Lista de Car_IDs que você quer exibir
-                carros_desejados = [10, 11, 44, 88, 31, 38]
+                carros_desejados = [1, 7, 11, 38]
 
                 # Dicionário para nomes dos drivers
                 nomes_carros = {
-                    10: "Ricardo Zonta",
                     11: "Gaetano Di Mauro",
-                    44: "Bruno Baptista",
-                    88: "Felipe Fraga",
-                    31: "Marcos Regadas",
+                    7: "Bruno Baptista",
+                    1: "Felipe Fraga",
                     38: "Zezinho Muggiati"
                 }
 
