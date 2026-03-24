@@ -644,7 +644,7 @@ def show():
                 
                     # média de todas as voltas por equipe
                     avg_per_team = (
-                        sessao_eff.groupby("Team", as_index=False)[["Avg Speed", "SPT"]].mean()
+                        sessao_eff.groupby("Team", as_index=False)[["Lap Tm (S)", "SPT"]].mean()
                     )
                 
                     # pegar um Car_ID representativo para o hover
