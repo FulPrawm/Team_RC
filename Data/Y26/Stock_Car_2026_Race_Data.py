@@ -568,13 +568,13 @@ def show():
                 # --- FUNÇÃO PARA PLOTAR O GRÁFICO (reutilizável) ---
                 def plot_efficiency(df, title_suffix=""):
                     # Define average lines
-                    media_avg_speed = df["Avg Speed"].mean()
+                    media_avg_time = df["Lap Tm (S)"].mean()
                     media_spt = df["SPT"].mean()
                 
                     # Graph
                     fig = px.scatter(
                         df, 
-                        x='Avg Speed', 
+                        x='Lap Tm (S)', 
                         y='SPT', 
                         color='Team', 
                         symbol='Team',
@@ -586,10 +586,10 @@ def show():
                 
                     # Vertical cut line
                     fig.add_vline(
-                        x=media_avg_speed,
+                        x=media_avg_time,
                         line_dash="dash",
                         line_color="white",
-                        annotation_text="Average Avg Speed",
+                        annotation_text="Average Lap Tm",
                         annotation_position="bottom left",
                         annotation_font_color="white"
                     )
