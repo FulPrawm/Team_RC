@@ -627,10 +627,10 @@ def show():
                     st.plotly_chart(fig_fastest, use_container_width=True)
                 
                     st.markdown("""
-                    - **↗ Upper Right** → High overall efficiency (straight + turn)
-                    - **↖ Upper Left** → Low downforce (good straight, bad cornering)
-                    - **↘ Lower Right** → High downforce (good cornering, bad straight)
-                    - **↙ Lower Left** → Lower Left Quadrant: Low efficiency (neither)
+                    - **↖ Upper Left** → High overall efficiency (straight + turn)
+                    - **↗ Upper Right** → Low downforce (good straight, bad cornering)
+                    - **↙ Lower Left** → High downforce (good cornering, bad straight)
+                    - **↘ Lower Right** → Lower Left Quadrant: Low efficiency (neither)
                     """)
                 
                 
