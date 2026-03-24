@@ -461,14 +461,14 @@ def show():
                 
                 st.plotly_chart(fig_radar)
 
-                st.subheader("Fast Lap vs Previous Lap")
-                # --- Find fastest lap for each driver (using full session) ---
+                st.subheader("Fast Lap vs Previous Lap (Unfiltered)")
+
+                # --- Fastest lap for each driver (unfiltered) ---
                 fastest_idx = sessao.groupby("Driver")["Lap Tm (S)"].idxmin()
                 fastest_laps = sessao.loc[fastest_idx, ["Driver", "Lap", "Lap Tm (S)"]]
 
-                # --- Find previous lap ---
+                # --- Previous lap ---
                 prev_laps = []
-
                 for _, row in fastest_laps.iterrows():
                     driver = row["Driver"]
                     lap = row["Lap"]
@@ -487,31 +487,29 @@ def show():
                             "Previous Lap": prev_time
                         })
 
-                    scatter_df = pd.DataFrame(prev_laps)
+                scatter_df = pd.DataFrame(prev_laps)
 
-                    # --- Scatter Plot ---
-                    fig_scatter = px.scatter(
-                        scatter_df,
-                        x="Fast Lap",
-                        y="Previous Lap",
-                        color="Driver",
-                        title="Fastest Lap vs Previous Lap"
-                    )
+                # --- Scatter Plot ---
+                fig_scatter = px.scatter(
+                    scatter_df,
+                    x="Fast Lap",
+                    y="Previous Lap",
+                    color="Driver",
+                    title="Fastest Lap vs Previous Lap (Unfiltered)"
+                )
 
-                    fig_scatter.update_traces(marker_size=12)
+                # Optional: add diagonal reference line
+                min_val = min(scatter_df["Fast Lap"].min(), scatter_df["Previous Lap"].min())
+                max_val = max(scatter_df["Fast Lap"].max(), scatter_df["Previous Lap"].max())
+                fig_scatter.add_shape(
+                    type="line",
+                    x0=min_val, y0=min_val,
+                    x1=max_val, y1=max_val,
+                    line=dict(dash="dash", color="white")
+                )
 
-                    # Add diagonal reference line
-                    min_val = min(scatter_df["Fast Lap"].min(), scatter_df["Previous Lap"].min())
-                    max_val = max(scatter_df["Fast Lap"].max(), scatter_df["Previous Lap"].max())
-
-                    fig_scatter.add_shape(
-                        type="line",
-                        x0=min_val, y0=min_val,
-                        x1=max_val, y1=max_val,
-                        line=dict(dash="dash", color="white")
-                    )
-
-                    st.plotly_chart(fig_scatter, use_container_width=True)
+                fig_scatter.update_traces(marker_size=12)
+                st.plotly_chart(fig_scatter, use_container_width=True)
             
             elif option == 'BoxPlots':
                 st.write('Values from every car for each manufacturer')
