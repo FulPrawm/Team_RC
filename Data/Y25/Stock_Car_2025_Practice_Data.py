@@ -498,16 +498,6 @@ def show():
                     title="Fastest Lap vs Previous Lap (Unfiltered)"
                 )
 
-                # Optional: add diagonal reference line
-                min_val = min(scatter_df["Fast Lap"].min(), scatter_df["Previous Lap"].min())
-                max_val = max(scatter_df["Fast Lap"].max(), scatter_df["Previous Lap"].max())
-                fig_scatter.add_shape(
-                    type="line",
-                    x0=min_val, y0=min_val,
-                    x1=max_val, y1=max_val,
-                    line=dict(dash="dash", color="white")
-                )
-
                 fig_scatter.update_traces(marker_size=12)
                 st.plotly_chart(fig_scatter, use_container_width=True)
             
