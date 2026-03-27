@@ -461,7 +461,7 @@ def show():
                 
                 st.plotly_chart(fig_radar)
 
-                st.subheader("Fast Lap vs Previous Lap (Unfiltered)")
+                st.subheader("Fast Lap vs Previous Lap")
 
                 # --- Fastest lap for each driver (unfiltered) ---
                 fastest_idx = sessao.groupby("Driver")["Lap Tm (S)"].idxmin()
@@ -495,7 +495,7 @@ def show():
                     x="Fast Lap",
                     y="Previous Lap",
                     color="Driver",
-                    title="Fastest Lap vs Previous Lap (Unfiltered)"
+                    title="Fastest Lap vs Previous Lap"
                 )
 
                 fig_scatter.update_traces(marker_size=12)

@@ -455,6 +455,46 @@ def show():
                 
                 st.plotly_chart(fig_radar)
 
+                st.subheader("Fast Lap vs Previous Lap")
+
+                # --- Fastest lap for each driver (unfiltered) ---
+                fastest_idx = sessao.groupby("Driver")["Lap Tm (S)"].idxmin()
+                fastest_laps = sessao.loc[fastest_idx, ["Driver", "Lap", "Lap Tm (S)"]]
+
+                # --- Previous lap ---
+                prev_laps = []
+                for _, row in fastest_laps.iterrows():
+                    driver = row["Driver"]
+                    lap = row["Lap"]
+
+                    prev_lap = sessao[
+                        (sessao["Driver"] == driver) &
+                        (sessao["Lap"] == lap - 1)
+                    ]
+
+                    if not prev_lap.empty:
+                        prev_time = prev_lap["Lap Tm (S)"].values[0]
+
+                        prev_laps.append({
+                            "Driver": driver,
+                            "Fast Lap": row["Lap Tm (S)"],
+                            "Previous Lap": prev_time
+                        })
+
+                scatter_df = pd.DataFrame(prev_laps)
+
+                # --- Scatter Plot ---
+                fig_scatter = px.scatter(
+                    scatter_df,
+                    x="Fast Lap",
+                    y="Previous Lap",
+                    color="Driver",
+                    title="Fastest Lap vs Previous Lap"
+                )
+
+                fig_scatter.update_traces(marker_size=12)
+                st.plotly_chart(fig_scatter, use_container_width=True)
+
             
             elif option == 'BoxPlots':
                 st.write('Values from every car for each manufacturer')
