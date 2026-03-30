@@ -86,7 +86,7 @@ def show():
                     0: 'Scudeira Chiarelli', 22: 'Scuderia Chiarelli',
                     121: 'Sterling Racing', 444: 'Sterling Racing',
                     7: 'Team RC', 38: 'Team RC',
-                    4: 'TMG Racing', 39: 'TMG Racing',
+                    4: 'TMG Racing', 19: 'TMG Racing',
                     6: 'Mercado Livre Racing Team', 24: 'RTR Sports Team' 
                 }
                 return Teams_dict.get(x, None)
