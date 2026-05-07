@@ -18,7 +18,7 @@ with st.sidebar:
     year_options = ["Select a year...", "2025", "2026"]
     selected_year = st.selectbox("Choose the year:", year_options)
 
-    session_options = ["Select a session...", "Race Data", "Practice Data"]
+    session_options = ["Select a session...", "Race Data", "Practice Data", "Teste"]
     selected_session = st.selectbox("Choose the session:", session_options)
 
 # ======================================
