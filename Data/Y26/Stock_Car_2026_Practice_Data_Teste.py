@@ -134,13 +134,12 @@ def show():
                 .reset_index()
             )
 
-        style_kw = dict(cmap='coolwarm', precision=3)
-
+            style_kw = dict(cmap='coolwarm')
         # By driver
         st.subheader('Table by Car')
         t1 = _table(['Driver', 'Team', 'Manufacturer'])
         st.dataframe(
-            t1.style.background_gradient(**style_kw).format(precision=3)
+            t1.style.background_gradient(**style_kw).format("{:.3f}")
               .apply(highlight_driver, subset=['Driver'])
               .apply(highlight_team,   subset=['Team'])
               .apply(highlight_manufacturer, subset=['Manufacturer']),
@@ -151,7 +150,7 @@ def show():
         st.subheader('Table by Team')
         t2 = _table(['Team', 'Manufacturer'])
         st.dataframe(
-            t2.style.background_gradient(**style_kw).format(precision=3)
+            t2.style.background_gradient(**style_kw).format("{:.3f}")
               .apply(highlight_team,         subset=['Team'])
               .apply(highlight_manufacturer, subset=['Manufacturer']),
             hide_index=True,
@@ -161,7 +160,7 @@ def show():
         st.subheader('Table by Manufacturer')
         t3 = _table(['Manufacturer'])
         st.dataframe(
-            t3.style.background_gradient(**style_kw).format(precision=3)
+            t3.style.background_gradient(**style_kw).format("{:.3f}")
               .apply(highlight_manufacturer, subset=['Manufacturer']),
             hide_index=True,
         )
