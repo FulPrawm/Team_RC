@@ -13,4 +13,3 @@ scikit-learn
 datetime
 streamlit-autorefresh
 pathlib
-sc_shared
