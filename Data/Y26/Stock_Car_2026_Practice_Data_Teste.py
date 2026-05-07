@@ -134,7 +134,7 @@ def show():
                 .reset_index()
             )
 
-            style_kw = dict(cmap='coolwarm')
+        style_kw = dict(cmap='coolwarm')
         # By driver
         st.subheader('Table by Car')
         t1 = _table(['Driver', 'Team', 'Manufacturer'])
