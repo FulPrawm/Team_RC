@@ -4,6 +4,7 @@ from Data.Y25.Stock_Car_2025_Race_Data import show as show_race_2025
 from Data.Y25.Stock_Car_2025_Practice_Data import show as show_practice_2025
 from Data.Y26.Stock_Car_2026_Race_Data import show as show_race_2026
 from Data.Y26.Stock_Car_2026_Practice_Data import show as show_practice_2026
+from Data.Y26.Stock_Car_2026_Practice_Data_Teste import show as show_teste_2026
 
 st.title("Race Analysis System")
 
@@ -40,6 +41,7 @@ else:
     elif selected_year == "2026":
         if selected_session == "Race Data":
             show_race_2026()
-            # show_race_2026()
         elif selected_session == "Practice Data":
             show_practice_2026()
+        elif selected_session == "Teste":
+            show_teste_2026()
