@@ -111,7 +111,7 @@ def show():
                     121: 'Sterling Racing', 444: 'Sterling Racing',
                     7: 'Team RC', 38: 'Team RC',
                     4: 'TMG Racing', 19: 'TMG Racing',
-                    6: 'Mercado Livre Racing Team', 24: 'RTR Sports Team' 
+                    6: 'Mercado Livre Racing Team', 24: 'Albatroz Racing' 
                 }
                 return Teams_dict.get(x, None)
             # Creating a new column for what team each driver races
@@ -139,7 +139,7 @@ def show():
             "Mercado Livre Racing": "Toyota", "Mercado Livre Racing Team": "Toyota", "RTR Racing Team": "Toyota",
             "A. Mattheis Vogel": "Chevrolet", "Cavaleiro Sports": "Chevrolet", "Scuderia Bandeiras": "Chevrolet",
             "Scuderia Chiarelli": "Chevrolet", "TMG Racing": "Chevrolet",
-            "Blau Motorsport": "Mitsubishi", "Eurofarma RC": "Mitsubishi", "RTR Sports Team": "Mitsubishi",
+            "Blau Motorsport": "Mitsubishi", "Eurofarma RC": "Mitsubishi", "Albatroz Racing": "Mitsubishi",
             "Scuderia Bandeiras Sports": "Mitsubishi", "Sterling Racing": "Mitsubishi", "Team RC": "Mitsubishi"
             } 
             # Creating a new column for what Manufacturer each team races
