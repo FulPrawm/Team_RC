@@ -54,7 +54,7 @@ def show():
 
 
             # Creating 3 manufacturer groups
-            carros_toyota = [6, 10, 21, 27, 30, 73, 80, 81, 95, 97, 293, 301, 25]
+            carros_toyota = [6, 10, 21, 27, 30, 73, 80, 81, 95, 97, 293, 301, 25, 54]
             carros_mitsubishi = [1, 7, 11, 18, 24, 29, 38, 51, 111, 121, 444]
             # Function that verifies if the car is Toyota, if not its Mitsubishi, and if its not either, its Chevrolet
             def brand(x):
@@ -87,7 +87,8 @@ def show():
                     121: 'Sterling Racing', 444: 'Sterling Racing',
                     7: 'Team RC', 38: 'Team RC',
                     4: 'TMG Racing', 19: 'TMG Racing',
-                    6: 'Mercado Livre Racing Team', 24: 'Albatroz Racing' 
+                    6: 'Mercado Livre Racing Team', 24: 'Albatroz Racing',
+                    54: 'Mercado Livre Racing'
                 }
                 return Teams_dict.get(x, None)
             # Creating a new column called "Team" and applying the function "Teams"
@@ -123,7 +124,8 @@ def show():
             95: 'Lucas Kohl', 97: 'Bruna Tomaselli', 
             111: 'Rubens Barrichello', 121: 'Felipe Baptista',
             293: 'Léo Reis', 301: 'Rafa Reis', 
-            444: 'Vicente Orige', 25: 'Tatiana Calderón'
+            444: 'Vicente Orige', 25: 'Tatiana Calderón',
+            54: "Caio Chaves"
             }
             sessao['Driver'] = sessao['Car_ID'].map(drivers_dict)
 
