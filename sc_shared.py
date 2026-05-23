@@ -1,4 +1,4 @@
-ão# sc_shared.py
+# sc_shared.py
 # Shared constants and utility functions used by both Race and Practice modules.
 
 import pandas as pd
