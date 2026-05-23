@@ -5,6 +5,8 @@ from Data.Y25.Stock_Car_2025_Practice_Data import show as show_practice_2025
 from Data.Y26.Stock_Car_2026_Race_Data import show as show_race_2026
 from Data.Y26.Stock_Car_2026_Practice_Data import show as show_practice_2026
 from Data.Y26.Stock_Car_2026_Practice_Data_Teste import show as show_teste_2026
+from Data.Y26.Stock_Car_2026_Race_Data_Teste import show as show_testerace_2026
+
 
 st.title("Race Analysis System")
 
@@ -18,7 +20,7 @@ with st.sidebar:
     year_options = ["Select a year...", "2025", "2026"]
     selected_year = st.selectbox("Choose the year:", year_options)
 
-    session_options = ["Select a session...", "Race Data", "Practice Data", "Teste"]
+    session_options = ["Select a session...", "Race Data", "Practice Data", "Practice Teste", "Race Teste"]
     selected_session = st.selectbox("Choose the session:", session_options)
 
 # ======================================
@@ -43,5 +45,7 @@ else:
             show_race_2026()
         elif selected_session == "Practice Data":
             show_practice_2026()
-        elif selected_session == "Teste":
+        elif selected_session == "Practice Teste":
             show_teste_2026()
+        elif selected_session == "Race Teste":
+            show_testerace_2026
