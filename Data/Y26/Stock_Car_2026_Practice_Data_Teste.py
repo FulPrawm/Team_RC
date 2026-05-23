@@ -135,11 +135,13 @@ def show():
             )
 
         CMAP = 'coolwarm'
+        NUM_COLS = ['Lap Tm (S)', 'S1 Tm', 'S2 Tm', 'S3 Tm', 'SPT', 'Avg Speed']
 
         # By driver
         st.subheader('Table by Car')
         t1 = _table(['Driver', 'Team', 'Manufacturer'])
-        t1_styled = t1.style.format(precision=3)
+        fmt1 = {c: '{:.3f}' for c in NUM_COLS if c in t1.columns}
+        t1_styled = t1.style.format(fmt1)
         t1_styled = t1_styled.background_gradient(cmap=CMAP)
         t1_styled = t1_styled.apply(highlight_driver, subset=['Driver'])
         t1_styled = t1_styled.apply(highlight_team,   subset=['Team'])
@@ -149,7 +151,8 @@ def show():
         # By team
         st.subheader('Table by Team')
         t2 = _table(['Team', 'Manufacturer'])
-        t2_styled = t2.style.format(precision=3)
+        fmt2 = {c: '{:.3f}' for c in NUM_COLS if c in t2.columns}
+        t2_styled = t2.style.format(fmt2)
         t2_styled = t2_styled.background_gradient(cmap=CMAP)
         t2_styled = t2_styled.apply(highlight_team,         subset=['Team'])
         t2_styled = t2_styled.apply(highlight_manufacturer, subset=['Manufacturer'])
@@ -158,11 +161,11 @@ def show():
         # By manufacturer
         st.subheader('Table by Manufacturer')
         t3 = _table(['Manufacturer'])
-        t3_styled = t3.style.format(precision=3)
+        fmt3 = {c: '{:.3f}' for c in NUM_COLS if c in t3.columns}
+        t3_styled = t3.style.format(fmt3)
         t3_styled = t3_styled.background_gradient(cmap=CMAP)
         t3_styled = t3_styled.apply(highlight_manufacturer, subset=['Manufacturer'])
         st.dataframe(t3_styled, hide_index=True)
-
 
     # =======================================================================
     elif option == 'Lines':
