@@ -134,37 +134,35 @@ def show():
                 .reset_index()
             )
 
-        GRADIENT_CMAPp = 'coolwarm'
+        CMAP = 'coolwarm'
 
         # By driver
         st.subheader('Table by Car')
         t1 = _table(['Driver', 'Team', 'Manufacturer'])
-        st.dataframe(
-            t1.style.background_gradient(cmap=GRADIENT_CMAPp).format(precision=3)
-              .apply(highlight_driver, subset=['Driver'])
-              .apply(highlight_team,   subset=['Team'])
-              .apply(highlight_manufacturer, subset=['Manufacturer']),
-            hide_index=True,
-        )
+        t1_styled = t1.style.format(precision=3)
+        t1_styled = t1_styled.background_gradient(cmap=CMAP)
+        t1_styled = t1_styled.apply(highlight_driver, subset=['Driver'])
+        t1_styled = t1_styled.apply(highlight_team,   subset=['Team'])
+        t1_styled = t1_styled.apply(highlight_manufacturer, subset=['Manufacturer'])
+        st.dataframe(t1_styled, hide_index=True)
 
         # By team
         st.subheader('Table by Team')
         t2 = _table(['Team', 'Manufacturer'])
-        st.dataframe(
-            t2.style.background_gradient(cmap=GRADIENT_CMAPp).format(precision=3)
-              .apply(highlight_team,         subset=['Team'])
-              .apply(highlight_manufacturer, subset=['Manufacturer']),
-            hide_index=True,
-        )
+        t2_styled = t2.style.format(precision=3)
+        t2_styled = t2_styled.background_gradient(cmap=CMAP)
+        t2_styled = t2_styled.apply(highlight_team,         subset=['Team'])
+        t2_styled = t2_styled.apply(highlight_manufacturer, subset=['Manufacturer'])
+        st.dataframe(t2_styled, hide_index=True)
 
         # By manufacturer
         st.subheader('Table by Manufacturer')
         t3 = _table(['Manufacturer'])
-        st.dataframe(
-            t3.style.background_gradient(cmap=GRADIENT_CMAPp).format(precision=3)
-              .apply(highlight_manufacturer, subset=['Manufacturer']),
-            hide_index=True,
-        )
+        t3_styled = t3.style.format(precision=3)
+        t3_styled = t3_styled.background_gradient(cmap=CMAP)
+        t3_styled = t3_styled.apply(highlight_manufacturer, subset=['Manufacturer'])
+        st.dataframe(t3_styled, hide_index=True)
+
 
     # =======================================================================
     elif option == 'Lines':
