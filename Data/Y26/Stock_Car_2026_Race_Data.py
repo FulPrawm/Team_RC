@@ -209,28 +209,48 @@ def show():
     # -----------------------------------------------------------------------
     # Filter controls
     # -----------------------------------------------------------------------
+    use_bpillar       = st.session_state.get("use_bpillar", False)
     melhor_volta      = sessao['Lap Tm (S)'].min()
-    percentual        = st.slider('Select lap time filter percentage (%)', 0.0, 20.0, 4.0, 1.0)
-    tempo_limite      = melhor_volta * (1 + percentual / 100)
     voltas_por_piloto = sessao.groupby('Car_ID')['Lap'].nunique()
     max_voltas        = voltas_por_piloto.max()
     min_voltas        = int(np.floor(max_voltas * 0.5))
     pilotos_validos   = voltas_por_piloto[voltas_por_piloto >= min_voltas].index
 
-    sessao_filtrado = sessao[
-        sessao['Car_ID'].isin(pilotos_validos) &
-        (sessao['Lap Tm (S)'] <= tempo_limite)
-    ].copy()
+    if use_bpillar:
+        st.subheader('B-Pillar Filter active')
+        # Exclude lap 1 and pit laps; keep within 110% class fastest and 110% driver fastest
+        df_bp = sessao[
+            sessao['Car_ID'].isin(pilotos_validos) &
+            (sessao['Lap'] > 1)
+        ].copy()
+        class_limit  = melhor_volta * 1.10
+        driver_fast  = df_bp.groupby('Driver')['Lap Tm (S)'].transform('min')
+        driver_limit = driver_fast * 1.10
+        df_bp = df_bp[(df_bp['Lap Tm (S)'] <= class_limit) & (df_bp['Lap Tm (S)'] <= driver_limit)]
+        # Keep fastest 50% of each driver's remaining laps
+        def _top50(grp):
+            threshold = grp['Lap Tm (S)'].quantile(0.5)
+            return grp[grp['Lap Tm (S)'] <= threshold]
+        sessao_filtrado = df_bp.groupby('Driver', group_keys=False).apply(_top50).copy()
+        st.write(f"Class fastest: **{melhor_volta:.3f} s** | 110% limit: **{class_limit:.3f} s**")
+        st.write(f"🧮 Maximum laps: **{max_voltas}** | Min laps to qualify: **{min_voltas}**")
+        st.write("Laps used: fastest 50% per driver, within 110% class & driver limits, excl. Lap 1")
+    else:
+        percentual   = st.slider('Select lap time filter percentage (%)', 0.0, 20.0, 4.0, 1.0)
+        tempo_limite = melhor_volta * (1 + percentual / 100)
+        sessao_filtrado = sessao[
+            sessao['Car_ID'].isin(pilotos_validos) &
+            (sessao['Lap Tm (S)'] <= tempo_limite)
+        ].copy()
+        st.subheader('Custom filter applied')
+        st.write(f"🔍 Best lap of the session: **{melhor_volta:.3f} s**")
+        st.write(f"📏 {percentual:.1f}% filter applied: **{tempo_limite:.3f} s**")
+        st.write(f"🧮 Maximum laps completed: **{max_voltas} laps**")
+        st.write(f"⚠️ Only drivers with **at least {min_voltas} laps** will be considered.")
 
     for col in SECTOR_COLS:
         sessao_filtrado[col] = sessao_filtrado[col].apply(convert_to_seconds)
     sessao_filtrado = coerce_numeric_cols(sessao_filtrado, TEMPORAL_COLS)
-
-    st.subheader('Custom filter applied')
-    st.write(f"🔍 Best lap of the session: **{melhor_volta:.3f} s**")
-    st.write(f"📏 {percentual:.1f}% filter applied: **{tempo_limite:.3f} s**")
-    st.write(f"🧮 Maximum laps completed: **{max_voltas} laps**")
-    st.write(f"⚠️ Only drivers with **at least {min_voltas} laps** will be considered.")
 
     # All drivers and cars in the session (for All Laps / Percentual diff)
     all_drivers = sorted(
