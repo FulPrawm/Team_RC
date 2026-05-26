@@ -48,4 +48,4 @@ else:
         elif selected_session == "Practice Teste":
             show_teste_2026()
         elif selected_session == "Race Teste":
-            show_testerace_2026
+            show_testerace_2026()
