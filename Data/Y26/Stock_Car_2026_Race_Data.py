@@ -390,6 +390,30 @@ def show():
             else:
                 st.info("⚠️ 'Crossing Time' not available. Gap to Leader graph will not be displayed.")
 
+        # Position Change chart
+        st.subheader('Position Change')
+        if 'Gap to Leader' in sessao.columns:
+            pos_df = sessao.copy()
+            pos_df['Position'] = (
+                pos_df.groupby('Lap')['Gap to Leader'].rank(method='first').astype(int)
+            )
+            fig_pos = px.line(
+                pos_df.sort_values(['Driver', 'Lap']),
+                x='Lap', y='Position', color='Driver',
+                markers=True,
+                title='Position Change per Lap',
+            )
+            fig_pos.update_yaxes(autorange='reversed', title='Position', dtick=1)
+            fig_pos.update_xaxes(title='Lap', dtick=1)
+            fig_pos.update_traces(marker_size=5)
+            fig_pos.update_layout(
+                yaxis=dict(tickprefix='P'),
+                hovermode='x unified',
+            )
+            st.plotly_chart(fig_pos, use_container_width=True)
+        else:
+            st.info("⚠️ 'Crossing Time' not available. Position Change chart will not be displayed.")
+
     # =======================================================================
     elif option == 'Histograms':
     # =======================================================================
