@@ -21,6 +21,7 @@ warnings.filterwarnings('ignore')
 # Constants
 # ---------------------------------------------------------------------------
 TEMPORAL_COLS = ['Lap Tm (S)', 'S1 Tm', 'S2 Tm', 'S3 Tm', 'SPT', 'Avg Speed']
+NUM_COLS      = ['Lap Tm (S)', 'S1 Tm', 'S2 Tm', 'S3 Tm', 'SPT', 'Avg Speed']
 
 ANALISE_CARROS       = ['Driver', 'Team', 'Manufacturer', 'Lap Tm (S)', 'S1 Tm', 'S2 Tm', 'S3 Tm', 'SPT', 'Avg Speed']
 ANALISE_TEAM         = ['Team', 'Manufacturer', 'Lap Tm (S)', 'S1 Tm', 'S2 Tm', 'S3 Tm', 'SPT', 'Avg Speed']
@@ -29,15 +30,13 @@ ANALISE_MANUFACTURER = ['Manufacturer', 'Lap Tm (S)', 'S1 Tm', 'S2 Tm', 'S3 Tm',
 SECTOR_COLS = ['S1 Tm', 'S2 Tm', 'S3 Tm']
 TIME_AGG    = {'Lap Tm (S)': 'min', 'S1 Tm': 'min', 'S2 Tm': 'min', 'S3 Tm': 'min', 'SPT': 'max', 'Avg Speed': 'max'}
 
-# Cars shown in team-specific views
-TEAM_CARS = [1, 7, 11, 38]
+CMAP = 'RdYlGn_r'  # same as Race
 
 
 # ---------------------------------------------------------------------------
 # Helper: gap-to-fastest bar chart (Altair)
 # ---------------------------------------------------------------------------
 def _gap_bar_chart(df_min: pd.DataFrame, coluna: str, tab_name: str):
-    """Return an Altair bar+label chart showing gap to the fastest driver."""
     min_val = df_min[coluna].min()
     df_min  = df_min.copy()
     df_min['Diff']  = df_min[coluna] - min_val
@@ -83,7 +82,7 @@ def show():
 
     pasta_etapa   = PASTA_ETAPAS / etapa_escolhida
     arquivos_xlsx = sorted(f for f in os.listdir(pasta_etapa) if f.endswith('.xlsx'))
-    labels_map    = {os.path.splitext(f)[0]: f for f in arquivos_xlsx}  # label → filename
+    labels_map    = {os.path.splitext(f)[0]: f for f in arquivos_xlsx}
 
     corrida_label = st.selectbox('Choose a session:', ['Select a session...'] + sorted(labels_map))
 
@@ -113,6 +112,10 @@ def show():
     sessao_filtrado = sessao[sessao['Lap Tm (S)'] <= tempo_limite].copy()
     sessao_filtrado = coerce_numeric_cols(sessao_filtrado, TEMPORAL_COLS)
 
+    # All drivers and cars available in the session
+    all_drivers = sorted(sessao['Driver'].dropna().unique().tolist())
+    all_car_ids = sorted(sessao['Car_ID'].dropna().unique().tolist())
+
     # -----------------------------------------------------------------------
     # Graph selector
     # -----------------------------------------------------------------------
@@ -125,17 +128,13 @@ def show():
     # =======================================================================
     if option == 'Charts':
     # =======================================================================
-        def _table(group_cols, agg_cols=None):
-            """Build a grouped aggregation table ready for styling."""
+        def _table(group_cols):
             return (
                 sessao_filtrado
                 .groupby(group_cols)
                 .agg({k: v for k, v in TIME_AGG.items() if k in sessao_filtrado.columns})
                 .reset_index()
             )
-
-        CMAP = 'coolwarm'
-        NUM_COLS = ['Lap Tm (S)', 'S1 Tm', 'S2 Tm', 'S3 Tm', 'SPT', 'Avg Speed']
 
         # By driver
         st.subheader('Table by Car')
@@ -207,7 +206,6 @@ def show():
         fastest_drv  = best_laps.loc[best_laps['Lap Tm (S)'].idxmin(), 'Driver']
         best_sectors = sessao_filtrado.groupby('Driver')[SECTOR_COLS].min().reset_index()
 
-        # Gap to fastest sector
         for col in SECTOR_COLS:
             best_sectors[col] -= best_sectors[col].min()
 
@@ -217,7 +215,6 @@ def show():
             .reset_index(drop=True)
         )
 
-        # Heatmap
         fig_heatmap = px.imshow(
             best_sectors.set_index('Driver')[SECTOR_COLS],
             color_continuous_scale='Turbo',
@@ -232,24 +229,20 @@ def show():
         st.plotly_chart(fig_heatmap)
 
         # Radar
-        selected_drivers = sessao_filtrado[sessao_filtrado['Car_ID'].isin(TEAM_CARS)]['Driver'].unique()
+        selected_drivers = sessao_filtrado[sessao_filtrado['Car_ID'].isin(all_car_ids)]['Driver'].unique()
         radar_drivers    = list(set(selected_drivers) | {fastest_drv})
         radar_data       = best_sectors[best_sectors['Driver'].isin(radar_drivers)].copy()
 
-        # Normalise: 0 = slowest, 1 = fastest
         for col in SECTOR_COLS:
-            mn, mx      = radar_data[col].min(), radar_data[col].max()
-            denom       = mx - mn if mx != mn else 1
+            mn, mx = radar_data[col].min(), radar_data[col].max()
+            denom  = mx - mn if mx != mn else 1
             radar_data[col] = (mx - radar_data[col]) / denom
 
         df_radar = radar_data.melt(id_vars=['Driver'], value_vars=SECTOR_COLS,
                                    var_name='Sector', value_name='Score')
 
-        driver_colors = {TEAM_CAR_NAMES[c]: TEAM_CAR_COLORS[c] for c in TEAM_CARS if c in TEAM_CAR_NAMES}
-        color_map = {
-            d: driver_colors.get(d, 'green')
-            for d in df_radar['Driver'].unique()
-        }
+        driver_colors = {TEAM_CAR_NAMES[c]: TEAM_CAR_COLORS[c] for c in TEAM_CAR_NAMES}
+        color_map = {d: driver_colors.get(d, 'green') for d in df_radar['Driver'].unique()}
 
         fig_radar = px.line_polar(
             df_radar, r='Score', theta='Sector', color='Driver',
@@ -277,9 +270,9 @@ def show():
             prev = sessao[(sessao['Driver'] == row['Driver']) & (sessao['Lap'] == row['Lap'] - 1)]
             if not prev.empty:
                 prev_rows.append({
-                    'Driver':        row['Driver'],
-                    'Fast Lap':      row['Lap Tm (S)'],
-                    'Previous Lap':  prev['Lap Tm (S)'].iat[0],
+                    'Driver':       row['Driver'],
+                    'Fast Lap':     row['Lap Tm (S)'],
+                    'Previous Lap': prev['Lap Tm (S)'].iat[0],
                 })
 
         if prev_rows:
@@ -290,6 +283,43 @@ def show():
             )
             fig_scatter.update_traces(marker_size=12)
             st.plotly_chart(fig_scatter, use_container_width=True)
+
+        # -------------------------------------------------------------------
+        # Percentual difference to best lap — ALL drivers
+        # -------------------------------------------------------------------
+        st.header('Percentual difference to the best lap — All Drivers')
+
+        tabs_dif = st.tabs(all_drivers)
+        for tab, driver_name in zip(tabs_dif, all_drivers):
+            with tab:
+                df = sessao_filtrado[sessao_filtrado['Driver'] == driver_name].copy()
+                if df.empty:
+                    st.write('No laps available for this driver after the filter.')
+                    continue
+
+                car_id   = df['Car_ID'].iat[0]
+                melhor   = df['Lap Tm (S)'].min()
+                best_lap_num = df.loc[df['Lap Tm (S)'].idxmin(), 'Lap']
+                df['Diff %'] = ((df['Lap Tm (S)'] - melhor) / melhor) * 100
+                df = df.sort_values('Lap')
+
+                bar_color = TEAM_CAR_COLORS.get(car_id, '#636EFA')
+                fig = px.bar(
+                    df, x='Lap', y='Diff %',
+                    text=df['Diff %'].map(lambda x: f'{x:.2f}%'),
+                    color_discrete_sequence=[bar_color],
+                    title=f'{driver_name} — Diff % by lap',
+                )
+                fig.update_traces(textposition='outside')
+                fig.add_vline(x=best_lap_num, line_dash='dash', line_color='white',
+                              annotation_text='Best lap', annotation_position='top')
+                fig.update_layout(
+                    yaxis_title='Difference to best lap (%)',
+                    xaxis_title='Lap',
+                    uniformtext_minsize=8,
+                    uniformtext_mode='show',
+                )
+                st.plotly_chart(fig, use_container_width=True)
 
     # =======================================================================
     elif option == 'BoxPlots':
@@ -304,16 +334,26 @@ def show():
             )
             st.plotly_chart(fig)
 
-        boxplot_cols = {'Lap': 'Lap Tm (S)', 'S1': 'S1 Tm', 'S2': 'S2 Tm', 'S3': 'S3 Tm', 'SPT': 'SPT'}
-        tabs_box     = st.tabs(list(boxplot_cols.keys()))
-        drivers_sorted = sorted(sessao_filtrado['Driver'].unique())
+        boxplot_cols   = {'Lap': 'Lap Tm (S)', 'S1': 'S1 Tm', 'S2': 'S2 Tm', 'S3': 'S3 Tm', 'SPT': 'SPT'}
+        drivers_sorted = sorted(
+            [d for d in sessao_filtrado['Driver'].dropna().unique()],
+            key=lambda x: str(x),
+        )
+        tabs_box = st.tabs(list(boxplot_cols.keys()))
 
         for tab, (tab_nome, coluna) in zip(tabs_box, boxplot_cols.items()):
             with tab:
+                selected = st.multiselect(
+                    f'Filter drivers — {coluna}',
+                    options=drivers_sorted,
+                    default=drivers_sorted,
+                    key=f'bp_practice_{coluna}',
+                )
+                df_box = sessao_filtrado[sessao_filtrado['Driver'].isin(selected)]
                 fig = px.box(
-                    sessao_filtrado, x='Driver', y=coluna,
+                    df_box, x='Driver', y=coluna,
                     points='all', color='Driver',
-                    category_orders={'Driver': drivers_sorted},
+                    category_orders={'Driver': [d for d in drivers_sorted if d in selected]},
                 )
                 fig.update_layout(yaxis_title=coluna, title=f'Boxplot - {coluna}', showlegend=False)
                 st.plotly_chart(fig, use_container_width=True)
@@ -321,7 +361,24 @@ def show():
     # =======================================================================
     elif option == 'All Laps':
     # =======================================================================
-        for car_id in TEAM_CARS:
-            name = TEAM_CAR_NAMES.get(car_id, f'Car {car_id}')
-            st.write(name)
-            st.dataframe(sessao[sessao['Car_ID'] == car_id])
+        st.subheader('All Laps by Driver')
+
+        selected_driver = st.selectbox('Choose a driver:', ['All drivers'] + all_drivers)
+
+        if selected_driver == 'All drivers':
+            drivers_to_show = all_drivers
+        else:
+            drivers_to_show = [selected_driver]
+
+        for driver_name in drivers_to_show:
+            df_drv = sessao[sessao['Driver'] == driver_name].copy()
+            if df_drv.empty:
+                continue
+
+            car_id = df_drv['Car_ID'].iat[0]
+            team   = df_drv['Team'].iat[0] if 'Team' in df_drv.columns else '—'
+
+            with st.expander(f'🏎️ #{car_id}  {driver_name}  |  {team}', expanded=(selected_driver != 'All drivers')):
+                display_cols = [c for c in ['Lap', 'Lap Tm (S)', 'S1 Tm', 'S2 Tm', 'S3 Tm', 'SPT', 'Avg Speed']
+                                if c in df_drv.columns]
+                st.dataframe(df_drv[display_cols].reset_index(drop=True), use_container_width=True)
