@@ -272,7 +272,7 @@ def show():
                 tickmode='array',
                 tickvals=[0, 0.5, 1],
                 ticktext=['Slow', 'Average', 'Fast'],
-                tickfont=dict(color='grey'),
+                tickfont=dict(color='red'),
             )),
         )
         st.plotly_chart(fig_radar)
@@ -300,43 +300,6 @@ def show():
             )
             fig_scatter.update_traces(marker_size=12)
             st.plotly_chart(fig_scatter, use_container_width=True)
-
-        # -------------------------------------------------------------------
-        # Percentual difference to best lap — ALL drivers
-        # -------------------------------------------------------------------
-        st.header('Percentual difference to the best lap — All Drivers')
-
-        tabs_dif = st.tabs(all_drivers)
-        for tab, driver_name in zip(tabs_dif, all_drivers):
-            with tab:
-                df = sessao_filtrado[sessao_filtrado['Driver'] == driver_name].copy()
-                if df.empty:
-                    st.write('No laps available for this driver after the filter.')
-                    continue
-
-                car_id   = df['Car_ID'].iat[0]
-                melhor   = df['Lap Tm (S)'].min()
-                best_lap_num = df.loc[df['Lap Tm (S)'].idxmin(), 'Lap']
-                df['Diff %'] = ((df['Lap Tm (S)'] - melhor) / melhor) * 100
-                df = df.sort_values('Lap')
-
-                bar_color = TEAM_CAR_COLORS.get(car_id, '#636EFA')
-                fig = px.bar(
-                    df, x='Lap', y='Diff %',
-                    text=df['Diff %'].map(lambda x: f'{x:.2f}%'),
-                    color_discrete_sequence=[bar_color],
-                    title=f'{driver_name} — Diff % by lap',
-                )
-                fig.update_traces(textposition='outside')
-                fig.add_vline(x=best_lap_num, line_dash='dash', line_color='white',
-                              annotation_text='Best lap', annotation_position='top')
-                fig.update_layout(
-                    yaxis_title='Difference to best lap (%)',
-                    xaxis_title='Lap',
-                    uniformtext_minsize=8,
-                    uniformtext_mode='show',
-                )
-                st.plotly_chart(fig, use_container_width=True)
 
     # =======================================================================
     elif option == 'BoxPlots':
