@@ -27,6 +27,7 @@ TEAMS_DICT: dict[int, str] = {
     7:  'Team RC',           38: 'Team RC',
     4:  'TMG Racing',        19: 'TMG Racing',
     6:  'Mercado Livre Racing Team', 24: 'Albatroz Racing',
+    72: 'Full Time GR'
 }
 
 TEAM_TO_MANUFACTURER: dict[str, str] = {
@@ -68,6 +69,7 @@ DRIVERS_DICT: dict[int, str] = {
     111: 'Rubens Barrichello', 121: 'Felipe Baptista',
     293: 'Léo Reis',       301: 'Rafa Reis',
     444: 'Vicente Orige',   25: 'Tatiana Calderón',
+    72: 'Antonella Bassani'
 }
 
 # Colors for specific drivers / teams / manufacturers
