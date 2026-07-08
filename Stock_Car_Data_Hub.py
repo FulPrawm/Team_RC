@@ -46,6 +46,8 @@ from Data.Y25.Stock_Car_2025_Race_Data import show as show_race_2025
 from Data.Y25.Stock_Car_2025_Practice_Data import show as show_practice_2025
 from Data.Y26.Stock_Car_2026_Race_Data import show as show_race_2026
 from Data.Y26.Stock_Car_2026_Practice_Data import show as show_practice_2026
+from Data.Y26.Stock_Car_2026_Round_Analysis import show as show_round_2026
+from Data.Y26.Stock_Car_2026_Season_Analysis import show as show_season_2026
 
 # ======================================
 # Sidebar Configuration Panel
@@ -101,3 +103,7 @@ else:
             show_race_2026()
         elif selected_session == "Practice Data":
             show_practice_2026()
+        elif selected_session == "Round Analysis":
+            show_round_2026()
+        elif selected_session == "Season Analysis":
+            show_season_2026()
