@@ -27,17 +27,19 @@ CMAP          = 'RdYlGn_r'
 
 # Session type tags derived from filename prefixes
 # Order matters: longer/more specific prefixes first
+# Q and Q1 are excluded — they are composite files already covered by Q1G1/Q1G2/Q2/Q3
 SESSION_TYPE_MAP = {
     'Q1G': 'Qualifying Group',
-    'Q1':  'Qualifying Q1',
     'Q2':  'Qualifying Q2',
     'Q3':  'Qualifying Q3',
-    'Q':   'Qualifying (Full)',
     'R':   'Race',
     'TL':  'Free Practice',
     'WU':  'Warm Up',
     'SD':  'Shakedown',
 }
+
+# Files to skip (composite qualifying files already covered by individual sessions)
+SKIP_STEMS = {'Q', 'Q1'}  # e.g. ET04_Q, ET04_Q1
 
 def _session_type(filename: str) -> str:
     stem = Path(filename).stem  # e.g. ET04_R1, ET04_TL2, ET04_Q1G1
@@ -163,7 +165,8 @@ def show():
             .reset_index()
         )
         st.dataframe(
-            pivot.style.background_gradient(cmap=CMAP, axis=1).format('{:.3f}', na_rep='—'),
+            pivot.style.background_gradient(cmap=CMAP, axis=1)
+              .format(lambda x: f'{x:.3f}' if isinstance(x, (int, float)) and not pd.isna(x) else '—'),
             use_container_width=True,
             hide_index=True,
         )
