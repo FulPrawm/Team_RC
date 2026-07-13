@@ -257,9 +257,13 @@ def show():
 
         # SPT comparison
         spt = df_drv.groupby(['Driver', 'Session'])['SPT'].max().reset_index()
+        spt['Session'] = pd.Categorical(spt['Session'], categories=sessions_available, ordered=True)
+        spt = spt.sort_values('Session')
         fig3 = px.bar(
             spt, x='Driver', y='SPT', color='Session',
-            barmode='group', title='Max Speed Trap per Session',
+            barmode='group',
+            category_orders={'Session': sessions_available},
+            title='Max Speed Trap per Session',
         )
         st.plotly_chart(fig3, use_container_width=True)
 
@@ -292,6 +296,8 @@ def show():
             df.groupby(['Manufacturer', 'Session'])['Lap Tm (S)'].min()
             .reset_index()
         )
+        manuf_best['Session'] = pd.Categorical(manuf_best['Session'], categories=sessions_available, ordered=True)
+        manuf_best = manuf_best.sort_values('Session')
         fig = px.line(
             manuf_best, x='Session', y='Lap Tm (S)',
             color='Manufacturer', markers=True,
