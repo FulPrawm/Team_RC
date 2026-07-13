@@ -41,9 +41,30 @@ SESSION_TYPE_MAP = {
 # Files to skip (composite qualifying files already covered by individual sessions)
 SKIP_STEMS = {'Q', 'Q1'}  # e.g. ET04_Q, ET04_Q1
 
+# Chronological session order for the weekend
+SESSION_ORDER = [
+    'Shakedown',
+    'Free Practice (TL1)',
+    'Free Practice (TL2)',
+    'Qualifying Group (Q1G1)',
+    'Qualifying Group (Q1G2)',
+    'Qualifying Q2 (Q2)',
+    'Qualifying Q3 (Q3)',
+    'Race (R1)',
+    'Race (R2)',
+]
+
+def _session_sort_key(session_name: str) -> int:
+    for i, s in enumerate(SESSION_ORDER):
+        if s == session_name:
+            return i
+    # fallback: extract any trailing number for unknown sessions
+    import re
+    m = re.search(r'(\d+)$', session_name)
+    return 100 + (int(m.group(1)) if m else 0)
+
 def _session_type(filename: str) -> str:
     stem = Path(filename).stem  # e.g. ET04_R1, ET04_TL2, ET04_Q1G1
-    # Extract the part after ETxx_
     match = re.search(r'ET\d+_(.+)', stem)
     if not match:
         return stem
@@ -117,7 +138,9 @@ def show():
         st.error('No data found for this round.')
         return
 
-    sessions_available = sorted(df_all['Session'].unique())
+    # Sort sessions in chronological weekend order
+    all_sess = df_all['Session'].unique().tolist()
+    sessions_available = sorted(all_sess, key=_session_sort_key)
     st.success(f"Loaded **{len(sessions_available)} sessions** for **{etapa}**")
 
     # Optional session filter
@@ -175,6 +198,7 @@ def show():
         fig = px.box(
             df, x='Session', y='Lap Tm (S)',
             color='Session', points='all',
+            category_orders={'Session': sessions_available},
             title='Lap Time Distribution per Session',
         )
         fig.update_layout(showlegend=False)
@@ -184,6 +208,7 @@ def show():
         fig2 = px.box(
             df, x='Session', y='SPT',
             color='Session', points='all',
+            category_orders={'Session': sessions_available},
             title='Speed Trap Distribution per Session',
         )
         fig2.update_layout(showlegend=False)
@@ -207,6 +232,7 @@ def show():
         fig  = px.line(
             best, x='Session', y='Lap Tm (S)',
             color='Driver', markers=True,
+            category_orders={'Session': sessions_available},
             title='Best Lap Time per Session',
         )
         st.plotly_chart(fig, use_container_width=True)
@@ -264,6 +290,7 @@ def show():
         fig = px.line(
             manuf_best, x='Session', y='Lap Tm (S)',
             color='Manufacturer', markers=True,
+            category_orders={'Session': sessions_available},
             title='Best Lap per Manufacturer per Session',
         )
         st.plotly_chart(fig, use_container_width=True)
@@ -286,6 +313,7 @@ def show():
             df.groupby(['Driver', 'Team', 'Manufacturer', 'Session'])['Lap Tm (S)'].min()
             .reset_index()
             .sort_values(['Session', 'Lap Tm (S)'])
+            .assign(Session=lambda d: pd.Categorical(d['Session'], categories=sessions_available, ordered=True))
         )
         fmt = {'Lap Tm (S)': '{:.3f}'}
         bs  = best_all.style.format(fmt)
