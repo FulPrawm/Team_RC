@@ -43,7 +43,7 @@ SKIP_STEMS = {'Q', 'Q1'}  # e.g. ET04_Q, ET04_Q1
 
 # Chronological session order for the weekend
 SESSION_ORDER = [
-    'Shakedown',
+    'Shakedown (SD)',
     'Free Practice (TL1)',
     'Free Practice (TL2)',
     'Qualifying Group (Q1G1)',
