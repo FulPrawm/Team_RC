@@ -50,6 +50,7 @@ SESSION_ORDER = [
     'Qualifying Group (Q1G2)',
     'Qualifying Q2 (Q2)',
     'Qualifying Q3 (Q3)',
+    'Warm Up (WU)',
     'Race (R1)',
     'Race (R2)',
 ]
@@ -182,11 +183,13 @@ def show():
     # =======================================================================
         st.subheader('Round Overview — Best lap per driver per session')
 
-        pivot = (
+        _pivot_raw = (
             df.groupby(['Driver', 'Session'])['Lap Tm (S)'].min()
             .unstack('Session')
-            .reset_index()
         )
+        # Reorder columns chronologically
+        _ordered_cols = [s for s in sessions_available if s in _pivot_raw.columns]
+        pivot = _pivot_raw[_ordered_cols].reset_index()
         st.dataframe(
             pivot.style.background_gradient(cmap=CMAP, axis=1)
               .format(lambda x: f'{x:.3f}' if isinstance(x, (int, float)) and not pd.isna(x) else '—'),
@@ -229,6 +232,8 @@ def show():
 
         # Best lap per session per driver
         best = df_drv.groupby(['Driver', 'Session'])['Lap Tm (S)'].min().reset_index()
+        best['Session'] = pd.Categorical(best['Session'], categories=sessions_available, ordered=True)
+        best = best.sort_values('Session')
         fig  = px.line(
             best, x='Session', y='Lap Tm (S)',
             color='Driver', markers=True,
