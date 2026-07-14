@@ -222,8 +222,14 @@ def show():
     # =======================================================================
         st.subheader('Driver Comparison across sessions')
 
+        DEFAULT_DRIVERS = ['Felipe Fraga', 'Gaetano Di Mauro', 'Sérgio Sette Câmara', 'Zezinho Muggiati']
+
         all_drivers = sorted(df['Driver'].dropna().unique().tolist(), key=str)
-        selected    = st.multiselect('Select drivers:', all_drivers, default=all_drivers[:6])
+        selected = st.multiselect(
+            'Select drivers:',
+            options=all_drivers,
+            default=[d for d in DEFAULT_DRIVERS if d in all_drivers],
+        )
         if not selected:
             st.warning('Select at least one driver.')
             return
