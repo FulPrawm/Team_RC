@@ -24,61 +24,42 @@ st.markdown("## ⚙️ Ajuste dos Horários das Sessões")
 if "sessions_df" not in st.session_state:
     st.session_state.sessions_df = pd.DataFrame({
         "Sessão": [
-            "Treino Extra 1 - Grupo 1 (Mugiatti)",
-            "Treino Extra 1 - Grupo 2 (Sette Camara)",
-            "Treino Extra 2 - Grupo 1 (Mugiatti)",
-            "Treino Extra 2 - Grupo 2 (Sette Camara)",
-            "Treino Extra 3 - Grupo 1 (Mugiatti)",
-            "Treino Extra 3 - Grupo 2 (Sette Camara)",
-            "Treino Extra 4 - Grupo 1 (Mugiatti)",
-            "Treino Extra 4 - Grupo 2 (Sette Camara)",
-            "Treino Extra 5 - Grupo 1 (Mugiatti)",
-            "Treino Extra 5 - Grupo 2 (Sette Camara)",
-            "Treino Extra 6 - Grupo 1 (Mugiatti)",
-            "Treino Extra 6 - Grupo 2 (Sette Camara)",
+            "Shakedown - Grupo 1 (Sette Camara)",
+            "Treino Livre 1 - Grupo 1 (Sette Camara)",
+            "Treino Livre 2 - Grupo 1 (Sette Camara)",
+            "Qualy",
+            "Box Aberto - R1",
+            "Warm Up - Grupo Único",
+            "Box Aberto - R2"
+
         ],
         "Data": [
-            "2026-03-03",
-            "2026-03-03",
-            "2026-03-03",
-            "2026-03-03",
-            "2026-03-03",
-            "2026-03-03",
-            "2026-03-04",
-            "2026-03-04",
-            "2026-03-04",
-            "2026-03-04",
-            "2026-03-04",
-            "2026-03-04",
+            "2026-07-24",
+            "2026-07-24",
+            "2026-07-24",
+            "2026-07-25",
+            "2026-07-25",
+            "2026-07-26",
+            "2026-07-26"
 
         ],
         "Horário": [
-            "13:00",
-            "14:00",
-            "15:00",
-            "16:00",
-            "17:00",
-            "17:35",
-            "13:00",
-            "14:00",
-            "15:00",
-            "16:00",
-            "17:00",
-            "17:35",
+            "08:50",
+            "11:10",
+            "13:45",
+            "08:00",
+            "11:20",
+            "09:15",
+            "11:10"
         ],
         "Duração (min)": [
+        15,
         30,
         30,
-        30,
-        30,
-        30,
-        30,
-        30,
-        30,
-        30,
-        30,
-        30,
-        30
+        50,
+        10,
+        10,
+        10
         ]
     })
 
