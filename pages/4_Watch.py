@@ -50,7 +50,7 @@ if "sessions_df" not in st.session_state:
             "08:00",
             "11:20",
             "09:15",
-            "11:10"
+            "11:25"
         ],
         "Duração (min)": [
         15,
