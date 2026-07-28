@@ -155,20 +155,15 @@ def show():
     else:
         df = df_all.copy()
 
-    # B-Pillar filter toggle (reads from Hub if available)
-    use_bpillar = st.session_state.get('use_bpillar', False)
-
-    if use_bpillar:
-        class_fast   = df['Lap Tm (S)'].min()
-        class_limit  = class_fast * 1.10
-        driver_fast  = df.groupby('Driver')['Lap Tm (S)'].transform('min')
-        driver_limit = driver_fast * 1.10
-        df = df[(df['Lap Tm (S)'] <= class_limit) & (df['Lap Tm (S)'] <= driver_limit)]
-        def _top50(grp):
-            t = grp['Lap Tm (S)'].quantile(0.5)
-            return grp[grp['Lap Tm (S)'] <= t]
-        df = df.groupby('Driver', group_keys=False).apply(_top50).copy()
-        st.info('🔵 B-Pillar filter active')
+    # B-Pillar filter (always active, main filter)
+    class_fast   = df['Lap Tm (S)'].min()
+    class_limit  = class_fast * 1.10
+    driver_fast  = df.groupby('Driver')['Lap Tm (S)'].transform('min')
+    driver_limit = driver_fast * 1.10
+    df = df[(df['Lap Tm (S)'] <= class_limit) & (df['Lap Tm (S)'] <= driver_limit)]
+    driver_median = df.groupby('Driver')['Lap Tm (S)'].transform('median')
+    df = df[df['Lap Tm (S)'] <= driver_median].copy()
+    st.info('🔵 B-Pillar filter active')
 
     # -----------------------------------------------------------------------
     # Analysis selector
