@@ -307,15 +307,13 @@ def show():
         df = df[df['Round'].isin(sel_rounds)]
         rounds_ordered = [r for r in rounds_ordered if r in sel_rounds]
 
-    use_bpillar = st.session_state.get('use_bpillar', False)
-    if use_bpillar:
-        class_limit = df['Lap Tm (S)'].min() * 1.10
-        drv_fast    = df.groupby('Driver')['Lap Tm (S)'].transform('min')
-        df = df[(df['Lap Tm (S)'] <= class_limit) & (df['Lap Tm (S)'] <= drv_fast * 1.10)]
-        def _top50(g):
-            return g[g['Lap Tm (S)'] <= g['Lap Tm (S)'].quantile(0.5)]
-        df = df.groupby('Driver', group_keys=False).apply(_top50).copy()
-        st.info('🔵 B-Pillar filter active')
+    # B-Pillar filter (always active, main filter)
+    class_limit = df['Lap Tm (S)'].min() * 1.10
+    drv_fast    = df.groupby('Driver')['Lap Tm (S)'].transform('min')
+    df = df[(df['Lap Tm (S)'] <= class_limit) & (df['Lap Tm (S)'] <= drv_fast * 1.10)]
+    drv_median = df.groupby('Driver')['Lap Tm (S)'].transform('median')
+    df = df[df['Lap Tm (S)'] <= drv_median].copy()
+    st.info('🔵 B-Pillar filter active')
 
     if df.empty:
         st.warning('No data after filters.')

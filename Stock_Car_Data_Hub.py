@@ -64,23 +64,6 @@ with st.sidebar:
     session_options = ["Select a session...", "Race Data", "Practice Data", "Round Analysis", "Season Analysis"]
     selected_session = st.selectbox("Choose the session:", session_options)
 
-    st.divider()
-
-    st.subheader("⚙️ Filter Settings")
-    use_bpillar = st.checkbox(
-        "B-Pillar filter",
-        value=False,
-        help=(
-            "Ranks drivers on the fastest 50% of their laps, "
-            "excluding pit in/out laps and the first lap of the race, "
-            "where the lap time was within 110% of the class fastest "
-            "and 110% of the driver's own fastest lap."
-        ),
-    )
-
-# Store filter preference in session state so child modules can read it
-st.session_state["use_bpillar"] = use_bpillar
-
 # ======================================
 # Navigation Logic
 # ======================================
