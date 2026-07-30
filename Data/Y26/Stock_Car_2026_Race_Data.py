@@ -381,7 +381,7 @@ def show():
         with delta_tabs[1]:
             st.plotly_chart(px.line(sessao, x='Lap', y='Fast Lap Diff', color='Driver', title='Fast Lap Delta'))
 
-        gap_tabs = st.tabs(['Gap to Winner', 'Gap to Lap Leader'])
+        gap_tabs = st.tabs(['Gap to Winner', 'Gap to Lap Leader', 'Gap to Reference'])
         with gap_tabs[0]:
             if 'Gap to Winner' in sessao.columns:
                 st.plotly_chart(px.line(sessao, x='Lap', y='Gap to Winner', color='Driver', title='Gap to Winner'))
@@ -392,6 +392,27 @@ def show():
                 st.plotly_chart(px.line(sessao, x='Lap', y='Gap to Leader', color='Driver', title='Gap to Leader'))
             else:
                 st.info("⚠️ 'Crossing Time' not available. Gap to Leader graph will not be displayed.")
+        with gap_tabs[2]:
+            if 'Cumulative Crossing' in sessao.columns:
+                driver_options = (
+                    sessao[['Car_ID', 'Driver']].dropna().drop_duplicates().sort_values('Driver')
+                )
+                ref_driver = st.selectbox(
+                    'Select the reference car:', driver_options['Driver'], key='gap_to_reference_driver',
+                )
+                ref_car_id  = driver_options.loc[driver_options['Driver'] == ref_driver, 'Car_ID'].iloc[0]
+                ref_times   = (
+                    sessao[sessao['Car_ID'] == ref_car_id][['Lap', 'Cumulative Crossing']]
+                    .rename(columns={'Cumulative Crossing': 'Reference Crossing'})
+                )
+                gap_ref_df  = sessao.merge(ref_times, on='Lap', how='left')
+                gap_ref_df['Gap to Reference'] = gap_ref_df['Cumulative Crossing'] - gap_ref_df['Reference Crossing']
+                st.plotly_chart(px.line(
+                    gap_ref_df, x='Lap', y='Gap to Reference', color='Driver',
+                    title=f'Gap to Reference ({ref_driver})',
+                ))
+            else:
+                st.info("⚠️ 'Crossing Time' not available. Gap to Reference graph will not be displayed.")
 
         # Position Change chart
         st.subheader('Position Change')
