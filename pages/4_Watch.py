@@ -24,9 +24,9 @@ st.markdown("## ⚙️ Ajuste dos Horários das Sessões")
 if "sessions_df" not in st.session_state:
     st.session_state.sessions_df = pd.DataFrame({
         "Sessão": [
-            "Shakedown - Grupo 1 (Sette Camara)",
-            "Treino Livre 1 - Grupo 1 (Sette Camara)",
-            "Treino Livre 2 - Grupo 1 (Sette Camara)",
+            "Shakedown - Grupo 1 (Zezinho)",
+            "Treino Livre 1 - Grupo 1 (Zezinho)",
+            "Treino Livre 2 - Grupo 1 (Zezinho)",
             "Qualy",
             "Box Aberto - R1",
             "Warm Up - Grupo Único",
@@ -34,23 +34,23 @@ if "sessions_df" not in st.session_state:
 
         ],
         "Data": [
-            "2026-07-24",
-            "2026-07-24",
-            "2026-07-24",
-            "2026-07-25",
-            "2026-07-25",
-            "2026-07-26",
-            "2026-07-26"
+            "2026-08-07",
+            "2026-08-07",
+            "2026-08-07",
+            "2026-08-08",
+            "2026-08-08",
+            "2026-08-09",
+            "2026-08-09"
 
         ],
         "Horário": [
-            "08:50",
-            "11:10",
-            "13:45",
-            "08:00",
-            "11:20",
+            "09:45",
+            "11:30",
+            "14:15",
+            "08:30",
+            "11:15",
             "09:15",
-            "11:25"
+            "11:10"
         ],
         "Duração (min)": [
         15,
