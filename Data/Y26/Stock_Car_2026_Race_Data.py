@@ -216,25 +216,37 @@ def show():
     pilotos_validos   = voltas_por_piloto[voltas_por_piloto >= min_voltas].index
 
     st.subheader('🔵 B-Pillar Filter')
-    # Exclude lap 1 and pit laps; keep within 110% class fastest and 110% driver fastest
+    percentual = st.slider(
+        'Select lap time filter percentage (%)',
+        min_value=0.0,
+        max_value=20.0,
+        value=10.0,
+        step=1.0,
+    )
+    # Exclude lap 1 and pit laps; keep within the chosen % of class fastest and driver fastest
     df_bp = sessao[
         sessao['Car_ID'].isin(pilotos_validos) &
         (sessao['Lap'] > 1)
     ].copy()
-    class_limit  = melhor_volta * 1.10
+    class_limit  = melhor_volta * (1 + percentual / 100)
     driver_fast  = df_bp.groupby('Driver')['Lap Tm (S)'].transform('min')
-    driver_limit = driver_fast * 1.10
+    driver_limit = driver_fast * (1 + percentual / 100)
     df_bp = df_bp[(df_bp['Lap Tm (S)'] <= class_limit) & (df_bp['Lap Tm (S)'] <= driver_limit)]
     # Keep fastest 50% of each driver's remaining laps
     driver_median   = df_bp.groupby('Driver')['Lap Tm (S)'].transform('median')
     sessao_filtrado = df_bp[df_bp['Lap Tm (S)'] <= driver_median].copy()
-    st.write(f"Class fastest: **{melhor_volta:.3f} s** | 110% limit: **{class_limit:.3f} s**")
+    st.write(f"Class fastest: **{melhor_volta:.3f} s** | {percentual:.1f}% limit: **{class_limit:.3f} s**")
     st.write(f"🧮 Maximum laps: **{max_voltas}** | Min laps to qualify: **{min_voltas}**")
-    st.write("Laps used: fastest 50% per driver, within 110% class & driver limits, excl. Lap 1")
+    st.write(f"Laps used: fastest 50% per driver, within {percentual:.1f}% class & driver limits, excl. Lap 1")
 
     for col in SECTOR_COLS:
         sessao_filtrado[col] = sessao_filtrado[col].apply(convert_to_seconds)
     sessao_filtrado = coerce_numeric_cols(sessao_filtrado, TEMPORAL_COLS)
+
+    # Full race (unfiltered) with sector times normalised — used for Progression charts
+    for col in SECTOR_COLS:
+        sessao[col] = sessao[col].apply(convert_to_seconds)
+    sessao = coerce_numeric_cols(sessao, TEMPORAL_COLS)
 
     # All drivers and cars in the session (for All Laps / Percentual diff)
     all_drivers = sorted(
@@ -358,7 +370,7 @@ def show():
                        'S3 Time Progression', 'SPT Progression']
         for tab, col, title in zip(prog_tabs, prog_cols, prog_titles):
             with tab:
-                st.plotly_chart(px.line(sessao_filtrado, x='Lap', y=col, color='Driver', title=title))
+                st.plotly_chart(px.line(sessao, x='Lap', y=col, color='Driver', title=title))
 
         raising_configs = [
             ('Lap Tm (S)', True,  'Lap Time Raising Average'),
