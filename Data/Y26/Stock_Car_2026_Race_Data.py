@@ -207,7 +207,7 @@ def show():
         st.warning('⚠️ This session file does not contain crossing time data.')
 
     # -----------------------------------------------------------------------
-    # Filter controls — B-Pillar filter (always active, main filter)
+    # Filter controls — B-Pillar filter (optional, off by default)
     # -----------------------------------------------------------------------
     melhor_volta      = sessao['Lap Tm (S)'].min()
     voltas_por_piloto = sessao.groupby('Car_ID')['Lap'].nunique()
@@ -215,29 +215,35 @@ def show():
     min_voltas        = int(np.floor(max_voltas * 0.5))
     pilotos_validos   = voltas_por_piloto[voltas_por_piloto >= min_voltas].index
 
-    st.subheader('🔵 B-Pillar Filter')
-    percentual = st.slider(
-        'Select lap time filter percentage (%)',
-        min_value=0.0,
-        max_value=20.0,
-        value=10.0,
-        step=1.0,
-    )
-    # Exclude lap 1 and pit laps; keep within the chosen % of class fastest and driver fastest
-    df_bp = sessao[
+    # Exclude lap 1 and pit laps; only keep drivers who completed >= 50% of the race laps
+    df_base = sessao[
         sessao['Car_ID'].isin(pilotos_validos) &
         (sessao['Lap'] > 1)
     ].copy()
-    class_limit  = melhor_volta * (1 + percentual / 100)
-    driver_fast  = df_bp.groupby('Driver')['Lap Tm (S)'].transform('min')
-    driver_limit = driver_fast * (1 + percentual / 100)
-    df_bp = df_bp[(df_bp['Lap Tm (S)'] <= class_limit) & (df_bp['Lap Tm (S)'] <= driver_limit)]
-    # Keep fastest 50% of each driver's remaining laps
-    driver_median   = df_bp.groupby('Driver')['Lap Tm (S)'].transform('median')
-    sessao_filtrado = df_bp[df_bp['Lap Tm (S)'] <= driver_median].copy()
-    st.write(f"Class fastest: **{melhor_volta:.3f} s** | {percentual:.1f}% limit: **{class_limit:.3f} s**")
+
+    st.subheader('🔵 B-Pillar Filter')
+    usar_filtro = st.checkbox('Enable B-Pillar filter (limit laps by % over the fastest lap)', value=False)
+
+    if usar_filtro:
+        percentual = st.slider(
+            'Select lap time filter percentage (%)',
+            min_value=0.0,
+            max_value=20.0,
+            value=4.0,
+            step=1.0,
+        )
+        # Keep all laps within the chosen % of class fastest and driver fastest
+        class_limit     = melhor_volta * (1 + percentual / 100)
+        driver_fast     = df_base.groupby('Driver')['Lap Tm (S)'].transform('min')
+        driver_limit    = driver_fast * (1 + percentual / 100)
+        sessao_filtrado = df_base[(df_base['Lap Tm (S)'] <= class_limit) & (df_base['Lap Tm (S)'] <= driver_limit)].copy()
+        st.write(f"Class fastest: **{melhor_volta:.3f} s** | {percentual:.1f}% limit: **{class_limit:.3f} s**")
+        st.write(f"Laps used: within {percentual:.1f}% class & driver limits, excl. Lap 1")
+    else:
+        sessao_filtrado = df_base
+        st.write('B-Pillar filter disabled — showing all laps (excl. Lap 1) for qualifying drivers.')
+
     st.write(f"🧮 Maximum laps: **{max_voltas}** | Min laps to qualify: **{min_voltas}**")
-    st.write(f"Laps used: fastest 50% per driver, within {percentual:.1f}% class & driver limits, excl. Lap 1")
 
     for col in SECTOR_COLS:
         sessao_filtrado[col] = sessao_filtrado[col].apply(convert_to_seconds)
