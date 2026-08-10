@@ -16,23 +16,23 @@ def show():
     #header
     st.image('header.png')
     #title
-    st.title("Session Data Report")
+    st.title("Relatório de Dados da Sessão")
 
 
     # Path to where the round folders are
     BASE_DIR = Path(__file__).resolve().parent
     PASTA_ETAPAS = BASE_DIR / "Excel_Files" / "Races"
     etapas_disponiveis = [p for p in os.listdir(PASTA_ETAPAS) if os.path.isdir(os.path.join(PASTA_ETAPAS, p))]
-    st.subheader("Round and Session Selector")
-    etapas_opcoes = ["Select a round..."] + sorted(etapas_disponiveis)
-    etapa_escolhida = st.selectbox("Choose the round:", etapas_opcoes)
-    if etapa_escolhida != "Select a round...":
+    st.subheader("Seletor de Etapa e Sessão")
+    etapas_opcoes = ["Selecione uma etapa..."] + sorted(etapas_disponiveis)
+    etapa_escolhida = st.selectbox("Escolha a etapa:", etapas_opcoes)
+    if etapa_escolhida != "Selecione uma etapa...":
         pasta_etapa = os.path.join(PASTA_ETAPAS, etapa_escolhida)
         arquivos_xlsx = [f for f in os.listdir(pasta_etapa) if f.endswith(".xlsx")]
         corrida_labels = [os.path.splitext(f)[0] for f in arquivos_xlsx]
-        corridas_opcoes = ["Select a race..."] + sorted(corrida_labels)
-        corrida_label = st.selectbox("Choose a race:", corridas_opcoes)
-        if corrida_label != "Select a race...":
+        corridas_opcoes = ["Selecione uma corrida..."] + sorted(corrida_labels)
+        corrida_label = st.selectbox("Escolha uma corrida:", corridas_opcoes)
+        if corrida_label != "Selecione uma corrida...":
             corrida_index = corrida_labels.index(corrida_label)
             corrida_arquivo = arquivos_xlsx[corrida_index]
             corrida_escolhida = corrida_arquivo  # manter compatibilidade
@@ -214,7 +214,7 @@ def show():
             melhor_volta = sessao["Lap Tm (S)"].min()        
             # Slider for the user to change the filter
             percentual = st.slider(
-                "Select lap time filter percentage (%)",
+                "Selecione a porcentagem do filtro de tempo de volta (%)",
                 min_value=0.0,
                 max_value=20.0,
                 value=4.0,
@@ -246,13 +246,13 @@ def show():
             for col in ["S1 Tm", "S2 Tm", "S3 Tm"]:
                 sessao_filtrado[col] = sessao_filtrado[col].apply(convert_to_seconds)
             # Exibir informações
-            st.subheader("Custom filter applied")
-            st.write(f"🔍 Best lap of the session: **{melhor_volta:.3f} s**")
-            st.write(f"📏 {percentual:.1f}% filter applied: **{tempo_limite:.3f} s**")
-            st.write(f"🧮 Maximum laps completed: **{max_voltas} laps**")
-            st.write(f"⚠️ Only drivers with **at least {min_voltas_necessarias} laps completed** will be considered in the analysis.")
+            st.subheader("Filtro personalizado aplicado")
+            st.write(f"🔍 Volta mais rápida da sessão: **{melhor_volta:.3f} s**")
+            st.write(f"📏 Filtro de {percentual:.1f}% aplicado: **{tempo_limite:.3f} s**")
+            st.write(f"🧮 Máximo de voltas completadas: **{max_voltas} voltas**")
+            st.write(f"⚠️ Apenas pilotos com **pelo menos {min_voltas_necessarias} voltas completadas** serão considerados na análise.")
             if "Crossing Seconds" not in sessao.columns:
-                 st.warning("⚠️ This session file does not contain crossing time data.")
+                 st.warning("⚠️ Este arquivo de sessão não contém dados de tempo de cruzamento.")
 
 
             # List of columns that SHOULD be numerics
@@ -264,13 +264,13 @@ def show():
         
             #Creating a list to select which type of graphs we want to display
             option = st.selectbox(
-                "Select the type of graph",
-                ("Chart", "Lines", "Histograms", "BoxPlots", "Others", "All Laps"),
+                "Selecione o tipo de gráfico",
+                ("Tabelas", "Linhas", "Histogramas", "BoxPlots", "Outros", "Todas as Voltas"),
                 index=0  # number 0 is to open it blank
             )
 
-        
-            if option == "Chart":
+
+            if option == "Tabelas":
                 # Base table with averages of numeric columns from the filtered session
                 tabela1 = (
                     sessao_filtrado[analise_carros]  # analise_carros não precisa mudar
@@ -298,11 +298,11 @@ def show():
                     .apply(highlight_manufacturer, subset=['Manufacturer'])
                 )
 
-                st.subheader("Table ordered by Car")
+                st.subheader("Tabela ordenada por Carro")
                 st.dataframe(tabela1_styled, hide_index=True)
 
                 #Consistency table by each driver/car
-                st.subheader("Consistency by driver (Standard Deviation)")
+                st.subheader("Consistência por piloto (Desvio Padrão)")
                 tabela_std = (
                     sessao_filtrado[analise_carros]
                     .groupby(by=['Driver', "Team", "Manufacturer"])
@@ -319,7 +319,7 @@ def show():
 
             
                 # Ordering by each team
-                st.subheader("Table ordered by Team")
+                st.subheader("Tabela ordenada por Equipe")
                 tabela2 = (
                     sessao_filtrado[analise_Team]
                     .groupby(by=["Team", "Manufacturer"])
@@ -385,12 +385,12 @@ def show():
                                                         .format(precision=3)\
                                                         .apply(highlight_manufacturer, subset=["Manufacturer"])
                 
-                st.subheader("Analysis of BoP (average of the best 2 results from each brand)")
+                st.subheader("Análise de BoP (média dos 2 melhores resultados de cada marca)")
                 st.dataframe(manufacturer_table, hide_index=True)
 
 
                 #RACE LAP TIME TABLE (FILTERED LAPS ONLY)
-                st.subheader("Race Lap Time Table")
+                st.subheader("Tabela de Tempos de Volta da Corrida")
                 # 1️⃣ Create pivot table (Driver x Lap) using filtered session
                 lap_table = (
                     sessao_filtrado
@@ -402,7 +402,7 @@ def show():
                 #Sort laps in ascending order
                 lap_table = lap_table.sort_index(axis=1)
                 #Rename columns for better visualization
-                lap_table.columns = [f"Lap {int(col)}" for col in lap_table.columns]
+                lap_table.columns = [f"Volta {int(col)}" for col in lap_table.columns]
                 #Apply background gradient per driver (row-wise)
                 lap_table_styled = (
                     lap_table
@@ -442,116 +442,116 @@ def show():
                         gaps_col = gaps_table[lap].apply(lambda x: f"{x:.3f}" if pd.notna(x) else "")
                 
                         # add columns to final table (Lap {n} Car, Lap {n} Gap)
-                        final_table[f"Lap {lap} Car"] = cars_col.values
-                        final_table[f"Lap {lap} Gap"] = gaps_col.values
-                
-                    st.subheader("Classification Table (Gap to Leader)")
+                        final_table[f"Volta {lap} Carro"] = cars_col.values
+                        final_table[f"Volta {lap} Gap"] = gaps_col.values
+
+                    st.subheader("Tabela de Classificação (Gap para o Líder)")
                     st.dataframe(final_table, use_container_width=True)
                 else:
-                    st.info("⚠️ 'Crossing Time' not available for this session. Classification table will not be displayed.")
+                    st.info("⚠️ 'Crossing Time' não disponível para esta sessão. A tabela de classificação não será exibida.")
 
 
-            elif option == 'Lines':
+            elif option == 'Linhas':
 
                 #Creating tabs for Progression
-                tabs = st.tabs(["Lap Time", "Sector 1", "Sector 2", "Sector 3", "Speed Trap"])
+                tabs = st.tabs(["Tempo de Volta", "Setor 1", "Setor 2", "Setor 3", "Speed Trap"])
 
                 #Lap Progression
                 with tabs[0]:
-                    graf1 = px.line(sessao_filtrado, x="Lap", y= "Lap Tm (S)", color="Driver", title='Lap Time Progression')
+                    graf1 = px.line(sessao_filtrado, x="Lap", y= "Lap Tm (S)", color="Driver", title='Progressão do Tempo de Volta')
                     st.plotly_chart(graf1)
-            
+
                 #S1 Progression
                 with tabs[1]:
-                    graf9 = px.line(sessao_filtrado, x="Lap", y= "S1 Tm", color="Driver", title='S1 Time Progression')
+                    graf9 = px.line(sessao_filtrado, x="Lap", y= "S1 Tm", color="Driver", title='Progressão do S1')
                     st.plotly_chart(graf9)
-            
+
                 #S2 Progression
                 with tabs[2]:
-                    graf10 = px.line(sessao_filtrado, x="Lap", y= "S2 Tm", color="Driver", title='S2 Time Progression')
+                    graf10 = px.line(sessao_filtrado, x="Lap", y= "S2 Tm", color="Driver", title='Progressão do S2')
                     st.plotly_chart(graf10)
-            
+
                 #S3 Progression
                 with tabs[3]:
-                    graf11 = px.line(sessao_filtrado, x="Lap", y= "S3 Tm", color="Driver", title='S3 Time Progression')
+                    graf11 = px.line(sessao_filtrado, x="Lap", y= "S3 Tm", color="Driver", title='Progressão do S3')
                     st.plotly_chart(graf11)
-            
+
                 #SPT Progression
                 with tabs[4]:
-                    graf12 = px.line(sessao_filtrado, x="Lap", y= "SPT", color="Driver", title='SPT Progression')
+                    graf12 = px.line(sessao_filtrado, x="Lap", y= "SPT", color="Driver", title='Progressão do SPT')
                     st.plotly_chart(graf12)
             
                 # Create tabs for Raising Average
-                tabs = st.tabs(["Lap Time", "Sector 1", "Sector 2", "Sector 3", "Speed Trap"])
-                
+                tabs = st.tabs(["Tempo de Volta", "Setor 1", "Setor 2", "Setor 3", "Speed Trap"])
+
                 # --- Lap Time Raising Average ---
                 with tabs[0]:
                     sessao_filtrado['Ranking'] = sessao_filtrado.groupby('Driver')['Lap Tm (S)'].rank(ascending=True)
                     sessao_filtrado = sessao_filtrado.sort_values(by=['Driver', 'Ranking'])
-                    graf2 = px.line(sessao_filtrado, x='Ranking', y='Lap Tm (S)', color='Driver', title='Lap Time Raising Average')
+                    graf2 = px.line(sessao_filtrado, x='Ranking', y='Lap Tm (S)', color='Driver', title='Média Crescente do Tempo de Volta')
                     st.plotly_chart(graf2)
-                
+
                 # --- Sector 1 Raising Average ---
                 with tabs[1]:
                     sessao_filtrado['Ranking'] = sessao_filtrado.groupby('Driver')['S1 Tm'].rank(ascending=True)
                     sessao_filtrado = sessao_filtrado.sort_values(by=['Driver', 'Ranking'])
-                    graf3 = px.line(sessao_filtrado, x='Ranking', y='S1 Tm', color='Driver', title='Sector 1 Raising Average')
+                    graf3 = px.line(sessao_filtrado, x='Ranking', y='S1 Tm', color='Driver', title='Média Crescente do Setor 1')
                     st.plotly_chart(graf3)
-                
+
                 # --- Sector 2 Raising Average ---
                 with tabs[2]:
                     sessao_filtrado['Ranking'] = sessao_filtrado.groupby('Driver')['S2 Tm'].rank(ascending=True)
                     sessao_filtrado = sessao_filtrado.sort_values(by=['Driver', 'Ranking'])
-                    graf4 = px.line(sessao_filtrado, x='Ranking', y='S2 Tm', color='Driver', title='Sector 2 Raising Average')
+                    graf4 = px.line(sessao_filtrado, x='Ranking', y='S2 Tm', color='Driver', title='Média Crescente do Setor 2')
                     st.plotly_chart(graf4)
-                
+
                 # --- Sector 3 Raising Average ---
                 with tabs[3]:
                     sessao_filtrado['Ranking'] = sessao_filtrado.groupby('Driver')['S3 Tm'].rank(ascending=True)
                     sessao_filtrado = sessao_filtrado.sort_values(by=['Driver', 'Ranking'])
-                    graf5 = px.line(sessao_filtrado, x='Ranking', y='S3 Tm', color='Driver', title='Sector 3 Raising Average')
+                    graf5 = px.line(sessao_filtrado, x='Ranking', y='S3 Tm', color='Driver', title='Média Crescente do Setor 3')
                     st.plotly_chart(graf5)
-                
+
                 # --- Speed Trap Raising Average ---
                 with tabs[4]:
                     sessao_filtrado['Ranking'] = sessao_filtrado.groupby('Driver')['SPT'].rank(ascending=False)
                     sessao_filtrado = sessao_filtrado.sort_values(by=['Driver', 'Ranking'])
-                    graf6 = px.line(sessao_filtrado, x='Ranking', y='SPT', color='Driver', title='Speed Trap Raising Average')
+                    graf6 = px.line(sessao_filtrado, x='Ranking', y='SPT', color='Driver', title='Média Crescente do Speed Trap')
                     st.plotly_chart(graf6)
 
 
                 # Tabs for Difference
-                tabs = st.tabs(["Last Lap Delta", "Fast Lap Delta"])
+                tabs = st.tabs(["Delta da Última Volta", "Delta da Volta Mais Rápida"])
 
                 # --- Last Lap Diff Graph ---
                 with tabs[0]:
-                    graf7 = px.line(sessao, x="Lap", y= "Last Lap Diff", color="Driver", title='Last Lap Difference')
+                    graf7 = px.line(sessao, x="Lap", y= "Last Lap Diff", color="Driver", title='Diferença da Última Volta')
                     st.plotly_chart(graf7)
-            
+
                 # --- Fast Lap Diff Graph ---
                 with tabs [1]:
-                    graf8 = px.line(sessao, x="Lap", y= "Fast Lap Diff", color="Driver", title='Fast Lap Delta')
+                    graf8 = px.line(sessao, x="Lap", y= "Fast Lap Diff", color="Driver", title='Delta da Volta Mais Rápida')
                     st.plotly_chart(graf8)
 
-                
+
                 # Tabs for Gaps
-                tabs = st.tabs(["Gap to Winner", "Gap to Lap Leader", "Gap to Reference"])
+                tabs = st.tabs(["Gap para o Vencedor", "Gap para o Líder da Volta", "Gap para Referência"])
 
                 # --- Gap to Winner Graph ---
                 with tabs[0]:
                     if "Gap to Winner" in sessao.columns:
-                        graf = px.line(sessao, x="Lap", y="Gap to Winner", color="Driver", title="Gap to Winner")
+                        graf = px.line(sessao, x="Lap", y="Gap to Winner", color="Driver", title="Gap para o Vencedor")
                         st.plotly_chart(graf)
                     else:
-                        st.info("⚠️ 'Crossing Time' not available for this session. Gap to Winner graph will not be displayed.")
+                        st.info("⚠️ 'Crossing Time' não disponível para esta sessão. O gráfico de Gap para o Vencedor não será exibido.")
 
                 # --- Gap to Leader Graph ---
                 with tabs[1]:
                     if "Gap to Leader" in sessao.columns:
-                        graf_leader = px.line(sessao, x="Lap", y="Gap to Leader", color="Driver", title="Gap to Leader")
+                        graf_leader = px.line(sessao, x="Lap", y="Gap to Leader", color="Driver", title="Gap para o Líder")
                         st.plotly_chart(graf_leader)
                     else:
-                        st.info("⚠️ 'Crossing Time' not available for this session. Gap to Leader graph will not be displayed.")
+                        st.info("⚠️ 'Crossing Time' não disponível para esta sessão. O gráfico de Gap para o Líder não será exibido.")
 
                 # --- Gap to Reference Graph ---
                 with tabs[2]:
@@ -560,7 +560,7 @@ def show():
                             sessao[["Car_ID", "Driver"]].dropna().drop_duplicates().sort_values("Driver")
                         )
                         ref_driver = st.selectbox(
-                            "Select the reference car:", driver_options["Driver"], key="gap_to_reference_driver"
+                            "Selecione o carro de referência:", driver_options["Driver"], key="gap_to_reference_driver"
                         )
                         ref_car_id = driver_options.loc[driver_options["Driver"] == ref_driver, "Car_ID"].iloc[0]
                         ref_times = sessao[sessao["Car_ID"] == ref_car_id][["Lap", "Cumulative Crossing"]].rename(
@@ -570,27 +570,27 @@ def show():
                         gap_ref_df["Gap to Reference"] = gap_ref_df["Cumulative Crossing"] - gap_ref_df["Reference Crossing"]
                         graf_ref = px.line(
                             gap_ref_df, x="Lap", y="Gap to Reference", color="Driver",
-                            title=f"Gap to Reference ({ref_driver})",
+                            title=f"Gap para Referência ({ref_driver})",
                         )
                         st.plotly_chart(graf_ref)
                     else:
-                        st.info("⚠️ 'Crossing Time' not available for this session. Gap to Reference graph will not be displayed.")
+                        st.info("⚠️ 'Crossing Time' não disponível para esta sessão. O gráfico de Gap para Referência não será exibido.")
 
 
 
         
-            elif option =='Histograms':
+            elif option =='Histogramas':
                 for var in analise_carros:
                     if var in ['Car_ID', 'Driver', 'Team', 'Manufacturer']:
                         continue #skips these columns
-                    fig = px.histogram(sessao_filtrado[var], nbins=25,title=f'{var} distribution')
+                    fig = px.histogram(sessao_filtrado[var], nbins=25,title=f'Distribuição de {var}')
                     st.plotly_chart(fig)
-            
-            elif option == 'Others':
-                st.subheader("Car Efficiency")
-                
+
+            elif option == 'Outros':
+                st.subheader("Eficiência dos Carros")
+
                 # Tabs
-                tab1, tab2 = st.tabs(["Fastest Lap per Team", "Average per Team"])
+                tab1, tab2 = st.tabs(["Volta Mais Rápida por Equipe", "Média por Equipe"])
                 
                 # --- FUNÇÃO PARA PLOTAR O GRÁFICO (reutilizável) ---
                 def plot_efficiency(df, title_suffix=""):
@@ -605,28 +605,28 @@ def show():
                         y='SPT', 
                         color='Team', 
                         symbol='Team',
-                        title=f"Aerodynamic Efficiency {title_suffix}",
+                        title=f"Eficiência Aerodinâmica {title_suffix}",
                         hover_data=['Car_ID']
                     )
-                
+
                     fig.update_traces(marker_size=12)
-                
+
                     # Vertical cut line
                     fig.add_vline(
                         x=media_avg_speed,
                         line_dash="dash",
                         line_color="white",
-                        annotation_text="Average Avg Speed",
+                        annotation_text="Velocidade Média",
                         annotation_position="bottom left",
                         annotation_font_color="white"
                     )
-                
+
                     # Horizontal cut line
                     fig.add_hline(
                         y=media_spt,
                         line_dash="dash",
                         line_color="white",
-                        annotation_text="Average SPT",
+                        annotation_text="SPT Médio",
                         annotation_position="top right",
                         annotation_font_color="white"
                     )
@@ -638,7 +638,7 @@ def show():
                 #  TAB 1 → FASTEST LAP PER TEAM
                 # =============================================================
                 with tab1:
-                    st.markdown("### Fastest Lap per Team")
+                    st.markdown("### Volta Mais Rápida por Equipe")
                 
                     sessao_eff = sessao_filtrado.copy()
                 
@@ -650,14 +650,14 @@ def show():
                         .reset_index()
                     )
                 
-                    fig_fastest = plot_efficiency(fastest_per_team, "(Fastest Lap per Team)")
+                    fig_fastest = plot_efficiency(fastest_per_team, "(Volta Mais Rápida por Equipe)")
                     st.plotly_chart(fig_fastest, use_container_width=True)
                 
                     st.markdown("""
-                    - **↗ Upper Right** → High overall efficiency (straight + turn)
-                    - **↖ Upper Left** → Low downforce (good straight, bad cornering)
-                    - **↘ Lower Right** → High downforce (good cornering, bad straight)
-                    - **↙ Lower Left** → Lower Left Quadrant: Low efficiency (neither)
+                    - **↗ Superior Direito** → Alta eficiência geral (reta + curva)
+                    - **↖ Superior Esquerdo** → Baixa downforce (boa reta, curva ruim)
+                    - **↘ Inferior Direito** → Alta downforce (boa curva, reta ruim)
+                    - **↙ Inferior Esquerdo** → Quadrante Inferior Esquerdo: Baixa eficiência (nenhuma das duas)
                     """)
                 
                 
@@ -665,7 +665,7 @@ def show():
                 #  TAB 2 → AVERAGE PER TEAM
                 # =============================================================
                 with tab2:
-                    st.markdown("### Average per Team")
+                    st.markdown("### Média por Equipe")
                 
                     sessao_eff = sessao_filtrado.copy()
                 
@@ -683,24 +683,24 @@ def show():
                 
                     avg_per_team = avg_per_team.merge(represent_car, on="Team")
                 
-                    fig_avg = plot_efficiency(avg_per_team, "(Average per Team)")
+                    fig_avg = plot_efficiency(avg_per_team, "(Média por Equipe)")
                     st.plotly_chart(fig_avg, use_container_width=True)
                 
                     st.markdown("""
-                    - **↗ Upper Right** → High overall efficiency (straight + turn)
-                    - **↖ Upper Left** → Low downforce (good straight, bad cornering)
-                    - **↘ Lower Right** → High downforce (good cornering, bad straight)
-                    - **↙ Lower Left** → Lower Left Quadrant: Low efficiency (neither)
+                    - **↗ Superior Direito** → Alta eficiência geral (reta + curva)
+                    - **↖ Superior Esquerdo** → Baixa downforce (boa reta, curva ruim)
+                    - **↘ Inferior Direito** → Alta downforce (boa curva, reta ruim)
+                    - **↙ Inferior Esquerdo** → Quadrante Inferior Esquerdo: Baixa eficiência (nenhuma das duas)
                     """)
     
                 # Tabs to Gap to Fastest
-                tabs = st.tabs(["Gap to Fastest Car in AVG - Lap", "Gap to Fastest Car in AVG - S1", "Gap to Fastest Car in AVG - S2", "Gap to Fastest Car in AVG - S3"])
-            
+                tabs = st.tabs(["Gap para o Carro Mais Rápido na Média - Volta", "Gap para o Carro Mais Rápido na Média - S1", "Gap para o Carro Mais Rápido na Média - S2", "Gap para o Carro Mais Rápido na Média - S3"])
+
                 colunas_setores = {
-                    "Gap to Fastest Car in AVG - Lap": "Lap Tm (S)",
-                    "Gap to Fastest Car in AVG - S1": "S1 Tm",
-                    "Gap to Fastest Car in AVG - S2": "S2 Tm",
-                    "Gap to Fastest Car in AVG - S3": "S3 Tm"
+                    "Gap para o Carro Mais Rápido na Média - Volta": "Lap Tm (S)",
+                    "Gap para o Carro Mais Rápido na Média - S1": "S1 Tm",
+                    "Gap para o Carro Mais Rápido na Média - S2": "S2 Tm",
+                    "Gap para o Carro Mais Rápido na Média - S3": "S3 Tm"
                 }
             
                 # Dicionário de cores dos seus carros
@@ -723,7 +723,7 @@ def show():
             
                         bars = alt.Chart(media_por_car_id).mark_bar().encode(
                             x=alt.X('Driver:N', sort=media_por_car_id['Diff'].tolist()),
-                            y=alt.Y('Diff', title=f'Diff to Best {coluna} (s)'),
+                            y=alt.Y('Diff', title=f'Diferença para o melhor {coluna} (s)'),
                             color=alt.Color('Color:N', scale=None)
                         )
             
@@ -743,7 +743,7 @@ def show():
                         st.altair_chart(chart, use_container_width=True)
             
                 # Percentual difference with tendency
-                st.header("Percentual difference to the best lap for each driver from this team")
+                st.header("Diferença percentual para a volta mais rápida de cada piloto desta equipe")
             
                 carros_desejados = [10, 11, 44, 88, 31, 38]
                 nomes_carros = {
@@ -771,7 +771,7 @@ def show():
                         df = sessao_filtrado[sessao_filtrado['Car_ID'] == carro].copy()
             
                         if df.empty:
-                            st.write("No laps avaiable for this car after the filter.")
+                            st.write("Nenhuma volta disponível para este carro após o filtro.")
                             continue
             
                         melhor_volta = df['Lap Tm (S)'].min()
@@ -787,13 +787,13 @@ def show():
                             df, x="Lap", y="Diff %",
                             text=df['Diff %'].map(lambda x: f"{x:.2f}%"),
                             color_discrete_sequence=[cores_carros[carro]],
-                            title=f"{nomes_carros[carro]} - Diff % by lap"
+                            title=f"{nomes_carros[carro]} - Diferença % por volta"
                         )
-            
+
                         fig.update_traces(textposition='outside')
-            
+
                         fig.add_vline(x=volta_mais_rapida, line_dash="dash", line_color="white",
-                                    annotation_text="Best lap", annotation_position="top")
+                                    annotation_text="Melhor volta", annotation_position="top")
             
                         # Linhas de tendência por bloco
                         for bloco_id in df['Bloco'].unique():
@@ -817,8 +817,8 @@ def show():
                             ))
             
                         fig.update_layout(
-                            yaxis_title="Difference to best lap (%)",
-                            xaxis_title="Lap",
+                            yaxis_title="Diferença para a melhor volta (%)",
+                            xaxis_title="Volta",
                             uniformtext_minsize=8,
                             uniformtext_mode='show'
                         )
@@ -838,15 +838,15 @@ def show():
                             y=var,
                             points="all",
                             color="Manufacturer",
-                            title=f"{var} Distribution by Manufacturer"
+                            title=f"Distribuição de {var} por Fabricante"
                         )
                         fig1.update_layout(showlegend=False)
                         st.plotly_chart(fig1, use_container_width=True)
 
                     # Block 2 — por Car_ID (como rótulo) em tabs
-                    tabs_box = st.tabs(["Lap", "S1", "S2", "S3", "SPT"])
+                    tabs_box = st.tabs(["Volta", "S1", "S2", "S3", "SPT"])
                     colunas_boxplot = {
-                        "Lap": "Lap Tm (S)",
+                        "Volta": "Lap Tm (S)",
                         "S1": "S1 Tm",
                         "S2": "S2 Tm",
                         "S3": "S3 Tm",
@@ -878,7 +878,7 @@ def show():
 
 
 
-            elif option == 'All Laps':
+            elif option == 'Todas as Voltas':
                 # Lista de Car_IDs que você quer exibir
                 carros_desejados = [10, 11, 44, 88, 31, 38]
 
@@ -903,6 +903,6 @@ def show():
                     st.dataframe(df_car)
 
         else:
-            st.warning("Please, select a race.")
+            st.warning("Por favor, selecione uma corrida.")
     else:
-        st.warning("Please, select a round.")
+        st.warning("Por favor, selecione uma etapa.")

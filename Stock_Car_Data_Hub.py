@@ -17,19 +17,19 @@ def _check_password() -> bool:
     if st.session_state.get("authenticated"):
         return True
 
-    st.title("Race Analysis System")
-    st.subheader("🔒 Please enter the password to continue")
+    st.title("Sistema de Análise de Corridas")
+    st.subheader("🔒 Digite a senha para continuar")
 
     st.text_input(
-        "Password",
+        "Senha",
         type="password",
         key="pwd_input",
         on_change=_submit,
-        placeholder="Enter password and press Enter",
+        placeholder="Digite a senha e pressione Enter",
     )
 
     if st.session_state.get("auth_error"):
-        st.error("Incorrect password. Please try again.")
+        st.error("Senha incorreta. Por favor, tente novamente.")
         st.session_state["auth_error"] = False
 
     return False
@@ -53,40 +53,40 @@ from Data.Y26.Stock_Car_2026_Season_Analysis import show as show_season_2026
 # Sidebar Configuration Panel
 # ======================================
 
-st.title("Race Analysis System")
+st.title("Sistema de Análise de Corridas")
 
 with st.sidebar:
-    st.header("Session Configuration")
+    st.header("Configuração da Sessão")
 
-    year_options = ["Select a year...", "2025", "2026"]
-    selected_year = st.selectbox("Choose the year:", year_options)
+    year_options = ["Selecione um ano...", "2025", "2026"]
+    selected_year = st.selectbox("Escolha o ano:", year_options)
 
-    session_options = ["Select a session...", "Race Data", "Practice Data", "Round Analysis", "Season Analysis"]
-    selected_session = st.selectbox("Choose the session:", session_options)
+    session_options = ["Selecione uma sessão...", "Dados de Corrida", "Dados de Treino", "Análise da Etapa", "Análise da Temporada"]
+    selected_session = st.selectbox("Escolha a sessão:", session_options)
 
 # ======================================
 # Navigation Logic
 # ======================================
 
-if selected_year == "Select a year...":
-    st.info("Please select a year to begin the analysis.")
+if selected_year == "Selecione um ano...":
+    st.info("Por favor, selecione um ano para iniciar a análise.")
 
-elif selected_session == "Select a session...":
-    st.warning("Please select a session type.")
+elif selected_session == "Selecione uma sessão...":
+    st.warning("Por favor, selecione um tipo de sessão.")
 
 else:
     if selected_year == "2025":
-        if selected_session == "Race Data":
+        if selected_session == "Dados de Corrida":
             show_race_2025()
-        elif selected_session == "Practice Data":
+        elif selected_session == "Dados de Treino":
             show_practice_2025()
 
     elif selected_year == "2026":
-        if selected_session == "Race Data":
+        if selected_session == "Dados de Corrida":
             show_race_2026()
-        elif selected_session == "Practice Data":
+        elif selected_session == "Dados de Treino":
             show_practice_2026()
-        elif selected_session == "Round Analysis":
+        elif selected_session == "Análise da Etapa":
             show_round_2026()
-        elif selected_session == "Season Analysis":
+        elif selected_session == "Análise da Temporada":
             show_season_2026()

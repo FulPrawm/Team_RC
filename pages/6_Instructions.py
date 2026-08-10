@@ -2,88 +2,93 @@ import streamlit as st
 
 # Header image and title
 st.image('header.png', use_container_width=True)
-st.title('Instructions')
-st.subheader('Data by Year and Session')
+st.title('Instruções')
+st.subheader('Dados por Ano e Sessão')
 
 # Main data filtering information
 st.info(
-    "All data shown is filtered to include only laps within 4% of the fastest lap of the session "
-    "and from drivers who completed at least 50% of the total laps completed by the session leader."
+    "Nas páginas de Dados de Corrida, Dados de Treino, Análise da Etapa e Análise da Temporada, "
+    "o **Filtro** está sempre ativo e é controlado por dois sliders:\n"
+    "- **Volta mais rápida da sessão (%):** mantém apenas as voltas dentro dessa porcentagem "
+    "acima da volta mais rápida da sessão (padrão: 3%).\n"
+    "- **Volta mais rápida de cada piloto (%):** mantém apenas as voltas dentro dessa porcentagem "
+    "acima da volta mais rápida de cada piloto (padrão: 3%).\n\n"
+    "A Volta 1 é sempre excluída da análise."
 )
 
 # Clarifying how 'Race' and 'Practice' pages differ
 st.info(
-    "**Note on 'Race' vs. 'Practice' pages:**\n"
-    "- The visualizations are the same on both pages.\n"
-    "- The difference lies in the data aggregation method:\n"
-    "    - **Race:** lap times and speeds are averaged across valid laps.\n"
-    "    - **Practice:** only the best times and highest speeds are used per driver."
+    "**Nota sobre as páginas 'Dados de Corrida' vs. 'Dados de Treino':**\n"
+    "- As visualizações são as mesmas nas duas páginas.\n"
+    "- A diferença está no método de agregação dos dados:\n"
+    "    - **Dados de Corrida:** os tempos de volta e velocidades são calculados pela média das voltas válidas.\n"
+    "    - **Dados de Treino:** são usados apenas os melhores tempos e maiores velocidades de cada piloto."
 )
 
 # General description of the dashboard
 st.markdown("""
-### Overview
-This dashboard provides performance data from multiple racing sessions, organized by **year** and session type.
+### Visão Geral
+Este painel fornece dados de desempenho de várias sessões de corrida, organizados por **ano** e tipo de sessão.
 
-Before accessing Race or Practice data, the user must select the desired **year** from the sidebar.
+Antes de acessar os dados de Corrida ou Treino, o usuário deve selecionar o **ano** desejado na barra lateral.
 
-Each racing series has a dedicated page. Data from one series cannot be analyzed through another series' page.
+Cada série de corrida tem uma página dedicada. Dados de uma série não podem ser analisados pela página de outra série.
 """)
 
 # Summary of the types of session analysis
-st.subheader("Session Analysis Criteria")
+st.subheader("Critérios de Análise da Sessão")
 col1, col2 = st.columns(2)
 
 with col1:
-    st.markdown("#### Race Sessions")
-    st.markdown("- Data processed using **average time** and **average speed** per driver/team/manufacturer.")
-    st.markdown("- Intended to reflect overall race pace and consistency.")
+    st.markdown("#### Sessões de Corrida")
+    st.markdown("- Dados processados usando **tempo médio** e **velocidade média** por piloto/equipe/fabricante.")
+    st.markdown("- Buscam refletir o ritmo geral de corrida e a consistência.")
 
 with col2:
-    st.markdown("#### Practice Sessions")
-    st.markdown("- Data processed using each driver/team/manufacturer's **best time** and **highest speed**.")
-    st.markdown("- Intended to reflect maximum single-lap/sector performance.")
+    st.markdown("#### Sessões de Treino")
+    st.markdown("- Dados processados usando o **melhor tempo** e a **maior velocidade** de cada piloto/equipe/fabricante.")
+    st.markdown("- Buscam refletir o desempenho máximo em volta/setor único.")
 
 # Optional section for explaining the charts
-with st.expander("How to interpret the charts"):
-    st.write("- All charts are based on the data provided by the category timeboard provider (Chronon for Stock Car).")
-    st.write("- Gaps are displayed in time deltas relative to the session.")
-    st.write("- Lines, colors, boxes, and dots represent individual drivers or data groupings.")
+with st.expander("Como interpretar os gráficos"):
+    st.write("- Todos os gráficos são baseados nos dados fornecidos pelo provedor de cronometragem da categoria (Chronon, no caso da Stock Car).")
+    st.write("- Os gaps são exibidos em deltas de tempo relativos à sessão.")
+    st.write("- Linhas, cores, boxes e pontos representam pilotos individuais ou agrupamentos de dados.")
 
 # Section for the Watch page
-st.subheader("Watch Page")
+st.subheader("Página Watch")
 st.info(
-    "The **Watch** page provides real-time information on the weekend sessions and allows you to edit session times directly from the page, without accessing the code.\n"
-    "- **Current Day & Time:** shows the current date and time.\n"
-    "- **Session Schedule:** start and end times for each session (editable).\n"
-    "- **Elapsed Time & Time Remaining:** tracks how long a session has been running and how much time is left.\n"
-    "- **Next Session Info:** displays the upcoming session, its duration, and countdown until it begins."
+    "A página **Watch** fornece informações em tempo real sobre as sessões do final de semana e permite editar os horários das sessões diretamente pela página, sem acessar o código.\n"
+    "- **Dia e Hora Atuais:** mostra a data e a hora atuais.\n"
+    "- **Cronograma das Sessões:** horários de início e fim de cada sessão (editáveis).\n"
+    "- **Tempo Decorrido e Tempo Restante:** acompanha há quanto tempo uma sessão está em andamento e quanto tempo falta.\n"
+    "- **Informações da Próxima Sessão:** exibe a próxima sessão, sua duração e a contagem regressiva até o início."
 )
 
 st.markdown("""
-### Overview
-The Watch page helps you stay updated with the weekend racing schedule. You can quickly know:
-- Which session is currently running.
-- How long it has been running.
-- When the next session will start.
-- The total duration of each session.
-- Countdown timers for upcoming sessions.
-- Edit session times directly from the page.
+### Visão Geral
+A página Watch ajuda a manter você atualizado sobre o cronograma de corridas do final de semana. Você pode saber rapidamente:
+- Qual sessão está em andamento no momento.
+- Há quanto tempo ela está em andamento.
+- Quando a próxima sessão vai começar.
+- A duração total de cada sessão.
+- Contagens regressivas para as próximas sessões.
+- Editar os horários das sessões diretamente pela página.
 """)
 
 # Section for the MoTeC Graphs page
-st.subheader("MoTeC Graphs Page")
+st.subheader("Página MoTeC Graphs")
 st.info(
-    "The **MoTeC Graphs** page allows you to generate scatter plot reports from MoTeC data.\n"
-    "- You first generate an Excel report from the MoTeC software.\n"
-    "- Modify the Excel file as needed.\n"
-    "- Open the modified Excel directly from this page to create scatter plot visualizations."
+    "A página **MoTeC Graphs** permite gerar gráficos de dispersão a partir de dados do MoTeC.\n"
+    "- Primeiro, gere um relatório em Excel a partir do software MoTeC.\n"
+    "- Modifique o arquivo Excel conforme necessário.\n"
+    "- Abra o Excel modificado diretamente por esta página para criar as visualizações de dispersão."
 )
 
 st.markdown("""
-### Overview
-This page is intended for advanced data analysis and visualization:
-- Generates scatter plots to analyze lap-by-lap data and trends.
-- Requires pre-processing the Excel files before loading.
-- Helps visualize performance differences between drivers, laps, and sessions.
+### Visão Geral
+Esta página é voltada para análise e visualização de dados avançada:
+- Gera gráficos de dispersão para analisar dados e tendências volta a volta.
+- Requer pré-processamento dos arquivos Excel antes de carregá-los.
+- Ajuda a visualizar diferenças de desempenho entre pilotos, voltas e sessões.
 """)

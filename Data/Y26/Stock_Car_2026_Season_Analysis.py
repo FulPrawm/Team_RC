@@ -19,6 +19,7 @@ TEMPORAL_COLS = ['Lap Tm (S)', 'S1 Tm', 'S2 Tm', 'S3 Tm', 'SPT', 'Avg Speed']
 SECTOR_COLS   = ['S1 Tm', 'S2 Tm', 'S3 Tm']
 CMAP          = 'RdYlGn_r'
 SKIP_STEMS    = {'Q', 'Q1'}
+FILTRO_PADRAO = 3.0
 
 
 def _round_label(folder: str) -> str:
@@ -178,7 +179,7 @@ def _load_season(base_dir: Path):
                     df = coerce_numeric_cols(df, TEMPORAL_COLS)
                     lap_frames.append(df)
                 except Exception as e:
-                    st.warning(f"Could not load {f.name}: {e}")
+                    st.warning(f"Não foi possível carregar {f.name}: {e}")
 
         # --- Race results with correct grids ---
         if not races_dir.exists() or not practice_dir.exists():
@@ -225,7 +226,7 @@ def _load_season(base_dir: Path):
                     )
                 result_frames.append(merged)
             except Exception as e:
-                st.warning(f"Could not process {race_file.name}: {e}")
+                st.warning(f"Não foi possível processar {race_file.name}: {e}")
 
     df_laps    = pd.concat(lap_frames,    ignore_index=True) if lap_frames    else pd.DataFrame()
     df_results = pd.concat(result_frames, ignore_index=True) if result_frames else pd.DataFrame()
@@ -274,15 +275,16 @@ def _rank_of_ranks(df: pd.DataFrame, value_col: str, agg_fn: str,
 # ---------------------------------------------------------------------------
 def show():
     st.image('header.png')
-    st.title('Season Analysis — 2026')
+    st.title('Análise da Temporada — 2026')
+    st.warning('🚧 Página ainda em construção — dados e funcionalidades podem mudar.')
 
     BASE_DIR = Path(__file__).resolve().parent
 
-    with st.spinner('Loading full season data…'):
+    with st.spinner('Carregando dados da temporada completa…'):
         df_laps, df_results = _load_season(BASE_DIR)
 
     if df_laps.empty:
-        st.error('No season data found.')
+        st.error('Nenhum dado de temporada encontrado.')
         return
 
     rounds_ordered = (
@@ -292,13 +294,13 @@ def show():
     # -----------------------------------------------------------------------
     # Filters
     # -----------------------------------------------------------------------
-    st.subheader('🔧 Filters')
+    st.subheader('🔧 Filtros')
     c1, c2 = st.columns(2)
     with c1:
         all_types  = sorted(df_laps['Session Type'].unique())
-        sel_types  = st.multiselect('Session type:', all_types, default=['Race'], key='s_type')
+        sel_types  = st.multiselect('Tipo de sessão:', all_types, default=['Race'], key='s_type')
     with c2:
-        sel_rounds = st.multiselect('Rounds (empty = all):', rounds_ordered, default=[], key='s_round')
+        sel_rounds = st.multiselect('Etapas (vazio = todas):', rounds_ordered, default=[], key='s_round')
 
     df = df_laps.copy()
     if sel_types:
@@ -307,30 +309,47 @@ def show():
         df = df[df['Round'].isin(sel_rounds)]
         rounds_ordered = [r for r in rounds_ordered if r in sel_rounds]
 
-    # B-Pillar filter (always active, main filter)
-    class_limit = df['Lap Tm (S)'].min() * 1.10
+    # Filter (always active, main filter)
+    st.subheader('🔵 Filtro')
+    col_f1, col_f2 = st.columns(2)
+    with col_f1:
+        percentual_sessao = st.slider(
+            'Volta mais rápida da sessão (%)',
+            min_value=0.0,
+            max_value=20.0,
+            value=FILTRO_PADRAO,
+            step=0.5,
+        )
+    with col_f2:
+        percentual_piloto = st.slider(
+            'Volta mais rápida de cada piloto (%)',
+            min_value=0.0,
+            max_value=20.0,
+            value=FILTRO_PADRAO,
+            step=0.5,
+        )
+
+    class_limit = df['Lap Tm (S)'].min() * (1 + percentual_sessao / 100)
     drv_fast    = df.groupby('Driver')['Lap Tm (S)'].transform('min')
-    df = df[(df['Lap Tm (S)'] <= class_limit) & (df['Lap Tm (S)'] <= drv_fast * 1.10)]
-    drv_median = df.groupby('Driver')['Lap Tm (S)'].transform('median')
-    df = df[df['Lap Tm (S)'] <= drv_median].copy()
-    st.info('🔵 B-Pillar filter active')
+    df = df[(df['Lap Tm (S)'] <= class_limit) & (df['Lap Tm (S)'] <= drv_fast * (1 + percentual_piloto / 100))].copy()
+    st.write(f"Voltas consideradas: dentro de {percentual_sessao:.1f}% da sessão e {percentual_piloto:.1f}% do piloto")
 
     if df.empty:
-        st.warning('No data after filters.')
+        st.warning('Nenhum dado após os filtros.')
         return
 
-    st.caption(f"**{len(df):,} laps** · **{df['Round'].nunique()} rounds** · **{df['Driver'].nunique()} drivers**")
+    st.caption(f"**{len(df):,} voltas** · **{df['Round'].nunique()} etapas** · **{df['Driver'].nunique()} pilotos**")
     st.divider()
 
     # -----------------------------------------------------------------------
     # Analysis selector
     # -----------------------------------------------------------------------
-    option = st.selectbox('Select analysis:', (
-        'Lap Time Ranking',
-        'Speed Trap Ranking',
-        'Sector Rankings',
-        'Consistency Ranking',
-        'Race Results & Positions',
+    option = st.selectbox('Selecione a análise:', (
+        'Ranking de Tempo de Volta',
+        'Ranking de Speed Trap',
+        'Ranking de Setores',
+        'Ranking de Consistência',
+        'Resultados e Posições da Corrida',
     ))
 
     def _show_rank_table(final, pivot, rounds_ordered, value_label, ascending=True):
@@ -340,7 +359,7 @@ def show():
             .background_gradient(cmap=CMAP, subset=['Avg_Rank']),
             use_container_width=True,
         )
-        st.caption('Per-round rank detail (1 = best in that round)')
+        st.caption('Detalhe do ranking por etapa (1 = melhor na etapa)')
         pivot_show = pivot[[r for r in rounds_ordered if r in pivot.columns]]
         fmt = {c: (lambda x: f'{x:.0f}' if pd.notna(x) else '—') for c in pivot_show.columns}
         st.dataframe(
@@ -350,39 +369,39 @@ def show():
         )
 
     # =======================================================================
-    if option == 'Lap Time Ranking':
+    if option == 'Ranking de Tempo de Volta':
     # =======================================================================
-        st.subheader('Lap Time Ranking — rank of ranks across rounds')
-        tabs = st.tabs(['Best Lap', 'Average Lap'])
+        st.subheader('Ranking de Tempo de Volta — ranking de rankings entre etapas')
+        tabs = st.tabs(['Melhor Volta', 'Volta Média'])
 
         with tabs[0]:
-            st.write('Each driver is ranked by best lap **within each round**, then those ranks are averaged.')
+            st.write('Cada piloto é ranqueado pela melhor volta **dentro de cada etapa**, depois esses rankings são calculados na média.')
             final, pivot = _rank_of_ranks(df, 'Lap Tm (S)', 'min', ascending=True)
-            _show_rank_table(final, pivot, rounds_ordered, 'Best Lap')
+            _show_rank_table(final, pivot, rounds_ordered, 'Melhor Volta')
 
         with tabs[1]:
-            st.write('Each driver is ranked by average lap **within each round**, then those ranks are averaged.')
+            st.write('Cada piloto é ranqueado pela volta média **dentro de cada etapa**, depois esses rankings são calculados na média.')
             final, pivot = _rank_of_ranks(df, 'Lap Tm (S)', 'mean', ascending=True)
-            _show_rank_table(final, pivot, rounds_ordered, 'Avg Lap')
+            _show_rank_table(final, pivot, rounds_ordered, 'Volta Média')
 
     # =======================================================================
-    elif option == 'Speed Trap Ranking':
+    elif option == 'Ranking de Speed Trap':
     # =======================================================================
-        st.subheader('Speed Trap Ranking — rank of ranks across rounds')
-        tabs = st.tabs(['Max SPT', 'Average SPT'])
+        st.subheader('Ranking de Speed Trap — ranking de rankings entre etapas')
+        tabs = st.tabs(['SPT Máximo', 'SPT Médio'])
 
         with tabs[0]:
             final, pivot = _rank_of_ranks(df, 'SPT', 'max', ascending=False)
-            _show_rank_table(final, pivot, rounds_ordered, 'Max SPT', ascending=False)
+            _show_rank_table(final, pivot, rounds_ordered, 'SPT Máximo', ascending=False)
 
         with tabs[1]:
             final, pivot = _rank_of_ranks(df, 'SPT', 'mean', ascending=False)
-            _show_rank_table(final, pivot, rounds_ordered, 'Avg SPT', ascending=False)
+            _show_rank_table(final, pivot, rounds_ordered, 'SPT Médio', ascending=False)
 
     # =======================================================================
-    elif option == 'Sector Rankings':
+    elif option == 'Ranking de Setores':
     # =======================================================================
-        st.subheader('Sector Rankings — rank of ranks across rounds')
+        st.subheader('Ranking de Setores — ranking de rankings entre etapas')
         tabs = st.tabs(['S1', 'S2', 'S3'])
         for tab, col in zip(tabs, SECTOR_COLS):
             with tab:
@@ -390,10 +409,10 @@ def show():
                 _show_rank_table(final, pivot, rounds_ordered, col)
 
     # =======================================================================
-    elif option == 'Consistency Ranking':
+    elif option == 'Ranking de Consistência':
     # =======================================================================
-        st.subheader('Consistency Ranking — rank of std deviation per round, then averaged')
-        st.write('Lower CV within each round = more consistent. Ranks are averaged across rounds.')
+        st.subheader('Ranking de Consistência — ranking do desvio padrão por etapa, depois calculados na média')
+        st.write('Menor variação dentro de cada etapa = mais consistente. Os rankings são calculados na média entre etapas.')
 
         # Std dev per driver per round, then rank within round
         std_per_round = (
@@ -419,33 +438,33 @@ def show():
         fig = px.bar(
             final.reset_index(), x='Driver', y='Avg_Rank',
             color='Avg_Rank', color_continuous_scale=CMAP,
-            title='Average Consistency Rank (lower = more consistent)',
+            title='Ranking Médio de Consistência (menor = mais consistente)',
             text='Avg_Rank',
         )
         fig.update_traces(texttemplate='%{text:.2f}', textposition='outside')
         fig.update_layout(coloraxis_showscale=False)
         st.plotly_chart(fig, use_container_width=True)
 
-        _show_rank_table(final, pivot, rounds_ordered, 'Std Dev')
+        _show_rank_table(final, pivot, rounds_ordered, 'Desvio Padrão')
 
     # =======================================================================
-    elif option == 'Race Results & Positions':
+    elif option == 'Resultados e Posições da Corrida':
     # =======================================================================
-        st.subheader('Race Results & Position Rankings')
+        st.subheader('Resultados e Rankings de Posição da Corrida')
 
         if df_results.empty:
-            st.warning('No race result data available yet.')
+            st.warning('Ainda não há dados de resultado de corrida disponíveis.')
             return
 
         res = df_results.copy()
         if sel_rounds:
             res = res[res['Round'].isin(sel_rounds)]
 
-        tabs = st.tabs(['Finish Position Ranking', 'Grid Position Ranking',
-                        'Positions Gained', 'Per Race Results'])
+        tabs = st.tabs(['Ranking de Posição de Chegada', 'Ranking de Posição de Largada',
+                        'Posições Ganhas', 'Resultados por Corrida'])
 
         with tabs[0]:
-            st.write('Rank of ranks: each driver ranked by finish position per race, then averaged.')
+            st.write('Ranking de rankings: cada piloto ranqueado pela posição de chegada por corrida, depois calculado na média.')
             fp = (
                 res.groupby(['Driver', 'Round', 'Race'])['Finish_Pos'].min()
                 .reset_index()
@@ -466,7 +485,7 @@ def show():
             )
 
         with tabs[1]:
-            st.write('Rank of ranks: each driver ranked by grid position per race, then averaged.')
+            st.write('Ranking de rankings: cada piloto ranqueado pela posição de largada por corrida, depois calculado na média.')
             gp = res.dropna(subset=['Grid_Pos']).copy()
             gp['Round Rank'] = gp.groupby(['Round', 'Race'])['Grid_Pos'].rank(ascending=True, method='min')
             final_gp = (
@@ -484,7 +503,7 @@ def show():
             )
 
         with tabs[2]:
-            st.write('Average positions gained per race (positive = gained, negative = lost).')
+            st.write('Média de posições ganhas por corrida (positivo = ganhou, negativo = perdeu).')
             pg = res.dropna(subset=['Positions Gained']).copy()
             avg_gain = (
                 pg.groupby('Driver')['Positions Gained'].mean()
@@ -498,7 +517,7 @@ def show():
             fig = px.bar(
                 avg_gain.reset_index(), x='Driver', y='Positions Gained',
                 color='Positions Gained', color_continuous_scale='RdYlGn',
-                title='Avg Positions Gained per Race (grid → finish)',
+                title='Média de Posições Ganhas por Corrida (largada → chegada)',
                 text='Positions Gained',
             )
             fig.update_traces(texttemplate='%{text:+.1f}', textposition='outside')
@@ -514,7 +533,7 @@ def show():
 
         with tabs[3]:
             race_options = sorted(res.apply(lambda r: f"{r['Round']} — {r['Race']}", axis=1).unique())
-            sel_race = st.selectbox('Choose a race:', race_options)
+            sel_race = st.selectbox('Escolha uma corrida:', race_options)
             sel_round_r, sel_race_r = sel_race.split(' — ', 1)
             race_res = (
                 res[(res['Round'] == sel_round_r) & (res['Race'] == sel_race_r)]
