@@ -61,7 +61,7 @@ else:
             color_map = {
                 "Felipe Fraga": "yellow",
                 "Gaetano Di Mauro": "blue",
-                "Sérgio Sette Câmara": "gray",
+                "Sette Camara": "gray",
                 "Zezinho Muggiati": "lightgreen"
             }
 
