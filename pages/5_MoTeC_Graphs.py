@@ -44,37 +44,40 @@ else:
     xcol = st.selectbox("Escolha a coluna para o eixo X", colunas_disponiveis)
     ycol = st.selectbox("Escolha a coluna para o eixo Y", colunas_disponiveis)
 
-    # converter X e Y para numérico
-    for c in [xcol, ycol]:
-        df[c] = pd.to_numeric(df[c].astype(str).str.replace(",", ".", regex=False), errors="coerce")
-
-    # limpar linhas inválidas
-    df_plot = df.dropna(subset=[xcol, ycol]).copy()
-
-    if df_plot.empty:
-        st.warning("Depois da limpeza/filtro, não há dados numéricos suficientes para plotar.")
+    if xcol == ycol:
+        st.warning("Escolha colunas diferentes para os eixos X e Y.")
     else:
-        # mapa de cores fixo por piloto
-        color_map = {
-            "Felipe Fraga": "yellow",
-            "Ricardo Zonta": "red",
-            "Gaetano Di Mauro": "blue",
-            "Bruno Baptista": "gray"
-        }
+        # converter X e Y para numérico
+        for c in [xcol, ycol]:
+            df[c] = pd.to_numeric(df[c].astype(str).str.replace(",", ".", regex=False), errors="coerce")
 
-        # gráfico com linha de tendência colorida por piloto
-        fig = px.scatter(
-            df_plot,
-            x=xcol,
-            y=ycol,
-            color=col_carro,
-            color_discrete_map=color_map,
-            title=f"Dispersão: {xcol} x {ycol}",
-            labels={xcol: xcol, ycol: ycol, col_carro: "Piloto"},
-            trendline="ols",
-            trendline_scope="trace"
-        )
+        # limpar linhas inválidas
+        df_plot = df.dropna(subset=[xcol, ycol]).copy()
 
-        fig.update_traces(marker=dict(size=8), selector=dict(mode="markers"))
+        if df_plot.empty:
+            st.warning("Depois da limpeza/filtro, não há dados numéricos suficientes para plotar.")
+        else:
+            # mapa de cores fixo por piloto
+            color_map = {
+                "Felipe Fraga": "yellow",
+                "Gaetano Di Mauro": "blue",
+                "Sérgio Sette Câmara": "gray",
+                "Zezinho Muggiati": "lightgreen"
+            }
 
-        st.plotly_chart(fig, use_container_width=True)
+            # gráfico com linha de tendência colorida por piloto
+            fig = px.scatter(
+                df_plot,
+                x=xcol,
+                y=ycol,
+                color=col_carro,
+                color_discrete_map=color_map,
+                title=f"Dispersão: {xcol} x {ycol}",
+                labels={xcol: xcol, ycol: ycol, col_carro: "Piloto"},
+                trendline="ols",
+                trendline_scope="trace"
+            )
+
+            fig.update_traces(marker=dict(size=8), selector=dict(mode="markers"))
+
+            st.plotly_chart(fig, use_container_width=True)
