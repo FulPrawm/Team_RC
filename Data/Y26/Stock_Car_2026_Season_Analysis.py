@@ -1,4 +1,5 @@
 # Stock_Car_2026_Season_Analysis.py
+import math
 import os
 import re
 import numpy as np
@@ -20,7 +21,12 @@ SECTOR_COLS   = ['S1 Tm', 'S2 Tm', 'S3 Tm']
 CMAP          = 'RdYlGn_r'
 SKIP_STEMS    = {'Q', 'Q1'}
 FILTRO_PADRAO = 3.0
-MIN_ROUNDS    = 6  # pilotos com menos etapas que isso ficam fora de todos os rankings da temporada
+# Pilotos com menos etapas que o mínimo ficam fora de todos os rankings da temporada.
+# O mínimo é calculado dinamicamente (metade das etapas já disputadas) em vez de um
+# número fixo — com um valor fixo, no início da temporada (poucas etapas disputadas)
+# ou com pilotos convidados/trocas de equipe, TODOS os pilotos podiam ficar abaixo do
+# mínimo e as tabelas apareciam completamente vazias.
+MIN_ROUNDS_FRACTION = 0.5
 
 
 def _round_label(folder: str) -> str:
@@ -150,7 +156,7 @@ def _rank_of_ranks(df: pd.DataFrame, value_col: str, agg_fn: str,
 
 
 def _apply_min_rounds(final: pd.DataFrame, pivot: pd.DataFrame,
-                       group_col: str = 'Driver', min_rounds: int = MIN_ROUNDS):
+                       group_col: str, min_rounds: int):
     """Drop entries with fewer than `min_rounds` rounds and re-number the final rank."""
     kept = final[final['Rounds'] >= min_rounds].copy()
     kept = kept.sort_values('Avg_Rank').reset_index(drop=True)
@@ -163,7 +169,7 @@ def _apply_min_rounds(final: pd.DataFrame, pivot: pd.DataFrame,
 def _team_ranking(final_drivers: pd.DataFrame, driver_team_map: dict) -> pd.DataFrame:
     """
     Ranking por equipe: para cada equipe, faz a média do Avg_Rank dos seus
-    pilotos (já filtrados por MIN_ROUNDS) para saber qual equipe é mais forte.
+    pilotos (já filtrados pelo mínimo de etapas) para saber qual equipe é mais forte.
     """
     d = final_drivers[['Driver', 'Avg_Rank']].copy()
     d['Team'] = d['Driver'].map(driver_team_map)
@@ -274,8 +280,11 @@ def show():
         st.warning('Nenhum dado após os filtros.')
         return
 
-    st.caption(f"**{len(df):,} voltas** · **{df['Round'].nunique()} etapas** · **{df['Driver'].nunique()} pilotos**")
-    st.caption(f"Rankings consideram apenas pilotos com no mínimo **{MIN_ROUNDS} etapas**.")
+    total_rounds = df['Round'].nunique()
+    min_rounds   = max(1, math.ceil(total_rounds * MIN_ROUNDS_FRACTION))
+
+    st.caption(f"**{len(df):,} voltas** · **{total_rounds} etapas** · **{df['Driver'].nunique()} pilotos**")
+    st.caption(f"Rankings consideram apenas pilotos com no mínimo **{min_rounds} de {total_rounds} etapas**.")
     st.divider()
 
     driver_team_map = df.drop_duplicates('Driver').set_index('Driver')['Team'].to_dict()
@@ -299,7 +308,7 @@ def show():
         with tabs[0]:
             st.write('Cada piloto é ranqueado pela melhor volta **dentro de cada etapa**, depois esses rankings são calculados na média.')
             final, pivot = _rank_of_ranks(df, 'Lap Tm (S)', 'min', ascending=True)
-            final, pivot = _apply_min_rounds(final, pivot, 'Driver')
+            final, pivot = _apply_min_rounds(final, pivot, 'Driver', min_rounds)
             _show_rank_table(final, pivot, rounds_ordered, 'Melhor Volta')
             st.markdown('##### 🏎️ Ranking por Equipe (média dos dois pilotos)')
             _show_team_table(_team_ranking(final, driver_team_map))
@@ -307,7 +316,7 @@ def show():
         with tabs[1]:
             st.write('Cada piloto é ranqueado pela volta média **dentro de cada etapa**, depois esses rankings são calculados na média.')
             final, pivot = _rank_of_ranks(df, 'Lap Tm (S)', 'mean', ascending=True)
-            final, pivot = _apply_min_rounds(final, pivot, 'Driver')
+            final, pivot = _apply_min_rounds(final, pivot, 'Driver', min_rounds)
             _show_rank_table(final, pivot, rounds_ordered, 'Volta Média')
             st.markdown('##### 🏎️ Ranking por Equipe (média dos dois pilotos)')
             _show_team_table(_team_ranking(final, driver_team_map))
@@ -320,14 +329,14 @@ def show():
 
         with tabs[0]:
             final, pivot = _rank_of_ranks(df, 'SPT', 'max', ascending=False)
-            final, pivot = _apply_min_rounds(final, pivot, 'Driver')
+            final, pivot = _apply_min_rounds(final, pivot, 'Driver', min_rounds)
             _show_rank_table(final, pivot, rounds_ordered, 'SPT Máximo', ascending=False)
             st.markdown('##### 🏎️ Ranking por Equipe (média dos dois pilotos)')
             _show_team_table(_team_ranking(final, driver_team_map))
 
         with tabs[1]:
             final, pivot = _rank_of_ranks(df, 'SPT', 'mean', ascending=False)
-            final, pivot = _apply_min_rounds(final, pivot, 'Driver')
+            final, pivot = _apply_min_rounds(final, pivot, 'Driver', min_rounds)
             _show_rank_table(final, pivot, rounds_ordered, 'SPT Médio', ascending=False)
             st.markdown('##### 🏎️ Ranking por Equipe (média dos dois pilotos)')
             _show_team_table(_team_ranking(final, driver_team_map))
@@ -358,7 +367,7 @@ def show():
         final['Avg_Rank'] = final['Avg_Rank'].round(2)
 
         pivot = std_per_round.pivot(index='Driver', columns='Round', values='Round Rank')
-        final, pivot = _apply_min_rounds(final, pivot, 'Driver')
+        final, pivot = _apply_min_rounds(final, pivot, 'Driver', min_rounds)
 
         fig = px.bar(
             final.reset_index(), x='Driver', y='Avg_Rank',
@@ -407,7 +416,7 @@ def show():
                 on='Driver', how='inner',
             )
         )
-        combined = combined[combined['Rounds'] >= MIN_ROUNDS].copy()
+        combined = combined[combined['Rounds'] >= min_rounds].copy()
         combined['Avg_Rank'] = ((combined['Ritmo'] + combined['Consistência']) / 2)
         combined = combined.sort_values('Avg_Rank').reset_index(drop=True)
         combined.index += 1
