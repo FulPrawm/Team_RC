@@ -228,27 +228,50 @@ def show():
         fastest_drv  = best_laps.loc[best_laps['Lap Tm (S)'].idxmin(), 'Driver']
         best_sectors = sessao_filtrado.groupby('Driver')[SECTOR_COLS].min().reset_index()
 
+        sector_mins      = {col: best_sectors[col].min() for col in SECTOR_COLS}
+        best_sectors_pct = best_sectors.copy()
         for col in SECTOR_COLS:
-            best_sectors[col] -= best_sectors[col].min()
+            best_sectors_pct[col] = (best_sectors[col] - sector_mins[col]) / sector_mins[col] * 100
+            best_sectors[col]    -= sector_mins[col]
 
         best_sectors = (
             best_sectors.merge(best_laps, on='Driver')
             .sort_values('Lap Tm (S)')
             .reset_index(drop=True)
         )
+        best_sectors_pct = (
+            best_sectors_pct.merge(best_laps, on='Driver')
+            .sort_values('Lap Tm (S)')
+            .reset_index(drop=True)
+        )
 
-        fig_heatmap = px.imshow(
-            best_sectors.set_index('Driver')[SECTOR_COLS],
-            color_continuous_scale='Turbo',
-            aspect='auto',
-            text_auto='.3f',
-        )
-        fig_heatmap.update_layout(
-            title='Tempo de Cada Piloto por Setor (Gap para o Melhor)',
-            xaxis_title='Setor',
-            yaxis_title='Piloto',
-        )
-        st.plotly_chart(fig_heatmap)
+        heatmap_tabs = st.tabs(['Tempo (s)', 'Porcentagem (%)'])
+        with heatmap_tabs[0]:
+            fig_heatmap = px.imshow(
+                best_sectors.set_index('Driver')[SECTOR_COLS],
+                color_continuous_scale='Turbo',
+                aspect='auto',
+                text_auto='.3f',
+            )
+            fig_heatmap.update_layout(
+                title='Tempo de Cada Piloto por Setor (Gap para o Melhor)',
+                xaxis_title='Setor',
+                yaxis_title='Piloto',
+            )
+            st.plotly_chart(fig_heatmap)
+        with heatmap_tabs[1]:
+            fig_heatmap_pct = px.imshow(
+                best_sectors_pct.set_index('Driver')[SECTOR_COLS],
+                color_continuous_scale='Turbo',
+                aspect='auto',
+                text_auto='.2f',
+            )
+            fig_heatmap_pct.update_layout(
+                title='Gap para o Melhor por Setor (%)',
+                xaxis_title='Setor',
+                yaxis_title='Piloto',
+            )
+            st.plotly_chart(fig_heatmap_pct)
 
         # Radar
         selected_drivers = sessao_filtrado[sessao_filtrado['Car_ID'].isin(all_car_ids)]['Driver'].unique()
