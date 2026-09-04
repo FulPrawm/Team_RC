@@ -373,32 +373,50 @@ def show():
                     "S2 Tm": best_sectors["S2 Tm"].min(),
                     "S3 Tm": best_sectors["S3 Tm"].min(),
                 }
+                best_sectors_pct = best_sectors.copy()
                 for col in ["S1 Tm", "S2 Tm", "S3 Tm"]:
+                    best_sectors_pct[col] = (best_sectors[col] - sector_refs[col]) / sector_refs[col] * 100
                     best_sectors[col] = best_sectors[col] - sector_refs[col]
-    
+
                 # Ordena pela melhor volta global
                 best_sectors = best_sectors.merge(best_laps, on="Driver").sort_values("Lap Tm (S)").reset_index(drop=True)
-    
+                best_sectors_pct = best_sectors_pct.merge(best_laps, on="Driver").sort_values("Lap Tm (S)").reset_index(drop=True)
+
                 # ---------- Heatmap ----------
                 df_heatmap = best_sectors.melt(
-                    id_vars=["Driver"], 
+                    id_vars=["Driver"],
                     value_vars=["S1 Tm", "S2 Tm", "S3 Tm"],
-                    var_name="Sector", 
+                    var_name="Sector",
                     value_name="Gap to Best Sector"
                 )
-                
-                fig_heatmap = px.imshow(
-                    best_sectors.set_index("Driver")[["S1 Tm", "S2 Tm", "S3 Tm"]],
-                    color_continuous_scale="Turbo",
-                    aspect="auto",
-                    text_auto=".3f"
-                )
-                fig_heatmap.update_layout(
-                    title="Tempo de Cada Piloto por Setor (Gap para o Melhor)",
-                    xaxis_title="Setor",
-                    yaxis_title="Piloto"
-                )
-                st.plotly_chart(fig_heatmap)
+
+                heatmap_tabs = st.tabs(["Tempo (s)", "Porcentagem (%)"])
+                with heatmap_tabs[0]:
+                    fig_heatmap = px.imshow(
+                        best_sectors.set_index("Driver")[["S1 Tm", "S2 Tm", "S3 Tm"]],
+                        color_continuous_scale="Turbo",
+                        aspect="auto",
+                        text_auto=".3f"
+                    )
+                    fig_heatmap.update_layout(
+                        title="Tempo de Cada Piloto por Setor (Gap para o Melhor)",
+                        xaxis_title="Setor",
+                        yaxis_title="Piloto"
+                    )
+                    st.plotly_chart(fig_heatmap)
+                with heatmap_tabs[1]:
+                    fig_heatmap_pct = px.imshow(
+                        best_sectors_pct.set_index("Driver")[["S1 Tm", "S2 Tm", "S3 Tm"]],
+                        color_continuous_scale="Turbo",
+                        aspect="auto",
+                        text_auto=".2f"
+                    )
+                    fig_heatmap_pct.update_layout(
+                        title="Gap para o Melhor por Setor (%)",
+                        xaxis_title="Setor",
+                        yaxis_title="Piloto"
+                    )
+                    st.plotly_chart(fig_heatmap_pct)
                 
                 # ---------- Radar Chart with Absolute Times Normalized ----------
                 selected_cars = [10, 11, 44, 88, 31, 38]
