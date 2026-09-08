@@ -1,9 +1,15 @@
 # sc_shared.py
 # Shared constants and utility functions used by both Race and Practice modules.
 
+import numpy as np
 import pandas as pd
 from sklearn.linear_model import LinearRegression
 import plotly.graph_objects as go
+
+# Gap (in seconds) to the car ahead on the same lap, below which a lap is
+# considered "traffic" rather than a clean lap. Shared by every module that
+# derives a '% Clean Laps' metric from 'Lap Traffic?'.
+TRAFFIC_THRESHOLD: float = 3.0
 
 # ---------------------------------------------------------------------------
 # Lookup dictionaries
@@ -187,3 +193,30 @@ def add_trend_line(fig: go.Figure, x_vals, y_vals, color: str = 'lightgray') -> 
         opacity=0.4,
         showlegend=False,
     ))
+
+
+# ---------------------------------------------------------------------------
+# Traffic / clean-lap detection (used by Race and Season modules)
+# ---------------------------------------------------------------------------
+
+def detect_traffic(sessao: pd.DataFrame, threshold: float = TRAFFIC_THRESHOLD) -> pd.DataFrame:
+    """
+    Flag each row's lap as traffic ('Yes'/'No') based on the gap (in 'Crossing
+    Seconds') to the car ahead on the same lap. `sessao` must contain a single
+    session's laps — mixing laps from different sessions in one call would let
+    a car from one race be treated as "ahead" of a car from another.
+    """
+    df = sessao.sort_values(['Lap', 'Crossing Seconds']).copy()
+    prev_crossing = df.groupby('Lap')['Crossing Seconds'].shift(1)
+    gap_ahead     = df['Crossing Seconds'] - prev_crossing
+    df['Lap Traffic?'] = np.where(
+        gap_ahead.notna() & (gap_ahead < threshold),
+        'Yes', 'No',
+    )
+    return df
+
+
+def clean_lap_pct(traffic: pd.Series) -> float:
+    """% of non-traffic laps in a 'Lap Traffic?' series. NaN if none are known."""
+    known = traffic.dropna()
+    return (known == 'No').mean() * 100 if len(known) else np.nan
