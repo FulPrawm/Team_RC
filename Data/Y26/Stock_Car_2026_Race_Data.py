@@ -12,7 +12,7 @@ from pathlib import Path
 from sc_shared import (
     enrich_session, coerce_numeric_cols, convert_to_seconds,
     highlight_driver, highlight_team, highlight_manufacturer,
-    add_trend_line,
+    add_trend_line, detect_traffic, clean_lap_pct,
     CORES_PERSONALIZADAS, TEAM_CAR_NAMES, TEAM_CAR_COLORS,
 )
 
@@ -27,23 +27,8 @@ ANALISE_CARROS       = ['Driver', 'Manufacturer', 'Team', 'Lap Tm (S)', 'S1 Tm',
 ANALISE_TEAM         = ['Team', 'Manufacturer', 'Lap Tm (S)', 'S1 Tm', 'S2 Tm', 'S3 Tm', 'SPT']
 ANALISE_MANUFACTURER = ['Manufacturer', 'Lap Tm (S)', 'S1 Tm', 'S2 Tm', 'S3 Tm', 'SPT']
 
-TRAFFIC_THRESHOLD  = 3.0
 CMAP               = 'RdYlGn_r'
 FILTRO_PADRAO      = 3.0
-
-
-# ---------------------------------------------------------------------------
-# Traffic detection  (vectorised)
-# ---------------------------------------------------------------------------
-def _detect_traffic(sessao: pd.DataFrame) -> pd.DataFrame:
-    df = sessao.sort_values(['Lap', 'Crossing Seconds']).copy()
-    df['_prev_crossing'] = df.groupby('Lap')['Crossing Seconds'].shift(1)
-    df['_gap_ahead']     = df['Crossing Seconds'] - df['_prev_crossing']
-    df['Lap Traffic?']   = np.where(
-        df['_gap_ahead'].notna() & (df['_gap_ahead'] < TRAFFIC_THRESHOLD),
-        'Yes', 'No',
-    )
-    return df.drop(columns=['_prev_crossing', '_gap_ahead'])
 
 
 # ---------------------------------------------------------------------------
@@ -73,7 +58,7 @@ def _add_crossing_gaps(sessao: pd.DataFrame) -> pd.DataFrame:
     sessao['Gap to Winner']  = sessao['Cumulative Crossing'] - sessao['Winner Crossing']
     leader_times             = sessao.groupby('Lap')['Crossing Seconds'].transform('min')
     sessao['Gap to Leader']  = sessao['Crossing Seconds'] - leader_times
-    sessao = _detect_traffic(sessao)
+    sessao = detect_traffic(sessao)
     return sessao
 
 
@@ -287,7 +272,7 @@ def show():
         )
         clean_pct = (
             sessao.groupby('Driver')['Lap Traffic?']
-            .apply(lambda x: (x == 'No').mean() * 100)
+            .apply(clean_lap_pct)
             .reset_index()
             .rename(columns={'Lap Traffic?': '% Clean Laps'})
         ) if 'Lap Traffic?' in sessao.columns else pd.DataFrame(columns=['Driver', '% Clean Laps'])
