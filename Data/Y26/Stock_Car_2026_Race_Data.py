@@ -490,11 +490,6 @@ def show():
 ''')
 
         st.subheader('Tempo Médio de Volta vs % de Clean Laps')
-        st.write(
-            'Cada ponto representa um piloto nesta corrida: no eixo X o tempo médio de volta '
-            'e no eixo Y o percentual de voltas limpas (sem tráfego). Serve para checar se pilotos '
-            'com mais voltas limpas tendem a ter tempos médios melhores (ou não).'
-        )
 
         if 'Lap Traffic?' not in sessao.columns:
             st.info("⚠️ 'Crossing Time' não disponível nesta corrida. Não é possível calcular % de Clean Laps.")
@@ -534,6 +529,14 @@ def show():
                 if len(scatter_df) >= 2:
                     corr = scatter_df['Avg_Lap_Time'].corr(scatter_df['% Clean Laps'])
                     st.caption(f"Coeficiente de correlação (Pearson): **{corr:.3f}**")
+                    st.caption(
+                        "Valor positivo: quando uma variável sobe, a outra também sobe na mesma proporção. "
+                        "Valor negativo: quando uma variável sobe, a outra desce.  \n"
+                        "0,8 a 1,0: Correlação forte · "
+                        "0,5 a 0,8: Correlação moderada · "
+                        "0,2 a 0,5: Correlação fraca · "
+                        "0,0 a 0,2: Correlação insignificante ou nula"
+                    )
                 st.caption(f"**{len(scatter_df)}** pilotos considerados.")
 
         sector_tabs_cfg = {
