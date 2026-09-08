@@ -489,6 +489,53 @@ def show():
 - **↙ Inferior Esquerdo** → Baixa eficiência (nenhuma das duas)
 ''')
 
+        st.subheader('Tempo Médio de Volta vs % de Clean Laps')
+        st.write(
+            'Cada ponto representa um piloto nesta corrida: no eixo X o tempo médio de volta '
+            'e no eixo Y o percentual de voltas limpas (sem tráfego). Serve para checar se pilotos '
+            'com mais voltas limpas tendem a ter tempos médios melhores (ou não).'
+        )
+
+        if 'Lap Traffic?' not in sessao.columns:
+            st.info("⚠️ 'Crossing Time' não disponível nesta corrida. Não é possível calcular % de Clean Laps.")
+        else:
+            group_cols = [c for c in ['Driver', 'Team', 'Manufacturer'] if c in sessao_filtrado.columns]
+
+            scatter_df = (
+                sessao_filtrado.groupby(group_cols)
+                .agg(
+                    Avg_Lap_Time=('Lap Tm (S)', 'mean'),
+                    Laps=('Lap Tm (S)', 'count'),
+                )
+                .reset_index()
+            )
+            clean_pct = (
+                sessao.groupby('Driver')['Lap Traffic?']
+                .apply(clean_lap_pct)
+                .reset_index(name='% Clean Laps')
+            )
+            scatter_df = scatter_df.merge(clean_pct, on='Driver', how='left')
+            scatter_df = scatter_df.dropna(subset=['Avg_Lap_Time', '% Clean Laps'])
+
+            if scatter_df.empty:
+                st.info("⚠️ Nenhum piloto com dados de 'Crossing Time' válidos para calcular % de Clean Laps.")
+            else:
+                hover_cols = [c for c in ['Team', 'Laps'] if c in scatter_df.columns]
+                fig = px.scatter(
+                    scatter_df, x='Avg_Lap_Time', y='% Clean Laps',
+                    color='Driver', hover_data=hover_cols,
+                    labels={'Avg_Lap_Time': 'Tempo Médio de Volta (s)', '% Clean Laps': '% de Clean Laps'},
+                    title='Tempo Médio de Volta vs % de Clean Laps (por piloto)',
+                )
+                fig.update_traces(marker_size=10)
+                add_trend_line(fig, scatter_df['Avg_Lap_Time'], scatter_df['% Clean Laps'])
+                st.plotly_chart(fig, use_container_width=True)
+
+                if len(scatter_df) >= 2:
+                    corr = scatter_df['Avg_Lap_Time'].corr(scatter_df['% Clean Laps'])
+                    st.caption(f"Coeficiente de correlação (Pearson): **{corr:.3f}**")
+                st.caption(f"**{len(scatter_df)}** pilotos considerados.")
+
         sector_tabs_cfg = {
             'Gap para o Carro Mais Rápido na Média - Volta': 'Lap Tm (S)',
             'Gap para o Carro Mais Rápido na Média - S1':    'S1 Tm',
