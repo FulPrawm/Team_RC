@@ -280,7 +280,7 @@ def show():
         tabela1 = tabela1.merge(clean_pct, on='Driver', how='left')
 
         st.subheader('Tabela ordenada por Carro')
-        fmt_t1 = {c: '{:.2f}' for c in NUM_COLS if c in tabela1.columns}
+        fmt_t1 = {c: '{:.2f}' for c in NUM_COLS + ['% Clean Laps'] if c in tabela1.columns}
         t1s = tabela1.style.format(fmt_t1)
         t1s = t1s.background_gradient(cmap=CMAP)
         t1s = t1s.apply(highlight_driver,       subset=['Driver'])
