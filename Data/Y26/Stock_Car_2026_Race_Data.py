@@ -337,11 +337,14 @@ def show():
         st.dataframe(lts, use_container_width=True)
 
         if 'Gap to Leader' in sessao.columns:
-            sessao['Position'] = (
-                sessao.groupby('Lap')['Gap to Leader'].rank(method='first').astype(int)
+            # Ignore laps without a valid gap (e.g. missing crossing time),
+            # otherwise the rank -> int conversion below raises and the table never renders
+            sessao_classificacao = sessao.dropna(subset=['Gap to Leader']).copy()
+            sessao_classificacao['Position'] = (
+                sessao_classificacao.groupby('Lap')['Gap to Leader'].rank(method='first').astype(int)
             )
-            gaps_table = sessao.pivot(index='Position', columns='Lap', values='Gap to Leader').round(3)
-            cars_table = sessao.pivot(index='Position', columns='Lap', values='Car_ID')
+            gaps_table = sessao_classificacao.pivot(index='Position', columns='Lap', values='Gap to Leader').round(3)
+            cars_table = sessao_classificacao.pivot(index='Position', columns='Lap', values='Car_ID')
 
             final_table = pd.DataFrame(index=[f'P{p}' for p in gaps_table.index])
             for lap in gaps_table.columns:
@@ -426,7 +429,7 @@ def show():
         # Position Change chart
         st.subheader('Mudança de Posição')
         if 'Gap to Leader' in sessao.columns:
-            pos_df = sessao.copy()
+            pos_df = sessao.dropna(subset=['Gap to Leader']).copy()
             pos_df['Position'] = (
                 pos_df.groupby('Lap')['Gap to Leader'].rank(method='first').astype(int)
             )
