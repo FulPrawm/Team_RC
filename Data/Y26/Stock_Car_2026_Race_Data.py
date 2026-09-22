@@ -332,8 +332,36 @@ def show():
             .sort_index(axis=1)
         )
         lap_table.columns = [f'Volta {int(c)}' for c in lap_table.columns]
-        lts = lap_table.style.format(lambda x: f'{x:.2f}' if pd.notna(x) else '—')
-        lts = lts.background_gradient(cmap=CMAP, axis=1)
+        lap_cols = list(lap_table.columns)
+
+        if 'Cumulative Crossing' in sessao.columns:
+            # Final race classification: most laps completed wins, ties broken
+            # by the lowest cumulative crossing time (same criteria used for
+            # the race winner above)
+            laps_por_carro     = sessao.groupby('Car_ID')['Lap'].max()
+            crossing_por_carro = sessao.groupby('Car_ID')['Cumulative Crossing'].max()
+            driver_por_carro   = sessao.drop_duplicates('Car_ID').set_index('Car_ID')['Driver']
+
+            classificacao_final = pd.DataFrame({
+                'MaxLap':       laps_por_carro,
+                'LastCrossing': crossing_por_carro,
+            }).sort_values(['MaxLap', 'LastCrossing'], ascending=[False, True])
+            classificacao_final['Posição'] = range(1, len(classificacao_final) + 1)
+            posicoes_por_piloto = classificacao_final.set_index(
+                classificacao_final.index.map(driver_por_carro)
+            )['Posição']
+
+            lap_table['__Posição__'] = lap_table.index.map(posicoes_por_piloto)
+            lap_table = lap_table.sort_values('__Posição__')
+            lap_table.insert(
+                0, 'Posição',
+                lap_table['__Posição__'].apply(lambda p: f'P{int(p)}' if pd.notna(p) else '—'),
+            )
+            lap_table = lap_table.drop(columns='__Posição__')
+
+        fmt_laps = {c: (lambda x: f'{x:.2f}' if pd.notna(x) else '—') for c in lap_cols}
+        lts = lap_table.style.format(fmt_laps)
+        lts = lts.background_gradient(cmap=CMAP, axis=1, subset=lap_cols)
         st.dataframe(lts, use_container_width=True)
 
         if 'Gap to Leader' in sessao.columns:
