@@ -183,7 +183,7 @@ def show():
     # Load & enrich
     # -----------------------------------------------------------------------
     sessao = pd.read_excel(caminho_corrida)
-    sessao = enrich_session(sessao)
+    sessao = enrich_session(sessao, etapa_escolhida)
 
     sessao['Last Lap Diff'] = sessao.groupby('Car_ID')['Lap Tm (S)'].diff()
     sessao['Fast Lap Diff'] = sessao['Lap Tm (S)'] - sessao.groupby('Car_ID')['Lap Tm (S)'].transform('min')

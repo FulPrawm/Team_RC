@@ -94,7 +94,7 @@ def _load_round(base_dir: Path, etapa: str) -> pd.DataFrame:
         for f in sorted(folder.glob('*.xlsx')):
             try:
                 df = pd.read_excel(f)
-                df = enrich_session(df)
+                df = enrich_session(df, etapa)
                 df['Session']      = _session_type(f.name)
                 df['Session File'] = f.stem
                 df['Folder Type']  = folder_type

@@ -97,7 +97,7 @@ def show():
     # Load & enrich data
     # -----------------------------------------------------------------------
     sessao = pd.read_excel(caminho_corrida)
-    sessao = enrich_session(sessao)
+    sessao = enrich_session(sessao, etapa_escolhida)
 
     # -----------------------------------------------------------------------
     # Filter controls — Filter (always active, main filter)

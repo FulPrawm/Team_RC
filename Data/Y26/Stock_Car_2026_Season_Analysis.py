@@ -104,7 +104,7 @@ def _load_season(base_dir: Path, dir_signature: tuple) -> pd.DataFrame:
                     stype = 'Other'
                 try:
                     df = pd.read_excel(f)
-                    df = enrich_session(df)
+                    df = enrich_session(df, etapa_folder)
                     df['Round']        = rlabel
                     df['Round Order']  = rorder
                     df['Session Type'] = stype
@@ -295,7 +295,12 @@ def show():
     st.caption(f"Rankings consideram apenas pilotos com no mínimo **{min_rounds} de {total_rounds} etapas**.")
     st.divider()
 
-    driver_team_map = df.drop_duplicates('Driver').set_index('Driver')['Team'].to_dict()
+    # Pilotos que trocaram de equipe no meio da temporada contam para a equipe mais recente.
+    driver_team_map = (
+        df.sort_values('Round Order')
+        .drop_duplicates('Driver', keep='last')
+        .set_index('Driver')['Team'].to_dict()
+    )
 
     # -----------------------------------------------------------------------
     # Analysis selector
