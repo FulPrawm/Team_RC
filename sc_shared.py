@@ -1,6 +1,8 @@
 # sc_shared.py
 # Shared constants and utility functions used by both Race and Practice modules.
 
+import re
+
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import LinearRegression
@@ -34,6 +36,14 @@ TEAMS_DICT: dict[int, str] = {
     4:  'TMG Racing',        19: 'TMG Racing',
     6:  'Mercado Livre Racing Team', 24: 'Albatroz Racing',
     72: 'Full Time GR'
+}
+
+# Mid-season team changes: car -> [(first_round, last_round, team)].
+# Rounds outside every range fall back to TEAMS_DICT.
+TEAM_CHANGES: dict[int, list[tuple[int, int, str]]] = {
+    8:   [(6, 99, 'Full Time Sports')],   # Rafael Suzuki (Scuderia Bandeiras until ET05)
+    111: [(9, 99, 'Full Time Sports')],   # Rubens Barrichello (Scuderia Bandeiras Sports until ET08)
+    24:  [(1, 2, 'SG28')],                # Pipe Bartz (Albatroz Racing from ET03)
 }
 
 TEAM_TO_MANUFACTURER: dict[str, str] = {
@@ -120,14 +130,30 @@ TEAM_CAR_NAMES: dict[int, str] = {
 # Shared helper functions
 # ---------------------------------------------------------------------------
 
-def enrich_session(sessao: pd.DataFrame) -> pd.DataFrame:
+def _round_number(etapa) -> int | None:
+    """Extract the round number from a folder/file name such as 'ET06_Cascavel_II'."""
+    m = re.search(r'ET(\d+)', str(etapa), flags=re.IGNORECASE)
+    return int(m.group(1)) if m else None
+
+
+def enrich_session(sessao: pd.DataFrame, etapa: str | None = None) -> pd.DataFrame:
     """
     Add Team, Manufacturer and Driver columns to a raw session DataFrame.
+    `etapa` (e.g. 'ET06_Cascavel_II' or 'ET06_R1') selects the mid-season team
+    changes in TEAM_CHANGES; without it, TEAMS_DICT is used as-is.
     Returns the same DataFrame (modified in place for efficiency).
     """
     sessao['Team']         = sessao['Car_ID'].map(TEAMS_DICT)
+    # Manufacturer belongs to the car, so it is resolved before any team change.
     sessao['Manufacturer'] = sessao['Team'].map(TEAM_TO_MANUFACTURER)
     sessao['Driver']       = sessao['Car_ID'].map(DRIVERS_DICT)
+
+    rnd = _round_number(etapa)
+    if rnd is not None:
+        for car_id, changes in TEAM_CHANGES.items():
+            team = next((t for first, last, t in changes if first <= rnd <= last), None)
+            if team is not None:
+                sessao.loc[sessao['Car_ID'] == car_id, 'Team'] = team
     return sessao
 
 
