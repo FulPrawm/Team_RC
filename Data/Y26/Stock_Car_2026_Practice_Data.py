@@ -11,7 +11,7 @@ from pathlib import Path
 
 from sc_shared import (
     enrich_session, coerce_numeric_cols, convert_to_seconds,
-    highlight_driver, highlight_team, highlight_manufacturer,
+    highlight_driver, highlight_team, highlight_manufacturer, add_trend_line,
     CORES_PERSONALIZADAS, TEAM_CAR_NAMES, TEAM_CAR_COLORS,
 )
 
@@ -414,6 +414,7 @@ def show():
                 title='Volta Mais Rápida vs Gap para o Carro da Frente',
             )
             fig_fast_gap.update_traces(marker_size=12)
+            add_trend_line(fig_fast_gap, fast_gaps['Lap Tm (S)'], fast_gaps['Gap Ahead'])
             for _, lower, _ in GAP_BINS[1:]:
                 fig_fast_gap.add_hline(y=lower, line_dash='dot', line_color='gray', opacity=0.5)
             fig_fast_gap.update_layout(xaxis_title='Volta Mais Rápida (s)', yaxis_title='Gap para o carro da frente (s)')
