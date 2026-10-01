@@ -380,6 +380,10 @@ def show():
                 )
                 dist['%'] = dist['Voltas'] / dist.groupby(group_col)['Voltas'].transform('sum') * 100
                 dist = dist.dropna(subset=['%'])
+                # Rank by % ideal; ties broken by limpa, muito longe, muito perto
+                pivot = dist.pivot(index=group_col, columns='Categoria', values='%').fillna(0)
+                tie_order = ['Ideal (3-6s)', 'Limpa (10s+)', 'Muito longe (6-10s)', 'Muito perto (0-3s)']
+                ranked = pivot.sort_values(tie_order, ascending=False).index.tolist()
                 fig = px.bar(
                     dist, y=group_col, x='%', color='Categoria', orientation='h',
                     color_discrete_map=GAP_COLORS,
@@ -388,7 +392,8 @@ def show():
                     hover_data={'Voltas': True, '%': ':.1f'},
                     title=title,
                 )
-                fig.update_layout(xaxis_title='% das voltas', yaxis_title='', barmode='stack')
+                fig.update_layout(xaxis_title='% das voltas', yaxis_title='', barmode='stack',
+                                  yaxis=dict(categoryorder='array', categoryarray=ranked[::-1]))
                 return fig
 
             gap_tabs = st.tabs(['Por Equipe', 'Por Piloto'])
@@ -413,6 +418,18 @@ def show():
                 fig_fast_gap.add_hline(y=lower, line_dash='dot', line_color='gray', opacity=0.5)
             fig_fast_gap.update_layout(xaxis_title='Volta Mais Rápida (s)', yaxis_title='Gap para o carro da frente (s)')
             st.plotly_chart(fig_fast_gap, use_container_width=True)
+
+            if len(fast_gaps) >= 2:
+                corr = fast_gaps['Lap Tm (S)'].corr(fast_gaps['Gap Ahead'])
+                st.caption(f"Coeficiente de correlação (Pearson): **{corr:.3f}**")
+                st.caption(
+                    "Valor positivo: quando uma variável sobe, a outra também sobe na mesma proporção. "
+                    "Valor negativo: quando uma variável sobe, a outra desce.  \n"
+                    "0,8 a 1,0: Correlação forte · "
+                    "0,5 a 0,8: Correlação moderada · "
+                    "0,2 a 0,5: Correlação fraca · "
+                    "0,0 a 0,2: Correlação insignificante ou nula"
+                )
 
     # =======================================================================
     elif option == 'BoxPlots':
