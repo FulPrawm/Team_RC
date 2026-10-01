@@ -409,15 +409,15 @@ def show():
             fast_idx  = df_gap.groupby('Driver')['Lap Tm (S)'].idxmin()
             fast_gaps = df_gap.loc[fast_idx, ['Driver', 'Team', 'Lap', 'Lap Tm (S)', 'Gap Ahead']]
             fig_fast_gap = px.scatter(
-                fast_gaps, x='Lap Tm (S)', y='Gap Ahead', color='Driver',
+                fast_gaps, x='Gap Ahead', y='Lap Tm (S)', color='Driver',
                 hover_data=['Team', 'Lap'],
                 title='Volta Mais Rápida vs Gap para o Carro da Frente',
             )
             fig_fast_gap.update_traces(marker_size=12)
-            add_trend_line(fig_fast_gap, fast_gaps['Lap Tm (S)'], fast_gaps['Gap Ahead'])
+            add_trend_line(fig_fast_gap, fast_gaps['Gap Ahead'], fast_gaps['Lap Tm (S)'])
             for _, lower, _ in GAP_BINS[1:]:
-                fig_fast_gap.add_hline(y=lower, line_dash='dot', line_color='gray', opacity=0.5)
-            fig_fast_gap.update_layout(xaxis_title='Volta Mais Rápida (s)', yaxis_title='Gap para o carro da frente (s)')
+                fig_fast_gap.add_vline(x=lower, line_dash='dot', line_color='gray', opacity=0.5)
+            fig_fast_gap.update_layout(xaxis_title='Gap para o carro da frente (s)', yaxis_title='Volta Mais Rápida (s)')
             st.plotly_chart(fig_fast_gap, use_container_width=True)
 
             if len(fast_gaps) >= 2:
