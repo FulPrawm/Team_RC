@@ -33,6 +33,32 @@ TIME_AGG    = {'Lap Tm (S)': 'min', 'S1 Tm': 'min', 'S2 Tm': 'min', 'S3 Tm': 'mi
 CMAP           = 'RdYlGn_r'  # same as Race
 FILTRO_PADRAO  = 3.0
 
+# Gap to the car ahead (s) -> category: (label, lower bound, color)
+GAP_BINS = [
+    ('Muito perto (0-3s)',  0.0,  '#d62728'),
+    ('Ideal (3-6s)',        3.0,  '#2ca02c'),
+    ('Muito longe (6-10s)', 6.0,  '#ff7f0e'),
+    ('Limpa (10s+)',        10.0, '#1f77b4'),
+]
+GAP_LABELS = [b[0] for b in GAP_BINS]
+GAP_COLORS = {b[0]: b[2] for b in GAP_BINS}
+
+
+def _gap_ahead(sessao: pd.DataFrame) -> pd.Series:
+    """
+    Gap (s) between each lap's finish-line crossing and the previous crossing by a
+    different car on track (any lap number). Indexed like `sessao`; NaN when unknown.
+    """
+    df  = sessao[['Car_ID', 'Crossing Seconds']].dropna().sort_values('Crossing Seconds')
+    gap = df['Crossing Seconds'].diff()
+    gap[df['Car_ID'] == df['Car_ID'].shift(1)] = np.nan
+    return gap.reindex(sessao.index)
+
+
+def _gap_category(gap: pd.Series) -> pd.Series:
+    edges = [b[1] for b in GAP_BINS] + [float('inf')]
+    return pd.cut(gap, bins=edges, labels=GAP_LABELS, right=False)
+
 
 # ---------------------------------------------------------------------------
 # Helper: gap-to-fastest bar chart (Altair)
@@ -98,6 +124,11 @@ def show():
     # -----------------------------------------------------------------------
     sessao = pd.read_excel(caminho_corrida)
     sessao = enrich_session(sessao, etapa_escolhida)
+
+    has_crossing = 'Crossing Time' in sessao.columns
+    if has_crossing:
+        sessao['Crossing Seconds'] = pd.to_timedelta(sessao['Crossing Time'], errors='coerce').dt.total_seconds()
+        sessao['Gap Ahead']        = _gap_ahead(sessao)
 
     # -----------------------------------------------------------------------
     # Filter controls — Filter (always active, main filter)
@@ -198,11 +229,14 @@ def show():
             ('S3 Tm',      True,  'Média Crescente do S3'),
             ('SPT',        False, 'Média Crescente do SPT'),
         ]
-        for col, ascending, title in raising_configs:
-            df_plot = sessao_filtrado.copy()
-            df_plot['Ranking'] = df_plot.groupby('Driver')[col].rank(ascending=ascending)
-            df_plot = df_plot.sort_values(['Driver', 'Ranking'])
-            st.plotly_chart(px.line(df_plot, x='Ranking', y=col, color='Driver', title=title))
+        line_tabs = st.tabs([title for _, _, title in raising_configs])
+        for tab, (col, ascending, title) in zip(line_tabs, raising_configs):
+            with tab:
+                df_plot = sessao_filtrado.copy()
+                df_plot['Ranking'] = df_plot.groupby('Driver')[col].rank(ascending=ascending)
+                df_plot = df_plot.sort_values(['Driver', 'Ranking'])
+                st.plotly_chart(px.line(df_plot, x='Ranking', y=col, color='Driver', title=title),
+                                use_container_width=True)
 
     # =======================================================================
     elif option == 'Outros':
@@ -328,6 +362,57 @@ def show():
             )
             fig_scatter.update_traces(marker_size=12)
             st.plotly_chart(fig_scatter, use_container_width=True)
+
+        # Gap to the car ahead
+        st.subheader('Gap para o Carro da Frente')
+        if not has_crossing or sessao['Gap Ahead'].notna().sum() == 0:
+            st.info("⚠️ 'Crossing Time' não disponível para esta sessão. Os gráficos de gap para o carro da frente não serão exibidos.")
+        else:
+            df_gap = sessao_filtrado.copy()
+            df_gap['Gap Ahead'] = sessao['Gap Ahead'].reindex(df_gap.index)
+            df_gap = df_gap.dropna(subset=['Gap Ahead'])
+            df_gap['Categoria'] = _gap_category(df_gap['Gap Ahead'])
+
+            def _gap_dist_chart(group_col: str, title: str):
+                dist = (
+                    df_gap.groupby([group_col, 'Categoria'], observed=False)
+                    .size().reset_index(name='Voltas')
+                )
+                dist['%'] = dist['Voltas'] / dist.groupby(group_col)['Voltas'].transform('sum') * 100
+                dist = dist.dropna(subset=['%'])
+                fig = px.bar(
+                    dist, y=group_col, x='%', color='Categoria', orientation='h',
+                    color_discrete_map=GAP_COLORS,
+                    category_orders={'Categoria': GAP_LABELS},
+                    text=dist['%'].round(0).astype(int).astype(str) + '%',
+                    hover_data={'Voltas': True, '%': ':.1f'},
+                    title=title,
+                )
+                fig.update_layout(xaxis_title='% das voltas', yaxis_title='', barmode='stack')
+                return fig
+
+            gap_tabs = st.tabs(['Por Equipe', 'Por Piloto'])
+            with gap_tabs[0]:
+                st.plotly_chart(_gap_dist_chart('Team', 'Gap para o Carro da Frente — por Equipe'),
+                                use_container_width=True)
+            with gap_tabs[1]:
+                st.plotly_chart(_gap_dist_chart('Driver', 'Gap para o Carro da Frente — por Piloto'),
+                                use_container_width=True)
+
+            # Fast lap vs gap to the car ahead
+            st.subheader('Volta Mais Rápida vs Gap para o Carro da Frente')
+            fast_idx  = df_gap.groupby('Driver')['Lap Tm (S)'].idxmin()
+            fast_gaps = df_gap.loc[fast_idx, ['Driver', 'Team', 'Lap', 'Lap Tm (S)', 'Gap Ahead']]
+            fig_fast_gap = px.scatter(
+                fast_gaps, x='Lap Tm (S)', y='Gap Ahead', color='Driver',
+                hover_data=['Team', 'Lap'],
+                title='Volta Mais Rápida vs Gap para o Carro da Frente',
+            )
+            fig_fast_gap.update_traces(marker_size=12)
+            for _, lower, _ in GAP_BINS[1:]:
+                fig_fast_gap.add_hline(y=lower, line_dash='dot', line_color='gray', opacity=0.5)
+            fig_fast_gap.update_layout(xaxis_title='Volta Mais Rápida (s)', yaxis_title='Gap para o carro da frente (s)')
+            st.plotly_chart(fig_fast_gap, use_container_width=True)
 
     # =======================================================================
     elif option == 'BoxPlots':
