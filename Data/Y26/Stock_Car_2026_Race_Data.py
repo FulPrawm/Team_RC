@@ -122,6 +122,35 @@ def _plot_efficiency(df: pd.DataFrame, title_suffix: str = '') -> go.Figure:
 
 
 # ---------------------------------------------------------------------------
+# Cumulative time offset from field-median pace
+# ---------------------------------------------------------------------------
+def _median_pace_chart(sessao: pd.DataFrame) -> go.Figure | None:
+    """
+    For each lap, the field-median lap time is the reference; each car's offset
+    is the running sum of (median - own lap time), so positive = ahead of the
+    median pace (faster). Laps without a valid time add nothing.
+    """
+    df = sessao.dropna(subset=['Driver', 'Lap', 'Lap Tm (S)']).copy()
+    if df.empty:
+        return None
+
+    df = df.sort_values(['Driver', 'Lap'])
+    df['Median Lap'] = df.groupby('Lap')['Lap Tm (S)'].transform('median')
+    df['Offset']     = (df['Median Lap'] - df['Lap Tm (S)']).groupby(df['Driver']).cumsum()
+
+    fig = px.line(
+        df, x='Lap', y='Offset', color='Driver',
+        title='Diferença de tempo para o pace mediano do grid',
+        color_discrete_map=CORES_PERSONALIZADAS,
+    )
+    fig.add_hline(y=0, line_dash='dash', line_color='gray')
+    fig.update_xaxes(title='Volta')
+    fig.update_yaxes(title='Diferença para o pace mediano do grid (s) · mais rápido = para cima')
+    fig.update_layout(hovermode='x unified')
+    return fig
+
+
+# ---------------------------------------------------------------------------
 # Gap-to-fastest bar chart (Altair)
 # ---------------------------------------------------------------------------
 def _gap_bar_chart(df_avg: pd.DataFrame, coluna: str, tab_name: str):
@@ -453,6 +482,14 @@ def show():
                 ))
             else:
                 st.info("⚠️ 'Crossing Time' não disponível. O gráfico de Gap para Referência não será exibido.")
+
+        # Offset from field-median pace chart
+        st.subheader('Diferença de Tempo para o Pace Mediano do Grid')
+        fig_med = _median_pace_chart(sessao)
+        if fig_med is not None:
+            st.plotly_chart(fig_med, use_container_width=True)
+        else:
+            st.info('⚠️ Não há tempos de volta suficientes para o gráfico de Pace Mediano do Grid.')
 
         # Position Change chart
         st.subheader('Mudança de Posição')
