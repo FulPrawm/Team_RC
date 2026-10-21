@@ -158,28 +158,39 @@ def show():
 
     # Filter (always active, main filter)
     st.subheader('🔵 Filtro')
+    col_c1, col_c2 = st.columns(2)
+    with col_c1:
+        filtro_5_10 = st.checkbox('Usar 5% (sessão) e 10% (piloto)', value=False)
+    with col_c2:
+        metade_voltas = st.checkbox('Considerar apenas 50% das voltas filtradas de cada piloto (as mais rápidas)', value=False)
     col_f1, col_f2 = st.columns(2)
     with col_f1:
         percentual_sessao = st.slider(
             'Volta mais rápida da sessão (%)',
             min_value=0.0,
             max_value=20.0,
-            value=FILTRO_PADRAO,
+            value=5.0 if filtro_5_10 else FILTRO_PADRAO,
             step=0.5,
+            disabled=filtro_5_10,
         )
     with col_f2:
         percentual_piloto = st.slider(
             'Volta mais rápida de cada piloto (%)',
             min_value=0.0,
             max_value=20.0,
-            value=FILTRO_PADRAO,
+            value=10.0 if filtro_5_10 else FILTRO_PADRAO,
             step=0.5,
+            disabled=filtro_5_10,
         )
 
     class_limit  = df['Lap Tm (S)'].min() * (1 + percentual_sessao / 100)
     driver_fast  = df.groupby('Driver')['Lap Tm (S)'].transform('min')
     driver_limit = driver_fast * (1 + percentual_piloto / 100)
     df = df[(df['Lap Tm (S)'] <= class_limit) & (df['Lap Tm (S)'] <= driver_limit)].copy()
+    if metade_voltas:
+        _rk  = df.groupby('Driver')['Lap Tm (S)'].rank(method='first')
+        _cnt = df.groupby('Driver')['Lap Tm (S)'].transform('count')
+        df = df[_rk <= (_cnt + 1) // 2].copy()
     st.write(f"Voltas consideradas: dentro de {percentual_sessao:.1f}% da sessão e {percentual_piloto:.1f}% do piloto")
 
     if df.empty:
