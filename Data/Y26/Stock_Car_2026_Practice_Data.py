@@ -138,7 +138,7 @@ def show():
     st.subheader('🔵 Filtro')
     col_c1, col_c2 = st.columns(2)
     with col_c1:
-        filtro_5_10 = st.checkbox('Usar 5% (sessão) e 10% (piloto)', value=False)
+        filtro_10_5 = st.checkbox('Usar 10% (sessão) e 5% (piloto)', value=False)
     with col_c2:
         metade_voltas = st.checkbox('Considerar apenas 50% das voltas filtradas de cada piloto (as mais rápidas)', value=False)
     col_f1, col_f2 = st.columns(2)
@@ -147,18 +147,18 @@ def show():
             'Volta mais rápida da sessão (%)',
             min_value=0.0,
             max_value=20.0,
-            value=5.0 if filtro_5_10 else FILTRO_PADRAO,
+            value=10.0 if filtro_10_5 else FILTRO_PADRAO,
             step=0.5,
-            disabled=filtro_5_10,
+            disabled=filtro_10_5,
         )
     with col_f2:
         percentual_piloto = st.slider(
             'Volta mais rápida de cada piloto (%)',
             min_value=0.0,
             max_value=20.0,
-            value=10.0 if filtro_5_10 else FILTRO_PADRAO,
+            value=5.0 if filtro_10_5 else FILTRO_PADRAO,
             step=0.5,
-            disabled=filtro_5_10,
+            disabled=filtro_10_5,
         )
 
     # Exclude lap 1; keep laps within the chosen % of the session's fastest and of the driver's fastest
