@@ -9,8 +9,7 @@ from pathlib import Path
 
 from sc_shared import (
     enrich_session, coerce_numeric_cols, convert_to_seconds,
-    highlight_driver, highlight_team, highlight_manufacturer,
-    detect_traffic,
+    get_season, detect_traffic,
 )
 
 # ---------------------------------------------------------------------------
@@ -66,7 +65,7 @@ def _dir_signature(base_dir: Path) -> tuple:
 
 
 @st.cache_data(show_spinner=False)
-def _load_season(base_dir: Path, dir_signature: tuple) -> pd.DataFrame:
+def _load_season(base_dir: Path, dir_signature: tuple, year: int) -> pd.DataFrame:
     races_root    = base_dir / 'Excel_Files' / 'Races'
     practice_root = base_dir / 'Excel_Files' / 'Practice_And_Qualy'
 
@@ -104,7 +103,7 @@ def _load_season(base_dir: Path, dir_signature: tuple) -> pd.DataFrame:
                     stype = 'Other'
                 try:
                     df = pd.read_excel(f)
-                    df = enrich_session(df, etapa_folder)
+                    df = enrich_session(df, etapa_folder, year)
                     df['Round']        = rlabel
                     df['Round Order']  = rorder
                     df['Session Type'] = stype
@@ -223,15 +222,15 @@ def _show_team_table(team: pd.DataFrame):
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
-def show():
+def show(year: int = 2026):
     st.image('header.png')
-    st.title('Análise da Temporada — 2026')
+    st.title(f'Análise da Temporada — {year}')
     st.warning('🚧 Página ainda em construção — dados e funcionalidades podem mudar.')
 
-    BASE_DIR = Path(__file__).resolve().parent
+    BASE_DIR = Path(__file__).resolve().parent.parent / get_season(year).folder
 
     with st.spinner('Carregando dados da temporada completa…'):
-        df_laps = _load_season(BASE_DIR, _dir_signature(BASE_DIR))
+        df_laps = _load_season(BASE_DIR, _dir_signature(BASE_DIR), year)
 
     if df_laps.empty:
         st.error('Nenhum dado de temporada encontrado.')

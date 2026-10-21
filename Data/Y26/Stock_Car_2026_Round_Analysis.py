@@ -13,8 +13,7 @@ from pathlib import Path
 
 from sc_shared import (
     enrich_session, coerce_numeric_cols, convert_to_seconds,
-    highlight_driver, highlight_team, highlight_manufacturer,
-    TEAM_CAR_NAMES, TEAM_CAR_COLORS,
+    get_season, make_highlighters,
 )
 
 # ---------------------------------------------------------------------------
@@ -81,7 +80,7 @@ def _session_type(filename: str) -> str:
 # Data loader — reads all xlsx from both Races and Practice folders for a round
 # ---------------------------------------------------------------------------
 @st.cache_data(show_spinner=False)
-def _load_round(base_dir: Path, etapa: str) -> pd.DataFrame:
+def _load_round(base_dir: Path, etapa: str, year: int) -> pd.DataFrame:
     """Load and tag every session file for the chosen round."""
     frames = []
     folders = {
@@ -94,7 +93,7 @@ def _load_round(base_dir: Path, etapa: str) -> pd.DataFrame:
         for f in sorted(folder.glob('*.xlsx')):
             try:
                 df = pd.read_excel(f)
-                df = enrich_session(df, etapa)
+                df = enrich_session(df, etapa, year)
                 df['Session']      = _session_type(f.name)
                 df['Session File'] = f.stem
                 df['Folder Type']  = folder_type
@@ -112,11 +111,14 @@ def _load_round(base_dir: Path, etapa: str) -> pd.DataFrame:
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
-def show():
+def show(year: int = 2026):
     st.image('header.png')
     st.title('Análise da Etapa')
 
-    BASE_DIR = Path(__file__).resolve().parent
+    season = get_season(year)
+    highlight_driver, highlight_team, highlight_manufacturer = make_highlighters(year)
+
+    BASE_DIR = Path(__file__).resolve().parent.parent / season.folder
 
     # Find etapas that exist in at least one of the two folders
     races_dir    = BASE_DIR / 'Excel_Files' / 'Races'
@@ -134,7 +136,7 @@ def show():
         return
 
     with st.spinner('Carregando todas as sessões…'):
-        df_all = _load_round(BASE_DIR, etapa)
+        df_all = _load_round(BASE_DIR, etapa, year)
 
     if df_all.empty:
         st.error('Nenhum dado encontrado para esta etapa.')
@@ -249,7 +251,7 @@ def show():
     # =======================================================================
         st.subheader('Comparação de Pilotos entre sessões')
 
-        DEFAULT_DRIVERS = ['Felipe Fraga', 'Gaetano Di Mauro', 'Sérgio Sette Câmara', 'Zezinho Muggiati']
+        DEFAULT_DRIVERS = season.default_drivers
 
         all_drivers = sorted(df['Driver'].dropna().unique().tolist(), key=str)
         selected = st.multiselect(
@@ -340,8 +342,9 @@ def show():
         st.plotly_chart(fig, use_container_width=True)
 
         # Average across all sessions
-        manuf_avg = df.groupby('Manufacturer')[NUM_COLS].mean(numeric_only=True).reset_index()
-        fmt = {c: '{:.3f}' for c in NUM_COLS if c in manuf_avg.columns}
+        num_cols  = [c for c in NUM_COLS if c in df.columns]
+        manuf_avg = df.groupby('Manufacturer')[num_cols].mean(numeric_only=True).reset_index()
+        fmt = {c: '{:.3f}' for c in num_cols}
         ms  = manuf_avg.style.format(fmt)
         ms  = ms.background_gradient(cmap=CMAP)
         ms  = ms.apply(highlight_manufacturer, subset=['Manufacturer'])

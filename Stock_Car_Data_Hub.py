@@ -44,6 +44,8 @@ if not _check_password():
 
 from Data.Y25.Stock_Car_2025_Race_Data import show as show_race_2025
 from Data.Y25.Stock_Car_2025_Practice_Data import show as show_practice_2025
+from Data.Y25.Stock_Car_2025_Round_Analysis import show as show_round_2025
+from Data.Y25.Stock_Car_2025_Season_Analysis import show as show_season_2025
 from Data.Y26.Stock_Car_2026_Race_Data import show as show_race_2026
 from Data.Y26.Stock_Car_2026_Practice_Data import show as show_practice_2026
 from Data.Y26.Stock_Car_2026_Round_Analysis import show as show_round_2026
@@ -80,6 +82,10 @@ else:
             show_race_2025()
         elif selected_session == "Dados de Treino":
             show_practice_2025()
+        elif selected_session == "Análise da Etapa":
+            show_round_2025()
+        elif selected_session == "Análise da Temporada":
+            show_season_2025()
 
     elif selected_year == "2026":
         if selected_session == "Dados de Corrida":

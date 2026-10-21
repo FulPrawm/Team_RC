@@ -11,9 +11,8 @@ from pathlib import Path
 
 from sc_shared import (
     enrich_session, coerce_numeric_cols, convert_to_seconds,
-    highlight_driver, highlight_team, highlight_manufacturer,
+    get_season, make_highlighters,
     add_trend_line, detect_traffic, clean_lap_pct,
-    CORES_PERSONALIZADAS, TEAM_CAR_NAMES, TEAM_CAR_COLORS,
 )
 
 # ---------------------------------------------------------------------------
@@ -124,7 +123,7 @@ def _plot_efficiency(df: pd.DataFrame, title_suffix: str = '') -> go.Figure:
 # ---------------------------------------------------------------------------
 # Cumulative time offset from field-median pace
 # ---------------------------------------------------------------------------
-def _median_pace_chart(sessao: pd.DataFrame, y_min: float = -60.0) -> go.Figure | None:
+def _median_pace_chart(sessao: pd.DataFrame, colors: dict, y_min: float = -60.0) -> go.Figure | None:
     """
     Race trace ("F1 Race Traces"): the reference is a ghost car whose lap time on
     each lap is the median of all cars on that lap; a driver's offset is
@@ -143,7 +142,7 @@ def _median_pace_chart(sessao: pd.DataFrame, y_min: float = -60.0) -> go.Figure 
 
     long = show.reset_index().melt(id_vars='Lap', var_name='Driver', value_name='Offset').dropna(subset=['Offset'])
 
-    fig = px.line(long, x='Lap', y='Offset', color='Driver', color_discrete_map=CORES_PERSONALIZADAS)
+    fig = px.line(long, x='Lap', y='Offset', color='Driver', color_discrete_map=colors)
     fig.add_hline(y=0, line_dash='dash', line_color='gray')
     y_max = max(float(long['Offset'].max()), 0.0) * 1.05 + 1
     fig.update_xaxes(title='Volta')
@@ -155,12 +154,12 @@ def _median_pace_chart(sessao: pd.DataFrame, y_min: float = -60.0) -> go.Figure 
 # ---------------------------------------------------------------------------
 # Gap-to-fastest bar chart (Altair)
 # ---------------------------------------------------------------------------
-def _gap_bar_chart(df_avg: pd.DataFrame, coluna: str, tab_name: str):
+def _gap_bar_chart(df_avg: pd.DataFrame, coluna: str, tab_name: str, colors: dict):
     min_val = df_avg[coluna].min()
     df_avg  = df_avg.copy()
     df_avg['Diff']  = df_avg[coluna] - min_val
     df_avg          = df_avg.sort_values('Diff')
-    df_avg['Color'] = df_avg['Driver'].map(CORES_PERSONALIZADAS).fillna('white')
+    df_avg['Color'] = df_avg['Driver'].map(colors).fillna('white')
 
     sort_order = df_avg['Diff'].tolist()
     bars = alt.Chart(df_avg).mark_bar().encode(
@@ -181,11 +180,14 @@ def _gap_bar_chart(df_avg: pd.DataFrame, coluna: str, tab_name: str):
 # ---------------------------------------------------------------------------
 # Main entry point
 # ---------------------------------------------------------------------------
-def show():
+def show(year: int = 2026):
     st.image('header.png')
     st.title('Relatório de Dados da Sessão')
 
-    BASE_DIR     = Path(__file__).resolve().parent
+    season = get_season(year)
+    highlight_driver, highlight_team, highlight_manufacturer = make_highlighters(year)
+
+    BASE_DIR     = Path(__file__).resolve().parent.parent / season.folder
     PASTA_ETAPAS = BASE_DIR / 'Excel_Files' / 'Races'
 
     etapas_disponiveis = sorted(
@@ -214,7 +216,7 @@ def show():
     # Load & enrich
     # -----------------------------------------------------------------------
     sessao = pd.read_excel(caminho_corrida)
-    sessao = enrich_session(sessao, etapa_escolhida)
+    sessao = enrich_session(sessao, etapa_escolhida, year)
 
     sessao['Last Lap Diff'] = sessao.groupby('Car_ID')['Lap Tm (S)'].diff()
     sessao['Fast Lap Diff'] = sessao['Lap Tm (S)'] - sessao.groupby('Car_ID')['Lap Tm (S)'].transform('min')
@@ -505,7 +507,7 @@ def show():
 
         # Offset from field-median pace chart
         st.subheader('Diferença de Tempo para o Pace Mediano do Grid')
-        fig_med = _median_pace_chart(sessao)
+        fig_med = _median_pace_chart(sessao, season.cores_personalizadas)
         if fig_med is not None:
             st.plotly_chart(fig_med, use_container_width=True)
         else:
@@ -637,7 +639,7 @@ def show():
         for tab, (tab_name, coluna) in zip(tabs, sector_tabs_cfg.items()):
             with tab:
                 df_avg = sessao_filtrado.groupby('Driver')[coluna].mean().reset_index()
-                st.altair_chart(_gap_bar_chart(df_avg, coluna, tab_name), use_container_width=True)
+                st.altair_chart(_gap_bar_chart(df_avg, coluna, tab_name, season.cores_personalizadas), use_container_width=True)
 
         # -------------------------------------------------------------------
         # Percentual difference — ALL drivers
@@ -658,7 +660,7 @@ def show():
                 df = df.sort_values('Lap')
                 df['Bloco'] = (df['Lap'].diff().fillna(1) > 1).cumsum()
 
-                bar_color = TEAM_CAR_COLORS.get(car_id, '#636EFA')
+                bar_color = season.team_car_colors.get(car_id, '#636EFA')
                 fig = px.bar(
                     df, x='Lap', y='Diff %',
                     text=df['Diff %'].map(lambda x: f'{x:.2f}%'),
