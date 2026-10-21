@@ -13,6 +13,10 @@ st.info(
     "acima da volta mais rápida da sessão (padrão: 3%).\n"
     "- **Volta mais rápida de cada piloto (%):** mantém apenas as voltas dentro dessa porcentagem "
     "acima da volta mais rápida de cada piloto (padrão: 3%).\n\n"
+    "Há também duas opções para marcar:\n"
+    "- **Usar 5% (sessão) e 10% (piloto):** atalho que fixa os dois sliders nesses valores.\n"
+    "- **Considerar apenas 50% das voltas filtradas de cada piloto:** após o filtro, mantém só as "
+    "50% mais rápidas de cada piloto.\n\n"
     "A Volta 1 é sempre excluída da análise."
 )
 
