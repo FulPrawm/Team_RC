@@ -11,8 +11,7 @@ from pathlib import Path
 
 from sc_shared import (
     enrich_session, coerce_numeric_cols, convert_to_seconds,
-    highlight_driver, highlight_team, highlight_manufacturer, add_trend_line,
-    CORES_PERSONALIZADAS, TEAM_CAR_NAMES, TEAM_CAR_COLORS,
+    get_season, make_highlighters, add_trend_line,
 )
 
 warnings.filterwarnings('ignore')
@@ -63,12 +62,12 @@ def _gap_category(gap: pd.Series) -> pd.Series:
 # ---------------------------------------------------------------------------
 # Helper: gap-to-fastest bar chart (Altair)
 # ---------------------------------------------------------------------------
-def _gap_bar_chart(df_min: pd.DataFrame, coluna: str, tab_name: str):
+def _gap_bar_chart(df_min: pd.DataFrame, coluna: str, tab_name: str, colors: dict):
     min_val = df_min[coluna].min()
     df_min  = df_min.copy()
     df_min['Diff']  = df_min[coluna] - min_val
     df_min          = df_min.sort_values('Diff')
-    df_min['Color'] = df_min['Driver'].map(CORES_PERSONALIZADAS).fillna('white')
+    df_min['Color'] = df_min['Driver'].map(colors).fillna('white')
 
     sort_order = df_min['Diff'].tolist()
     bars = alt.Chart(df_min).mark_bar().encode(
@@ -89,11 +88,14 @@ def _gap_bar_chart(df_min: pd.DataFrame, coluna: str, tab_name: str):
 # ---------------------------------------------------------------------------
 # Main entry point
 # ---------------------------------------------------------------------------
-def show():
+def show(year: int = 2026):
     st.image('header.png')
     st.title('Relatório de Dados da Sessão — Volta Mais Rápida')
 
-    BASE_DIR      = Path(__file__).resolve().parent
+    season = get_season(year)
+    highlight_driver, highlight_team, highlight_manufacturer = make_highlighters(year)
+
+    BASE_DIR      = Path(__file__).resolve().parent.parent / season.folder
     PASTA_ETAPAS  = BASE_DIR / 'Excel_Files' / 'Practice_And_Qualy'
 
     etapas_disponiveis = sorted(
@@ -123,7 +125,7 @@ def show():
     # Load & enrich data
     # -----------------------------------------------------------------------
     sessao = pd.read_excel(caminho_corrida)
-    sessao = enrich_session(sessao, etapa_escolhida)
+    sessao = enrich_session(sessao, etapa_escolhida, year)
 
     has_crossing = 'Crossing Time' in sessao.columns
     if has_crossing:
@@ -264,7 +266,7 @@ def show():
         for tab, (tab_name, coluna) in zip(tabs, sector_tabs_cfg.items()):
             with tab:
                 df_min = sessao_filtrado.groupby('Driver')[coluna].min().reset_index()
-                st.altair_chart(_gap_bar_chart(df_min, coluna, tab_name), use_container_width=True)
+                st.altair_chart(_gap_bar_chart(df_min, coluna, tab_name, season.cores_personalizadas), use_container_width=True)
 
         # -------------------------------------------------------------------
         st.subheader('Heatmap de Setores & Comparação em Radar')
@@ -331,7 +333,7 @@ def show():
         df_radar = radar_data.melt(id_vars=['Driver'], value_vars=SECTOR_COLS,
                                    var_name='Sector', value_name='Score')
 
-        driver_colors = {TEAM_CAR_NAMES[c]: TEAM_CAR_COLORS[c] for c in TEAM_CAR_NAMES}
+        driver_colors = {season.team_car_names[c]: season.team_car_colors[c] for c in season.team_car_names}
         color_map = {d: driver_colors.get(d, 'green') for d in df_radar['Driver'].unique()}
 
         fig_radar = px.line_polar(
