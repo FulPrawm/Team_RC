@@ -321,8 +321,15 @@ def show():
 
         tabela1 = tabela1.merge(clean_pct, on='Driver', how='left')
 
+        # Mean lap-time z-score per driver, relative to all filtered laps of the session (lower = faster)
+        _lap_std = sessao_filtrado['Lap Tm (S)'].std()
+        if pd.notna(_lap_std) and _lap_std > 0:
+            _z = (sessao_filtrado['Lap Tm (S)'] - sessao_filtrado['Lap Tm (S)'].mean()) / _lap_std
+            z_mean = _z.groupby(sessao_filtrado['Driver']).mean().rename('Z-Score Médio').reset_index()
+            tabela1 = tabela1.merge(z_mean, on='Driver', how='left')
+
         st.subheader('Tabela ordenada por Carro')
-        fmt_t1 = {c: '{:.2f}' for c in NUM_COLS + ['% Clean Laps'] if c in tabela1.columns}
+        fmt_t1 = {c: '{:.2f}' for c in NUM_COLS + ['% Clean Laps', 'Z-Score Médio'] if c in tabela1.columns}
         t1s = tabela1.style.format(fmt_t1)
         t1s = t1s.background_gradient(cmap=CMAP)
         t1s = t1s.apply(highlight_driver,       subset=['Driver'])

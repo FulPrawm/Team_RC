@@ -287,6 +287,13 @@ def show():
                 # Merge the % clean laps into tabela1
                 tabela1 = tabela1.merge(clean_laps_percent, on='Driver', how='left')
 
+                # Mean lap-time z-score per driver, relative to all filtered laps of the session (lower = faster)
+                lap_std = sessao_filtrado['Lap Tm (S)'].std()
+                if pd.notna(lap_std) and lap_std > 0:
+                    z = (sessao_filtrado['Lap Tm (S)'] - sessao_filtrado['Lap Tm (S)'].mean()) / lap_std
+                    z_mean = z.groupby(sessao_filtrado['Driver']).mean().rename('Z-Score Médio').reset_index()
+                    tabela1 = tabela1.merge(z_mean, on='Driver', how='left')
+
                 # Now include the new column in the style
                 tabela1_styled = (
                     tabela1
