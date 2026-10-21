@@ -124,28 +124,30 @@ def _plot_efficiency(df: pd.DataFrame, title_suffix: str = '') -> go.Figure:
 # ---------------------------------------------------------------------------
 # Cumulative time offset from field-median pace
 # ---------------------------------------------------------------------------
-def _median_pace_chart(sessao: pd.DataFrame) -> go.Figure | None:
+def _median_pace_chart(sessao: pd.DataFrame, y_min: float = -60.0) -> go.Figure | None:
     """
-    For each lap, the field-median lap time is the reference; each car's offset
-    is the running sum of (median - own lap time), so positive = ahead of the
-    median pace (faster). Laps without a valid time add nothing.
+    Race trace ("F1 Race Traces"): the reference is a ghost car whose lap time on
+    each lap is the median of all cars on that lap; a driver's offset is
+    (cumulative reference - cumulative own time). Positive = ahead of the ghost.
+    Lap 0 starts every driver at offset 0.
     """
-    df = sessao.dropna(subset=['Driver', 'Lap', 'Lap Tm (S)']).copy()
+    df = sessao.dropna(subset=['Driver', 'Lap', 'Lap Tm (S)'])
     if df.empty:
         return None
 
-    df = df.sort_values(['Driver', 'Lap'])
-    df['Median Lap'] = df.groupby('Lap')['Lap Tm (S)'].transform('median')
-    df['Offset']     = (df['Median Lap'] - df['Lap Tm (S)']).groupby(df['Driver']).cumsum()
+    chart = df.pivot_table(index='Lap', columns='Driver', values='Lap Tm (S)', aggfunc='first').sort_index()
+    basis = chart.median(axis=1).cumsum()
+    show  = -chart.cumsum().subtract(basis, axis=0)          # NaN where no lap time
+    show.loc[0] = 0.0
+    show = show.sort_index()
 
-    fig = px.line(
-        df, x='Lap', y='Offset', color='Driver',
-        title='Diferença de tempo para o pace mediano do grid',
-        color_discrete_map=CORES_PERSONALIZADAS,
-    )
+    long = show.reset_index().melt(id_vars='Lap', var_name='Driver', value_name='Offset').dropna(subset=['Offset'])
+
+    fig = px.line(long, x='Lap', y='Offset', color='Driver', color_discrete_map=CORES_PERSONALIZADAS)
     fig.add_hline(y=0, line_dash='dash', line_color='gray')
+    y_max = max(float(long['Offset'].max()), 0.0) * 1.05 + 1
     fig.update_xaxes(title='Volta')
-    fig.update_yaxes(title='Diferença para o pace mediano do grid (s) · mais rápido = para cima')
+    fig.update_yaxes(title='Diferença (s)', range=[y_min, y_max])
     fig.update_layout(hovermode='x unified')
     return fig
 
