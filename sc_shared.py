@@ -429,7 +429,7 @@ def box_plot(df: pd.DataFrame, cat: str, val: str, orientation: str = 'v',
             boxmean=True, boxpoints='all', pointpos=-1.5 if vertical else 1.5, jitter=0.3,
             line_color=color, marker=dict(color=color, size=4, opacity=0.6), showlegend=False,
         ))
-    fig.update_layout(title=title, boxmode='group', showlegend=False)
+    fig.update_layout(title=title, boxmode='overlay', showlegend=False)
     if vertical:
         fig.update_xaxes(categoryorder='array', categoryarray=cats)
     else:
