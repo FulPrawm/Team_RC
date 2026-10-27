@@ -251,6 +251,15 @@ def show(year: int = 2026):
                 st.plotly_chart(px.line(df_plot, x='Ranking', y=col, color='Driver', title=title),
                                 use_container_width=True)
 
+                df_prog = sessao_filtrado.sort_values(['Driver', 'Lap'])
+                fig_prog = px.line(
+                    df_prog, x='Lap', y=col, color='Driver', markers=True,
+                    title=title.replace('Média Crescente do', 'Progressão do').replace(
+                        'Média Crescente de', 'Progressão de') + ' durante a Sessão',
+                )
+                fig_prog.update_layout(xaxis_title='Volta', yaxis_title=col)
+                st.plotly_chart(fig_prog, use_container_width=True)
+
     # =======================================================================
     elif option == 'Outros':
     # =======================================================================
