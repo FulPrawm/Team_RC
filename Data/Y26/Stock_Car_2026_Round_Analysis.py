@@ -13,7 +13,7 @@ from pathlib import Path
 
 from sc_shared import (
     enrich_session, coerce_numeric_cols, convert_to_seconds,
-    get_season, make_highlighters,
+    get_season, make_highlighters, violin_plot,
 )
 
 # ---------------------------------------------------------------------------
@@ -227,23 +227,17 @@ def show(year: int = 2026):
         )
 
         st.subheader('Distribuição do tempo de volta entre sessões')
-        fig = px.box(
-            df, x='Session', y='Lap Tm (S)',
-            color='Session', points='all',
-            category_orders={'Session': sessions_available},
+        fig = violin_plot(
+            df, 'Session', 'Lap Tm (S)', order=list(sessions_available),
             title='Distribuição do Tempo de Volta por Sessão',
         )
-        fig.update_layout(showlegend=False)
         st.plotly_chart(fig, use_container_width=True)
 
         st.subheader('Speed Trap entre sessões')
-        fig2 = px.box(
-            df, x='Session', y='SPT',
-            color='Session', points='all',
-            category_orders={'Session': sessions_available},
+        fig2 = violin_plot(
+            df, 'Session', 'SPT', order=list(sessions_available),
             title='Distribuição do Speed Trap por Sessão',
         )
-        fig2.update_layout(showlegend=False)
         st.plotly_chart(fig2, use_container_width=True)
 
     # =======================================================================

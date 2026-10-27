@@ -12,7 +12,7 @@ from pathlib import Path
 from sc_shared import (
     enrich_session, coerce_numeric_cols, convert_to_seconds,
     get_season, make_highlighters,
-    add_trend_line, detect_traffic, clean_lap_pct,
+    add_trend_line, detect_traffic, clean_lap_pct, violin_plot,
 )
 
 # ---------------------------------------------------------------------------
@@ -301,7 +301,7 @@ def show(year: int = 2026):
     # -----------------------------------------------------------------------
     option = st.selectbox(
         'Selecione o tipo de gráfico',
-        ('Tabelas', 'Linhas', 'Histogramas', 'BoxPlots', 'Outros', 'Todas as Voltas'),
+        ('Tabelas', 'Linhas', 'Histogramas', 'Violin Plots', 'Outros', 'Todas as Voltas'),
         index=0,
     )
 
@@ -681,19 +681,17 @@ def show(year: int = 2026):
                 st.plotly_chart(fig, use_container_width=True)
 
     # =======================================================================
-    elif option == 'BoxPlots':
+    elif option == 'Violin Plots':
     # =======================================================================
         # By manufacturer
         vars_manuf = [c for c in ANALISE_MANUFACTURER if c != 'Manufacturer']
         tabs_manuf = st.tabs(vars_manuf)
         for tab, var in zip(tabs_manuf, vars_manuf):
             with tab:
-                fig = px.box(
-                    sessao_filtrado, x='Manufacturer', y=var,
-                    points='all', color='Manufacturer',
+                fig = violin_plot(
+                    sessao_filtrado, 'Manufacturer', var,
                     title=f'Distribuição de {var} por Fabricante',
                 )
-                fig.update_layout(showlegend=False)
                 st.plotly_chart(fig, use_container_width=True)
 
         # By driver — with driver filter multiselect
@@ -713,12 +711,12 @@ def show(year: int = 2026):
                     key=f'bp_race_{coluna}',
                 )
                 df_box = sessao_filtrado[sessao_filtrado['Driver'].isin(selected)]
-                fig = px.box(
-                    df_box, x='Driver', y=coluna,
-                    points='all', color='Driver',
-                    category_orders={'Driver': [d for d in drivers_sorted if d in selected]},
+                fig = violin_plot(
+                    df_box, 'Driver', coluna,
+                    order=[d for d in drivers_sorted if d in selected],
+                    title=f'Violin Plot - {coluna}',
                 )
-                fig.update_layout(yaxis_title=coluna, title=f'Boxplot - {coluna}', showlegend=False)
+                fig.update_layout(yaxis_title=coluna)
                 st.plotly_chart(fig, use_container_width=True)
 
     # =======================================================================
