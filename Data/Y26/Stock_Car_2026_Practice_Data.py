@@ -11,7 +11,7 @@ from pathlib import Path
 
 from sc_shared import (
     enrich_session, coerce_numeric_cols, convert_to_seconds,
-    get_season, make_highlighters, add_trend_line, violin_plot,
+    get_season, make_highlighters, add_trend_line, box_plot,
 )
 
 warnings.filterwarnings('ignore')
@@ -187,7 +187,7 @@ def show(year: int = 2026):
     # -----------------------------------------------------------------------
     option = st.selectbox(
         'Selecione o tipo de gráfico',
-        ('Tabelas', 'Linhas', 'Violin Plots', 'Outros', 'Todas as Voltas'),
+        ('Tabelas', 'Linhas', 'Box Plots', 'Outros', 'Todas as Voltas'),
         index=0,
     )
 
@@ -446,13 +446,13 @@ def show(year: int = 2026):
                 )
 
     # =======================================================================
-    elif option == 'Violin Plots':
+    elif option == 'Box Plots':
     # =======================================================================
         st.write('Valores de todos os carros de cada fabricante')
         for var in ANALISE_MANUFACTURER:
             if var == 'Manufacturer':
                 continue
-            fig = violin_plot(
+            fig = box_plot(
                 sessao_filtrado, 'Manufacturer', var, orientation='h',
                 title=f'Distribuição de {var}',
             )
@@ -474,10 +474,10 @@ def show(year: int = 2026):
                     key=f'bp_practice_{coluna}',
                 )
                 df_box = sessao_filtrado[sessao_filtrado['Driver'].isin(selected)]
-                fig = violin_plot(
+                fig = box_plot(
                     df_box, 'Driver', coluna,
                     order=[d for d in drivers_sorted if d in selected],
-                    title=f'Violin Plot - {coluna}',
+                    title=f'Box Plot -{coluna}',
                 )
                 fig.update_layout(yaxis_title=coluna)
                 st.plotly_chart(fig, use_container_width=True)

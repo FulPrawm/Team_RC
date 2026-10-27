@@ -12,7 +12,7 @@ from pathlib import Path
 from sc_shared import (
     enrich_session, coerce_numeric_cols, convert_to_seconds,
     get_season, make_highlighters,
-    add_trend_line, detect_traffic, clean_lap_pct, violin_plot,
+    add_trend_line, detect_traffic, clean_lap_pct, box_plot,
 )
 
 # ---------------------------------------------------------------------------
@@ -301,7 +301,7 @@ def show(year: int = 2026):
     # -----------------------------------------------------------------------
     option = st.selectbox(
         'Selecione o tipo de gráfico',
-        ('Tabelas', 'Linhas', 'Histogramas', 'Violin Plots', 'Outros', 'Todas as Voltas'),
+        ('Tabelas', 'Linhas', 'Histogramas', 'Box Plots', 'Outros', 'Todas as Voltas'),
         index=0,
     )
 
@@ -681,14 +681,14 @@ def show(year: int = 2026):
                 st.plotly_chart(fig, use_container_width=True)
 
     # =======================================================================
-    elif option == 'Violin Plots':
+    elif option == 'Box Plots':
     # =======================================================================
         # By manufacturer
         vars_manuf = [c for c in ANALISE_MANUFACTURER if c != 'Manufacturer']
         tabs_manuf = st.tabs(vars_manuf)
         for tab, var in zip(tabs_manuf, vars_manuf):
             with tab:
-                fig = violin_plot(
+                fig = box_plot(
                     sessao_filtrado, 'Manufacturer', var,
                     title=f'Distribuição de {var} por Fabricante',
                 )
@@ -711,10 +711,10 @@ def show(year: int = 2026):
                     key=f'bp_race_{coluna}',
                 )
                 df_box = sessao_filtrado[sessao_filtrado['Driver'].isin(selected)]
-                fig = violin_plot(
+                fig = box_plot(
                     df_box, 'Driver', coluna,
                     order=[d for d in drivers_sorted if d in selected],
-                    title=f'Violin Plot - {coluna}',
+                    title=f'Box Plot -{coluna}',
                 )
                 fig.update_layout(yaxis_title=coluna)
                 st.plotly_chart(fig, use_container_width=True)
