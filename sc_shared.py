@@ -406,9 +406,9 @@ def clean_lap_pct(traffic: pd.Series) -> float:
     return (known == 'No').mean() * 100 if len(known) else np.nan
 
 
-def violin_plot(df: pd.DataFrame, cat: str, val: str, orientation: str = 'v',
-                order: list | None = None, title: str | None = None) -> go.Figure:
-    """Violin per category in the style of the Plotly docs: inner box, mean line, points.
+def box_plot(df: pd.DataFrame, cat: str, val: str, orientation: str = 'v',
+             order: list | None = None, title: str | None = None) -> go.Figure:
+    """Boxplot per category with mean line and all points.
 
     orientation 'v': categories on x, values on y. 'h': values on x, categories on y.
     """
@@ -424,14 +424,12 @@ def violin_plot(df: pd.DataFrame, cat: str, val: str, orientation: str = 'v',
             continue
         color = palette[i % len(palette)]
         axis = dict(x=[c] * len(vals), y=vals) if vertical else dict(x=vals, y=[c] * len(vals))
-        fig.add_trace(go.Violin(
+        fig.add_trace(go.Box(
             **axis, name=str(c), orientation=orientation,
-            box_visible=True, meanline_visible=True,
-            points='all', pointpos=-0.5 if vertical else 0.5, jitter=0.05,
-            line_color=color, fillcolor=color, opacity=0.6,
-            marker=dict(color=color, size=4, opacity=0.7), showlegend=False,
+            boxmean=True, boxpoints='all', pointpos=-1.5 if vertical else 1.5, jitter=0.3,
+            line_color=color, marker=dict(color=color, size=4, opacity=0.6), showlegend=False,
         ))
-    fig.update_layout(title=title, violinmode='group', showlegend=False)
+    fig.update_layout(title=title, boxmode='group', showlegend=False)
     if vertical:
         fig.update_xaxes(categoryorder='array', categoryarray=cats)
     else:
