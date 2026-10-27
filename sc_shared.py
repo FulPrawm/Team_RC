@@ -408,7 +408,7 @@ def clean_lap_pct(traffic: pd.Series) -> float:
 
 def violin_plot(df: pd.DataFrame, cat: str, val: str, orientation: str = 'v',
                 order: list | None = None, title: str | None = None) -> go.Figure:
-    """Violin per category with points inside, mean line and Q1/median/Q3 markers.
+    """Violin per category in the style of the Plotly docs: inner box, mean line, points.
 
     orientation 'v': categories on x, values on y. 'h': values on x, categories on y.
     """
@@ -426,23 +426,12 @@ def violin_plot(df: pd.DataFrame, cat: str, val: str, orientation: str = 'v',
         axis = dict(x=[c] * len(vals), y=vals) if vertical else dict(x=vals, y=[c] * len(vals))
         fig.add_trace(go.Violin(
             **axis, name=str(c), orientation=orientation,
-            points='all', pointpos=0, jitter=0.5, spanmode='hard',
-            box_visible=False, meanline_visible=True,
+            box_visible=True, meanline_visible=True,
+            points='all', pointpos=-0.5 if vertical else 0.5, jitter=0.05,
             line_color=color, fillcolor=color, opacity=0.6,
-            marker=dict(color=color, size=4), showlegend=False,
+            marker=dict(color=color, size=4, opacity=0.7), showlegend=False,
         ))
-        q = vals.quantile([0.25, 0.5, 0.75]).tolist()
-        qaxis = dict(x=[c] * 3, y=q) if vertical else dict(x=q, y=[c] * 3)
-        fig.add_trace(go.Scatter(
-            **qaxis, mode='markers',
-            marker=dict(symbol='line-ew-open' if vertical else 'line-ns-open',
-                        size=45, color='black', line=dict(width=1.5)),
-            text=['25%', '50% (mediana)', '75%'],
-            hovertemplate=('%{text}: %{y:.3f}' if vertical else '%{text}: %{x:.3f}')
-            + '<extra>' + str(c) + '</extra>',
-            showlegend=False,
-        ))
-    fig.update_layout(title=title, violinmode='overlay', showlegend=False)
+    fig.update_layout(title=title, violinmode='group', showlegend=False)
     if vertical:
         fig.update_xaxes(categoryorder='array', categoryarray=cats)
     else:
