@@ -94,7 +94,7 @@ COLORS_DRIVER: dict[str, tuple[str, str]] = {
     'Gaetano Di Mauro':     ('lightblue', 'black'),
     'Sérgio Sette Câmara':  ('gray',      'white'),
     'Felipe Fraga':         ('yellow',    'black'),
-    'Zezinho Muggiati':     ('#0057B8',   'white'),
+    'Zezinho Muggiati':     ('lightgreen', 'black'),
 }
 COLORS_TEAM: dict[str, tuple[str, str]] = {
     'Eurofarma RC': ('yellow', 'black'),
@@ -109,7 +109,7 @@ CORES_PERSONALIZADAS: dict[str, str] = {
     'Gaetano Di Mauro':    'blue',
     'Sérgio Sette Câmara': 'gray',
     'Felipe Fraga':        'yellow',
-    'Zezinho Muggiati':    '#0057B8',
+    'Zezinho Muggiati':    'lightgreen',
 }
 
 # Cars belonging to each team for team-specific views
@@ -118,7 +118,7 @@ TEAM_CARS: dict[str, list[int]] = {
     'Team RC':      [7, 38],
 }
 TEAM_CAR_COLORS: dict[int, str] = {
-    11: 'blue', 7: 'gray', 1: 'yellow', 38: '#0057B8',
+    11: 'blue', 7: 'gray', 1: 'yellow', 38: 'lightgreen',
 }
 TEAM_CAR_NAMES: dict[int, str] = {
     11: 'Gaetano Di Mauro',
@@ -195,7 +195,7 @@ COLORS_DRIVER_2025: dict[str, tuple[str, str]] = {
     'Bruno Baptista':    ('gray',      'white'),
     'Felipe Fraga':      ('yellow',    'black'),
     'Marcos Regadas':    ('gray',      'white'),
-    'Zezinho Muggiati':  ('#0057B8',   'white'),
+    'Zezinho Muggiati':  ('lightgreen', 'black'),
 }
 COLORS_TEAM_2025: dict[str, tuple[str, str]] = {
     'Eurofarma RC':   ('yellow', 'black'),
@@ -208,10 +208,10 @@ CORES_PERSONALIZADAS_2025: dict[str, str] = {
     'Bruno Baptista':   'gray',
     'Felipe Fraga':     'yellow',
     'Marcos Regadas':   'gray',
-    'Zezinho Muggiati': '#0057B8',
+    'Zezinho Muggiati': 'lightgreen',
 }
 TEAM_CAR_COLORS_2025: dict[int, str] = {
-    10: 'red', 11: 'blue', 44: 'gray', 88: 'yellow', 31: 'gray', 38: '#0057B8',
+    10: 'red', 11: 'blue', 44: 'gray', 88: 'yellow', 31: 'gray', 38: 'lightgreen',
 }
 TEAM_CAR_NAMES_2025: dict[int, str] = {
     10: 'Ricardo Zonta',

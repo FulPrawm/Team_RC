@@ -248,12 +248,14 @@ def show(year: int = 2026):
                 df_plot = sessao_filtrado.copy()
                 df_plot['Ranking'] = df_plot.groupby('Driver')[col].rank(ascending=ascending)
                 df_plot = df_plot.sort_values(['Driver', 'Ranking'])
-                st.plotly_chart(px.line(df_plot, x='Ranking', y=col, color='Driver', title=title),
+                st.plotly_chart(px.line(df_plot, x='Ranking', y=col, color='Driver', title=title,
+                                        color_discrete_map=season.cores_personalizadas),
                                 use_container_width=True)
 
                 df_prog = sessao_filtrado.sort_values(['Driver', 'Lap'])
                 fig_prog = px.line(
                     df_prog, x='Lap', y=col, color='Driver', markers=True,
+                    color_discrete_map=season.cores_personalizadas,
                     title=title.replace('Média Crescente do', 'Progressão do').replace(
                         'Média Crescente de', 'Progressão de') + ' durante a Sessão',
                 )
