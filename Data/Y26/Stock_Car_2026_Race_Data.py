@@ -449,7 +449,8 @@ def show(year: int = 2026):
                        'Progressão do S3', 'Progressão do SPT']
         for tab, col, title in zip(prog_tabs, prog_cols, prog_titles):
             with tab:
-                st.plotly_chart(px.line(sessao, x='Lap', y=col, color='Driver', title=title))
+                st.plotly_chart(px.line(sessao, x='Lap', y=col, color='Driver', title=title,
+                                        color_discrete_map=season.cores_personalizadas))
 
         raising_configs = [
             ('Lap Tm (S)', True,  'Média Crescente do Tempo de Volta'),
@@ -464,23 +465,28 @@ def show(year: int = 2026):
                 df_plot = sessao_filtrado.copy()
                 df_plot['Ranking'] = df_plot.groupby('Driver')[col].rank(ascending=ascending)
                 df_plot = df_plot.sort_values(['Driver', 'Ranking'])
-                st.plotly_chart(px.line(df_plot, x='Ranking', y=col, color='Driver', title=title))
+                st.plotly_chart(px.line(df_plot, x='Ranking', y=col, color='Driver', title=title,
+                                        color_discrete_map=season.cores_personalizadas))
 
         delta_tabs = st.tabs(['Delta da Última Volta', 'Delta da Volta Mais Rápida'])
         with delta_tabs[0]:
-            st.plotly_chart(px.line(sessao, x='Lap', y='Last Lap Diff', color='Driver', title='Diferença da Última Volta'))
+            st.plotly_chart(px.line(sessao, x='Lap', y='Last Lap Diff', color='Driver', title='Diferença da Última Volta',
+                                    color_discrete_map=season.cores_personalizadas))
         with delta_tabs[1]:
-            st.plotly_chart(px.line(sessao, x='Lap', y='Fast Lap Diff', color='Driver', title='Delta da Volta Mais Rápida'))
+            st.plotly_chart(px.line(sessao, x='Lap', y='Fast Lap Diff', color='Driver', title='Delta da Volta Mais Rápida',
+                                    color_discrete_map=season.cores_personalizadas))
 
         gap_tabs = st.tabs(['Gap para o Vencedor', 'Gap para o Líder da Volta', 'Gap para Referência'])
         with gap_tabs[0]:
             if 'Gap to Winner' in sessao.columns:
-                st.plotly_chart(px.line(sessao, x='Lap', y='Gap to Winner', color='Driver', title='Gap para o Vencedor'))
+                st.plotly_chart(px.line(sessao, x='Lap', y='Gap to Winner', color='Driver', title='Gap para o Vencedor',
+                                        color_discrete_map=season.cores_personalizadas))
             else:
                 st.info("⚠️ 'Crossing Time' não disponível. O gráfico de Gap para o Vencedor não será exibido.")
         with gap_tabs[1]:
             if 'Gap to Leader' in sessao.columns:
-                st.plotly_chart(px.line(sessao, x='Lap', y='Gap to Leader', color='Driver', title='Gap para o Líder'))
+                st.plotly_chart(px.line(sessao, x='Lap', y='Gap to Leader', color='Driver', title='Gap para o Líder',
+                                        color_discrete_map=season.cores_personalizadas))
             else:
                 st.info("⚠️ 'Crossing Time' não disponível. O gráfico de Gap para o Líder não será exibido.")
         with gap_tabs[2]:
@@ -500,6 +506,7 @@ def show(year: int = 2026):
                 gap_ref_df['Gap to Reference'] = gap_ref_df['Cumulative Crossing'] - gap_ref_df['Reference Crossing']
                 st.plotly_chart(px.line(
                     gap_ref_df, x='Lap', y='Gap to Reference', color='Driver',
+                    color_discrete_map=season.cores_personalizadas,
                     title=f'Gap para Referência ({ref_driver})',
                 ))
             else:
@@ -523,6 +530,7 @@ def show(year: int = 2026):
             fig_pos = px.line(
                 pos_df.sort_values(['Driver', 'Lap']),
                 x='Lap', y='Position', color='Driver',
+                color_discrete_map=season.cores_personalizadas,
                 markers=True,
                 title='Mudança de Posição por Volta',
             )

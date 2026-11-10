@@ -266,6 +266,7 @@ def show(year: int = 2026):
         fig  = px.line(
             best, x='Session', y='Lap Tm (S)',
             color='Driver', markers=True,
+            color_discrete_map=season.cores_personalizadas,
             category_orders={'Session': sessions_available},
             title='Melhor Tempo de Volta por Sessão',
         )
@@ -313,7 +314,8 @@ def show(year: int = 2026):
         for tab, col in zip(tabs, cols):
             with tab:
                 fig = px.line(df_sess.sort_values('Lap'), x='Lap', y=col,
-                              color='Driver', markers=True, title=f'{col} — {session_choice}')
+                              color='Driver', markers=True, title=f'{col} — {session_choice}',
+                              color_discrete_map=season.cores_personalizadas)
                 st.plotly_chart(fig, use_container_width=True)
 
     # =======================================================================
