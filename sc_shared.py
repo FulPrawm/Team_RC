@@ -406,6 +406,23 @@ def clean_lap_pct(traffic: pd.Series) -> float:
     return (known == 'No').mean() * 100 if len(known) else np.nan
 
 
+def add_ideal_lap(table: pd.DataFrame, laps: pd.DataFrame, group_cols: list[str],
+                  sector_cols: tuple[str, ...] = ('S1 Tm', 'S2 Tm', 'S3 Tm'),
+                  col_name: str = 'Ideal') -> pd.DataFrame:
+    """
+    Add the ideal lap (sum of the best S1 + S2 + S3 of each group over `laps`)
+    to `table`, merged on `group_cols`. Placed right after 'Lap Tm (S)' if present.
+    """
+    best = laps.groupby(group_cols)[list(sector_cols)].min()
+    ideal = best.sum(axis=1, min_count=len(sector_cols)).rename(col_name).reset_index()
+    out = table.merge(ideal, on=group_cols, how='left')
+    if 'Lap Tm (S)' in out.columns:
+        cols = [c for c in out.columns if c != col_name]
+        cols.insert(cols.index('Lap Tm (S)') + 1, col_name)
+        out = out[cols]
+    return out
+
+
 def box_plot(df: pd.DataFrame, cat: str, val: str, orientation: str = 'v',
              order: list | None = None, title: str | None = None) -> go.Figure:
     """Boxplot per category with mean line and all points.
