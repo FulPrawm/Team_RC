@@ -11,7 +11,7 @@ from pathlib import Path
 
 from sc_shared import (
     enrich_session, coerce_numeric_cols, convert_to_seconds,
-    get_season, make_highlighters, add_trend_line, box_plot,
+    get_season, make_highlighters, add_trend_line, box_plot, add_ideal_lap,
 )
 
 warnings.filterwarnings('ignore')
@@ -195,17 +195,18 @@ def show(year: int = 2026):
     if option == 'Tabelas':
     # =======================================================================
         def _table(group_cols):
-            return (
+            t = (
                 sessao_filtrado
                 .groupby(group_cols)
                 .agg({k: v for k, v in TIME_AGG.items() if k in sessao_filtrado.columns})
                 .reset_index()
             )
+            return add_ideal_lap(t, sessao_filtrado, group_cols)
 
         # By driver
         st.subheader('Tabela por Carro')
         t1 = _table(['Driver', 'Team', 'Manufacturer'])
-        fmt1 = {c: '{:.3f}' for c in NUM_COLS if c in t1.columns}
+        fmt1 = {c: '{:.3f}' for c in NUM_COLS + ['Ideal'] if c in t1.columns}
         t1_styled = t1.style.format(fmt1)
         t1_styled = t1_styled.background_gradient(cmap=CMAP)
         t1_styled = t1_styled.apply(highlight_driver, subset=['Driver'])
@@ -216,7 +217,7 @@ def show(year: int = 2026):
         # By team
         st.subheader('Tabela por Equipe')
         t2 = _table(['Team', 'Manufacturer'])
-        fmt2 = {c: '{:.3f}' for c in NUM_COLS if c in t2.columns}
+        fmt2 = {c: '{:.3f}' for c in NUM_COLS + ['Ideal'] if c in t2.columns}
         t2_styled = t2.style.format(fmt2)
         t2_styled = t2_styled.background_gradient(cmap=CMAP)
         t2_styled = t2_styled.apply(highlight_team,         subset=['Team'])
@@ -226,7 +227,7 @@ def show(year: int = 2026):
         # By manufacturer
         st.subheader('Tabela por Fabricante')
         t3 = _table(['Manufacturer'])
-        fmt3 = {c: '{:.3f}' for c in NUM_COLS if c in t3.columns}
+        fmt3 = {c: '{:.3f}' for c in NUM_COLS + ['Ideal'] if c in t3.columns}
         t3_styled = t3.style.format(fmt3)
         t3_styled = t3_styled.background_gradient(cmap=CMAP)
         t3_styled = t3_styled.apply(highlight_manufacturer, subset=['Manufacturer'])

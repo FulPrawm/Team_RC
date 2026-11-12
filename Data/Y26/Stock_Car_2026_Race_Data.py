@@ -12,7 +12,7 @@ from pathlib import Path
 from sc_shared import (
     enrich_session, coerce_numeric_cols, convert_to_seconds,
     get_season, make_highlighters,
-    add_trend_line, detect_traffic, clean_lap_pct, box_plot,
+    add_trend_line, detect_traffic, clean_lap_pct, box_plot, add_ideal_lap,
 )
 
 # ---------------------------------------------------------------------------
@@ -96,6 +96,7 @@ def _manufacturer_top2_table(sessao: pd.DataFrame, sessao_filtrado: pd.DataFrame
         .groupby('Manufacturer').mean(numeric_only=True)
         .reset_index()
     )
+    result = add_ideal_lap(result, sessao_top2, ['Manufacturer'])
     result['Top 2 Cars'] = result['Manufacturer'].map(top2_dict)
     return result
 
@@ -323,15 +324,10 @@ def show(year: int = 2026):
 
         tabela1 = tabela1.merge(clean_pct, on='Driver', how='left')
 
-        # Mean lap-time z-score per driver, relative to all filtered laps of the session (lower = faster)
-        _lap_std = sessao_filtrado['Lap Tm (S)'].std()
-        if pd.notna(_lap_std) and _lap_std > 0:
-            _z = (sessao_filtrado['Lap Tm (S)'] - sessao_filtrado['Lap Tm (S)'].mean()) / _lap_std
-            z_mean = _z.groupby(sessao_filtrado['Driver']).mean().rename('Z-Score Médio').reset_index()
-            tabela1 = tabela1.merge(z_mean, on='Driver', how='left')
+        tabela1 = add_ideal_lap(tabela1, sessao_filtrado, ['Driver', 'Team', 'Manufacturer'])
 
         st.subheader('Tabela ordenada por Carro')
-        fmt_t1 = {c: '{:.2f}' for c in NUM_COLS + ['% Clean Laps', 'Z-Score Médio'] if c in tabela1.columns}
+        fmt_t1 = {c: '{:.2f}' for c in NUM_COLS + ['Ideal', '% Clean Laps'] if c in tabela1.columns}
         t1s = tabela1.style.format(fmt_t1)
         t1s = t1s.background_gradient(cmap=CMAP)
         t1s = t1s.apply(highlight_driver,       subset=['Driver'])
@@ -361,7 +357,8 @@ def show(year: int = 2026):
             .mean(numeric_only=True)
             .reset_index()
         )
-        fmt_tm = {c: '{:.3f}' for c in NUM_COLS if c in team_df.columns}
+        team_df = add_ideal_lap(team_df, sessao_filtrado, ['Team', 'Manufacturer'])
+        fmt_tm = {c: '{:.3f}' for c in NUM_COLS + ['Ideal'] if c in team_df.columns}
         tms = team_df.style.format(fmt_tm)
         tms = tms.background_gradient(cmap=CMAP)
         tms = tms.apply(highlight_team,         subset=['Team'])
@@ -370,7 +367,7 @@ def show(year: int = 2026):
 
         manuf_table = _manufacturer_top2_table(sessao, sessao_filtrado)
         st.subheader('Análise de BoP (média dos 2 melhores resultados de cada marca)')
-        fmt_mf = {c: '{:.3f}' for c in NUM_COLS if c in manuf_table.columns}
+        fmt_mf = {c: '{:.3f}' for c in NUM_COLS + ['Ideal'] if c in manuf_table.columns}
         mfs = manuf_table.style.format(fmt_mf)
         mfs = mfs.background_gradient(cmap=CMAP)
         mfs = mfs.apply(highlight_manufacturer, subset=['Manufacturer'])
