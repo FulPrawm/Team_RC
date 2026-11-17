@@ -204,44 +204,11 @@ def show(year: int = 2026):
     # -----------------------------------------------------------------------
     option = st.selectbox(
         'Selecione a análise:',
-        ('Visão Geral', 'Comparação de Pilotos', 'Progressão da Sessão', 'Disputa entre Fabricantes', 'Tabela de Melhores Voltas'),
+        ('Comparação de Pilotos', 'Progressão da Sessão', 'Disputa entre Fabricantes', 'Tabela de Melhores Voltas'),
     )
 
     # =======================================================================
-    if option == 'Visão Geral':
-    # =======================================================================
-        st.subheader('Visão Geral da Etapa — Melhor volta por piloto por sessão')
-
-        _pivot_raw = (
-            df.groupby(['Driver', 'Session'])['Lap Tm (S)'].min()
-            .unstack('Session')
-        )
-        # Reorder columns chronologically
-        _ordered_cols = [s for s in sessions_available if s in _pivot_raw.columns]
-        pivot = _pivot_raw[_ordered_cols].reset_index()
-        st.dataframe(
-            pivot.style.background_gradient(cmap=CMAP, axis=1)
-              .format(lambda x: f'{x:.3f}' if isinstance(x, (int, float)) and not pd.isna(x) else '—'),
-            use_container_width=True,
-            hide_index=True,
-        )
-
-        st.subheader('Distribuição do tempo de volta entre sessões')
-        fig = box_plot(
-            df, 'Session', 'Lap Tm (S)', order=list(sessions_available),
-            title='Distribuição do Tempo de Volta por Sessão',
-        )
-        st.plotly_chart(fig, use_container_width=True)
-
-        st.subheader('Speed Trap entre sessões')
-        fig2 = box_plot(
-            df, 'Session', 'SPT', order=list(sessions_available),
-            title='Distribuição do Speed Trap por Sessão',
-        )
-        st.plotly_chart(fig2, use_container_width=True)
-
-    # =======================================================================
-    elif option == 'Comparação de Pilotos':
+    if option == 'Comparação de Pilotos':
     # =======================================================================
         st.subheader('Comparação de Pilotos entre sessões')
 
@@ -321,10 +288,17 @@ def show(year: int = 2026):
     # =======================================================================
     elif option == 'Disputa entre Fabricantes':
     # =======================================================================
-        st.subheader('Disputa entre Fabricantes — média da melhor volta por sessão')
+        st.subheader('Disputa entre Fabricantes — média dos dois melhores carros de cada marca por sessão')
 
+        # Best lap of each car per session, then average the two fastest cars of each manufacturer
+        car_best = (
+            df.groupby(['Manufacturer', 'Session', 'Car_ID'])['Lap Tm (S)'].min()
+            .reset_index()
+        )
+        car_best = car_best.sort_values('Lap Tm (S)')
+        top2 = car_best.groupby(['Manufacturer', 'Session']).head(2)
         manuf_best = (
-            df.groupby(['Manufacturer', 'Session'])['Lap Tm (S)'].min()
+            top2.groupby(['Manufacturer', 'Session'])['Lap Tm (S)'].mean()
             .reset_index()
         )
         manuf_best['Session'] = pd.Categorical(manuf_best['Session'], categories=sessions_available, ordered=True)
@@ -333,7 +307,7 @@ def show(year: int = 2026):
             manuf_best, x='Session', y='Lap Tm (S)',
             color='Manufacturer', markers=True,
             category_orders={'Session': sessions_available},
-            title='Melhor Volta por Fabricante por Sessão',
+            title='Média das Duas Melhores Voltas (dois melhores carros) por Fabricante por Sessão',
         )
         st.plotly_chart(fig, use_container_width=True)
 

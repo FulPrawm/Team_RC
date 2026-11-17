@@ -237,11 +237,11 @@ def show(year: int = 2026):
     elif option == 'Linhas':
     # =======================================================================
         raising_configs = [
-            ('Lap Tm (S)', True,  'Média Crescente do Tempo de Volta'),
-            ('S1 Tm',      True,  'Média Crescente do S1'),
-            ('S2 Tm',      True,  'Média Crescente do S2'),
-            ('S3 Tm',      True,  'Média Crescente do S3'),
-            ('SPT',        False, 'Média Crescente do SPT'),
+            ('Lap Tm (S)', True,  'Tempo de Volta'),
+            ('S1 Tm',      True,  'S1'),
+            ('S2 Tm',      True,  'S2'),
+            ('S3 Tm',      True,  'S3'),
+            ('SPT',        False, 'SPT'),
         ]
         line_tabs = st.tabs([title for _, _, title in raising_configs])
         for tab, (col, ascending, title) in zip(line_tabs, raising_configs):
@@ -249,16 +249,17 @@ def show(year: int = 2026):
                 df_plot = sessao_filtrado.copy()
                 df_plot['Ranking'] = df_plot.groupby('Driver')[col].rank(ascending=ascending)
                 df_plot = df_plot.sort_values(['Driver', 'Ranking'])
-                st.plotly_chart(px.line(df_plot, x='Ranking', y=col, color='Driver', title=title,
-                                        color_discrete_map=season.cores_personalizadas),
-                                use_container_width=True)
+                fig_rank = px.line(df_plot, x='Ranking', y=col, color='Driver', markers=True,
+                                   title=f'Média Crescente — {title}',
+                                   color_discrete_map=season.cores_personalizadas)
+                fig_rank.update_layout(xaxis_title='Ranking', yaxis_title=col)
+                st.plotly_chart(fig_rank, use_container_width=True)
 
                 df_prog = sessao_filtrado.sort_values(['Driver', 'Lap'])
                 fig_prog = px.line(
                     df_prog, x='Lap', y=col, color='Driver', markers=True,
                     color_discrete_map=season.cores_personalizadas,
-                    title=title.replace('Média Crescente do', 'Progressão do').replace(
-                        'Média Crescente de', 'Progressão de') + ' durante a Sessão',
+                    title=f'Progressão — {title} durante a Sessão',
                 )
                 fig_prog.update_layout(xaxis_title='Volta', yaxis_title=col)
                 st.plotly_chart(fig_prog, use_container_width=True)
@@ -267,12 +268,14 @@ def show(year: int = 2026):
     elif option == 'Outros':
     # =======================================================================
         st.subheader('Gap para o Mais Rápido')
+        st.caption('Compara o **melhor tempo de cada piloto em cada setor** (cada setor pode vir de uma volta diferente), '
+                   'e não os setores da volta mais rápida.')
 
         sector_tabs_cfg = {
             'Gap para o Carro Mais Rápido - Volta': 'Lap Tm (S)',
-            'Gap para o Carro Mais Rápido - S1':    'S1 Tm',
-            'Gap para o Carro Mais Rápido - S2':    'S2 Tm',
-            'Gap para o Carro Mais Rápido - S3':    'S3 Tm',
+            'Gap para o Carro Mais Rápido - S1 (melhor S1 de cada piloto)': 'S1 Tm',
+            'Gap para o Carro Mais Rápido - S2 (melhor S2 de cada piloto)': 'S2 Tm',
+            'Gap para o Carro Mais Rápido - S3 (melhor S3 de cada piloto)': 'S3 Tm',
         }
         tabs = st.tabs(list(sector_tabs_cfg.keys()))
         for tab, (tab_name, coluna) in zip(tabs, sector_tabs_cfg.items()):
@@ -282,6 +285,7 @@ def show(year: int = 2026):
 
         # -------------------------------------------------------------------
         st.subheader('Heatmap de Setores & Comparação em Radar')
+        st.caption('Heatmap e radar usam o **melhor tempo de cada piloto em cada setor** (não os setores da volta mais rápida).')
 
         best_laps    = sessao_filtrado.groupby('Driver')['Lap Tm (S)'].min().reset_index()
         fastest_drv  = best_laps.loc[best_laps['Lap Tm (S)'].idxmin(), 'Driver']
@@ -313,7 +317,7 @@ def show(year: int = 2026):
                 text_auto='.3f',
             )
             fig_heatmap.update_layout(
-                title='Tempo de Cada Piloto por Setor (Gap para o Melhor)',
+                title='Melhor Tempo de Cada Piloto por Setor (Gap para o Melhor)',
                 xaxis_title='Setor',
                 yaxis_title='Piloto',
             )
@@ -326,7 +330,7 @@ def show(year: int = 2026):
                 text_auto='.2f',
             )
             fig_heatmap_pct.update_layout(
-                title='Gap para o Melhor por Setor (%)',
+                title='Gap do Melhor Tempo de Cada Piloto por Setor (%)',
                 xaxis_title='Setor',
                 yaxis_title='Piloto',
             )
@@ -354,7 +358,7 @@ def show(year: int = 2026):
         )
         fig_radar.update_traces(fill='toself', opacity=0.6)
         fig_radar.update_layout(
-            title='Comparação de Desempenho por Setor — Melhores Pilotos',
+            title='Comparação de Desempenho por Setor — Melhor Tempo de Cada Piloto em Cada Setor',
             polar=dict(radialaxis=dict(
                 tickmode='array',
                 tickvals=[0, 0.5, 1],
@@ -380,13 +384,27 @@ def show(year: int = 2026):
                 })
 
         if prev_rows:
+            df_prev = pd.DataFrame(prev_rows)
             fig_scatter = px.scatter(
-                pd.DataFrame(prev_rows),
+                df_prev,
                 x='Fast Lap', y='Previous Lap', color='Driver',
                 title='Volta Mais Rápida vs Volta Anterior',
             )
             fig_scatter.update_traces(marker_size=12)
+            add_trend_line(fig_scatter, df_prev['Fast Lap'], df_prev['Previous Lap'])
             st.plotly_chart(fig_scatter, use_container_width=True)
+
+            if len(df_prev) >= 2:
+                corr = df_prev['Fast Lap'].corr(df_prev['Previous Lap'])
+                st.caption(f"Coeficiente de correlação (Pearson): **{corr:.3f}**")
+                st.caption(
+                    "Valor positivo: quando uma variável sobe, a outra também sobe na mesma proporção. "
+                    "Valor negativo: quando uma variável sobe, a outra desce.  \n"
+                    "0,8 a 1,0: Correlação forte · "
+                    "0,5 a 0,8: Correlação moderada · "
+                    "0,2 a 0,5: Correlação fraca · "
+                    "0,0 a 0,2: Correlação insignificante ou nula"
+                )
 
         # Gap to the car ahead
         st.subheader('Gap para o Carro da Frente')
@@ -461,24 +479,25 @@ def show(year: int = 2026):
     elif option == 'Box Plots':
     # =======================================================================
         st.write('Valores de todos os carros de cada fabricante')
-        for var in ANALISE_MANUFACTURER:
-            if var == 'Manufacturer':
-                continue
-            fig = box_plot(
-                sessao_filtrado, 'Manufacturer', var, orientation='h',
-                title=f'Distribuição de {var}',
-            )
-            st.plotly_chart(fig)
+        vars_manuf = [c for c in ANALISE_MANUFACTURER if c != 'Manufacturer']
+        for tab, var in zip(st.tabs(vars_manuf), vars_manuf):
+            with tab:
+                fig = box_plot(
+                    sessao_filtrado, 'Manufacturer', var, orientation='h',
+                    title=f'Distribuição de {var}',
+                )
+                st.plotly_chart(fig, use_container_width=True)
 
         boxplot_cols   = {'Volta': 'Lap Tm (S)', 'S1': 'S1 Tm', 'S2': 'S2 Tm', 'S3': 'S3 Tm', 'SPT': 'SPT'}
-        drivers_sorted = sorted(
-            [d for d in sessao_filtrado['Driver'].dropna().unique()],
-            key=lambda x: str(x),
-        )
+        drivers_all = sorted(sessao_filtrado['Driver'].dropna().unique(), key=str)
         tabs_box = st.tabs(list(boxplot_cols.keys()))
 
         for tab, (tab_nome, coluna) in zip(tabs_box, boxplot_cols.items()):
             with tab:
+                # Order drivers by median (fastest first; SPT: highest first)
+                medians = sessao_filtrado.groupby('Driver')[coluna].median()
+                drivers_sorted = medians.sort_values(ascending=(coluna != 'SPT')).index.tolist()
+                drivers_sorted += [d for d in drivers_all if d not in drivers_sorted]
                 selected = st.multiselect(
                     f'Filtrar pilotos — {coluna}',
                     options=drivers_sorted,

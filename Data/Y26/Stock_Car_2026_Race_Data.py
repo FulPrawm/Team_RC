@@ -578,10 +578,10 @@ def show(year: int = 2026):
             avg_per_team = avg_per_team.merge(rep_car, on='Team')
             st.plotly_chart(_plot_efficiency(avg_per_team, '(Média por Equipe)'), use_container_width=True)
             st.markdown('''
-- **↗ Superior Direito** → Alta eficiência geral (reta + curva)
-- **↖ Superior Esquerdo** → Baixa downforce (boa reta, curva ruim)
-- **↘ Inferior Direito** → Alta downforce (boa curva, reta ruim)
-- **↙ Inferior Esquerdo** → Baixa eficiência (nenhuma das duas)
+- **↖ Superior Esquerdo** → Alta eficiência geral (reta + curva)
+- **↗ Superior Direito** → Baixa downforce (boa reta, curva ruim)
+- **↙ Inferior Esquerdo** → Alta downforce (boa curva, reta ruim)
+- **↘ Inferior Direito** → Baixa eficiência (nenhuma das duas)
 ''')
 
         st.subheader('Tempo Médio de Volta vs % de Clean Laps')
@@ -701,14 +701,15 @@ def show(year: int = 2026):
 
         # By driver — with driver filter multiselect
         boxplot_cols   = {'Volta': 'Lap Tm (S)', 'S1': 'S1 Tm', 'S2': 'S2 Tm', 'S3': 'S3 Tm', 'SPT': 'SPT'}
-        drivers_sorted = sorted(
-            [d for d in sessao_filtrado['Driver'].dropna().unique()],
-            key=lambda x: str(x),
-        )
+        drivers_all = sorted(sessao_filtrado['Driver'].dropna().unique(), key=str)
         tabs_box = st.tabs(list(boxplot_cols.keys()))
 
         for tab, (tab_nome, coluna) in zip(tabs_box, boxplot_cols.items()):
             with tab:
+                # Order drivers by median (fastest first; SPT: highest first)
+                medians = sessao_filtrado.groupby('Driver')[coluna].median()
+                drivers_sorted = medians.sort_values(ascending=(coluna != 'SPT')).index.tolist()
+                drivers_sorted += [d for d in drivers_all if d not in drivers_sorted]
                 selected = st.multiselect(
                     f'Filtrar pilotos — {coluna}',
                     options=drivers_sorted,
